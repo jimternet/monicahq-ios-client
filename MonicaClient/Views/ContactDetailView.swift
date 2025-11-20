@@ -3439,9 +3439,10 @@ struct TasksManagementView: View {
                     isCompleted: !task.isCompleted
                 )
 
+                let updatedTask = response.data
                 await MainActor.run {
                     if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-                        tasks[index] = response.data
+                        tasks[index] = updatedTask
                     }
                 }
                 print("✅ Toggled task completion")

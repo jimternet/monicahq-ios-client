@@ -434,7 +434,7 @@ struct EditContactFieldView: View {
         createdAt: Date(),
         updatedAt: Date()
     )
-    
-    ContactFieldsManagementView(contact: contact)
+
+    return ContactFieldsManagementView(contact: contact)
         .environmentObject(AuthenticationManager())
 }
