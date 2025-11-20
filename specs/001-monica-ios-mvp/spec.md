@@ -1,8 +1,38 @@
 # Feature Specification: Monica iOS Client MVP
 
-**Feature Branch**: `001-monica-ios-mvp`  
-**Created**: 2025-10-26  
-**Status**: Draft  
+**Feature Branch**: `001-monica-ios-mvp`
+**Created**: 2025-10-26
+**Status**: In Progress
+**Last Updated**: 2025-11-17
+
+## Completion Status
+
+### Completed User Stories
+- ✅ **User Story 1** - Authentication & API Configuration (P1)
+- ✅ **User Story 2** - Browse & Paginate Contacts (P1)
+- ✅ **User Story 3** - Search Contacts (P2)
+- ✅ **User Story 4** - View Contact Details (P2)
+- ✅ **User Story 5** - View Contact Activities & Timeline (P3)
+- ✅ **User Story 6** - View Related Contacts & Relationships (P3) - Completed 2025-11-17
+- ✅ **User Story 7** - View Notes & Tasks (P3)
+- ✅ **User Story 8** - View Tags & Organization (P4)
+- ✅ **User Story 9** - Handle API Errors Gracefully (P1)
+- ✅ **User Story 10** - Manage Settings (P2)
+
+### In Progress
+- 🔄 **Reminders** - Birthday/anniversary alerts with iOS notifications
+
+### Post-MVP Enhancements
+- 📋 **Full CRUD Operations** - Add create/edit/delete UI for:
+  - Contacts (currently read-only)
+  - Relationships (API ready, UI needed)
+  - Notes (API ready, UI needed)
+  - Tasks (API ready, UI needed)
+  - Activities (API ready, UI needed)
+  - Reminders (create/delete implemented, edit UI needed)
+  - Gifts (API ready, UI needed)
+  - Tags (API ready, UI needed)
+
 **Input**: User description: "Monica iOS Client - MVP Specification: Build an iOS app that allows users to view and search their Monica contacts and related information (activities, notes, tasks, gifts) in a read-only format. The app prioritizes simplicity, privacy, and native iOS experience."
 
 ## User Scenarios & Testing *(mandatory)*
