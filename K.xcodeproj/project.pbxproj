@@ -27,7 +27,6 @@
 		B7BD39F62ECD7791005A016F /* ContactAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */; };
 		B7BD39F82ECD7791005A016F /* RemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39E72ECD7790005A016F /* RemindersListView.swift */; };
 		B7BD39F92ECD7791005A016F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39EB2ECD7790005A016F /* SettingsView.swift */; };
-		B7BD39FD2ECD7791005A016F /* RemindersListView.swift.backup in Resources */ = {isa = PBXBuildFile; fileRef = B7BD39E82ECD7790005A016F /* RemindersListView.swift.backup */; };
 		B7BD3A052ECD781E005A016F /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A032ECD781E005A016F /* Reminder.swift */; };
 		B7BD3A0D2ECD7A45005A016F /* Gift.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A0B2ECD7A45005A016F /* Gift.swift */; };
 		B7BD3A0E2ECD7A45005A016F /* Task.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A0C2ECD7A45005A016F /* Task.swift */; };
@@ -59,7 +58,6 @@
 		B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatar.swift; sourceTree = "<group>"; };
 		B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldsManagementView.swift; sourceTree = "<group>"; };
 		B7BD39E72ECD7790005A016F /* RemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersListView.swift; sourceTree = "<group>"; };
-		B7BD39E82ECD7790005A016F /* RemindersListView.swift.backup */ = {isa = PBXFileReference; lastKnownFileType = text; path = RemindersListView.swift.backup; sourceTree = "<group>"; };
 		B7BD39EB2ECD7790005A016F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B7BD3A032ECD781E005A016F /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
 		B7BD3A0B2ECD7A45005A016F /* Gift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gift.swift; sourceTree = "<group>"; };
@@ -129,7 +127,6 @@
 				B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */,
 				B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */,
 				B7BD39E72ECD7790005A016F /* RemindersListView.swift */,
-				B7BD39E82ECD7790005A016F /* RemindersListView.swift.backup */,
 				B7BD39EB2ECD7790005A016F /* SettingsView.swift */,
 				1A2B3C642B1E5FB101234567 /* LoginView.swift */,
 				1A2B3C602B1E5F9B01234567 /* ContactsListView.swift */,
@@ -244,7 +241,6 @@
 				1A2B3C542B1E5F6901234567 /* Preview Assets.xcassets in Resources */,
 				1A2B3C512B1E5F6901234567 /* Assets.xcassets in Resources */,
 				1A2B3C692B1E5FC701234567 /* MonicaClient.xcdatamodeld in Resources */,
-				B7BD39FD2ECD7791005A016F /* RemindersListView.swift.backup in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
