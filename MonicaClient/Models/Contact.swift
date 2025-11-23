@@ -388,7 +388,7 @@ struct ContactFieldTypeObject: Codable, Identifiable {
     let fontawesomeIcon: String
     let `protocol`: String?
     let delible: Bool
-    let type: String
+    let type: String? // Optional because some contact field types (e.g., LinkedIn) return null
     let account: Account
     let createdAt: Date
     let updatedAt: Date
@@ -500,7 +500,8 @@ extension ContactField {
     
     // Computed property to get the simplified type for UI
     var contactFieldTypeEnum: ContactFieldType {
-        return ContactFieldType(rawValue: contactFieldType.type) ?? .other
+        guard let typeString = contactFieldType.type else { return .other }
+        return ContactFieldType(rawValue: typeString) ?? .other
     }
 }
 
