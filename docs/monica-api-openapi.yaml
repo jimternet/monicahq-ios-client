@@ -19,8 +19,10 @@ info:
     url: https://www.gnu.org/licenses/agpl-3.0.html
 
 servers:
-  - url: https://monica.noofincnet.synology.me/api
-    description: Production Monica API
+  - url: https://app.monicahq.com/api
+    description: Monica Cloud (monicahq.com)
+  - url: https://your-instance.example.com/api
+    description: Self-hosted Monica instance
   - url: http://localhost:8081/api
     description: Local Development (Docker Compose)
 
@@ -41,31 +43,368 @@ components:
       properties:
         id:
           type: integer
-          example: 1
+          example: 3011
+        uuid:
+          type: string
+          example: "fdc2e91b-cf37-48b1-8b98-edc54e8184d6"
+        object:
+          type: string
+          example: "contact"
+        hash_id:
+          type: string
+          example: "h:LWZb9rX7ek0Y6wMa7O"
         first_name:
           type: string
-          example: "John"
+          example: "James"
         last_name:
           type: string
-          example: "Doe"
+          example: "Beyers"
         nickname:
           type: string
-          example: "Johnny"
-        gender_id:
-          type: integer
-          example: 1
+          nullable: true
+          example: "Jim"
+        complete_name:
+          type: string
+          example: "James Matthew Beyers (Jim)"
+        initials:
+          type: string
+          example: "JMB"
+        description:
+          type: string
+          nullable: true
+        gender:
+          type: string
+          example: "Man"
+        gender_type:
+          type: string
+          example: "M"
+        is_starred:
+          type: boolean
+          example: false
         is_partial:
           type: boolean
           example: false
+        is_active:
+          type: boolean
+          example: true
         is_dead:
           type: boolean
           example: false
+        is_me:
+          type: boolean
+          example: false
+        last_called:
+          type: string
+          nullable: true
+          format: date-time
+        last_activity_together:
+          type: string
+          nullable: true
+          format: date-time
+        stay_in_touch_frequency:
+          type: integer
+          nullable: true
+        stay_in_touch_trigger_date:
+          type: string
+          nullable: true
+          format: date-time
+        information:
+          $ref: '#/components/schemas/ContactInformation'
+        addresses:
+          type: array
+          items:
+            type: object
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        statistics:
+          $ref: '#/components/schemas/ContactStatistics'
+        url:
+          type: string
+          example: "https://monica.example.com/api/contacts/3011"
+        account:
+          $ref: '#/components/schemas/Account'
         created_at:
           type: string
           format: date-time
         updated_at:
           type: string
           format: date-time
+    
+    ContactInformation:
+      type: object
+      properties:
+        relationships:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              total:
+                type: integer
+              contacts:
+                type: array
+                items:
+                  type: object
+        dates:
+          $ref: '#/components/schemas/ContactDates'
+        career:
+          $ref: '#/components/schemas/CareerInfo'
+        avatar:
+          $ref: '#/components/schemas/AvatarInfo'
+        food_preferences:
+          type: string
+          nullable: true
+        how_you_met:
+          type: object
+          nullable: true
+    
+    ContactDates:
+      type: object
+      properties:
+        birthdate:
+          $ref: '#/components/schemas/DateInfo'
+        deceased_date:
+          $ref: '#/components/schemas/DateInfo'
+    
+    DateInfo:
+      type: object
+      properties:
+        is_age_based:
+          type: boolean
+          nullable: true
+          example: false
+        is_year_unknown:
+          type: boolean
+          nullable: true
+          example: false
+        date:
+          type: string
+          nullable: true
+          format: date-time
+          example: "1976-01-12T00:00:00Z"
+    
+    CareerInfo:
+      type: object
+      properties:
+        job:
+          type: string
+          nullable: true
+          example: "Vice President of Engineering"
+        company:
+          type: string
+          nullable: true
+          example: "CVS"
+    
+    AvatarInfo:
+      type: object
+      properties:
+        url:
+          type: string
+          example: "https://monica.example.com/store/avatars/avatar.jpg"
+        source:
+          type: string
+          example: "default"
+        default_avatar_color:
+          type: string
+          example: "#fdb660"
+    
+    ContactStatistics:
+      type: object
+      properties:
+        number_of_calls:
+          type: integer
+          example: 0
+        number_of_notes:
+          type: integer
+          example: 1
+        number_of_activities:
+          type: integer
+          example: 0
+        number_of_reminders:
+          type: integer
+          example: 0
+        number_of_tasks:
+          type: integer
+          example: 0
+        number_of_gifts:
+          type: integer
+          example: 0
+        number_of_debts:
+          type: integer
+          example: 0
+    
+    Gender:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        object:
+          type: string
+          example: "gender"
+        name:
+          type: string
+          example: "Man"
+        account:
+          $ref: '#/components/schemas/Account'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 18
+        object:
+          type: string
+          example: "tag"
+        name:
+          type: string
+          example: "EdgeMonsters"
+        name_slug:
+          type: string
+          example: "edgemonsters"
+        account:
+          $ref: '#/components/schemas/Account'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+
+    ContactUpdate:
+      type: object
+      required:
+        - is_birthdate_known
+        - is_deceased
+        - is_deceased_date_known
+        - is_partial
+        - birthdate_is_age_based
+        - deceased_date_is_age_based
+        - deceased_date_is_year_unknown
+      properties:
+        first_name:
+          type: string
+          example: "Henri"
+          description: Contact's first name
+        last_name:
+          type: string
+          example: "Troyat"
+          description: Contact's last name
+        nickname:
+          type: string
+          example: "Rambo"
+          description: Contact's nickname
+        gender_id:
+          type: integer
+          nullable: true
+          example: 1
+          description: Gender identifier (1=male, 2=female, etc.)
+        gender:
+          type: string
+          nullable: true
+          example: "male"
+          description: Gender as string
+        birthdate_day:
+          type: integer
+          nullable: true
+          example: null
+          minimum: 1
+          maximum: 31
+          description: Day component of birthdate (1-31)
+        birthdate_month:
+          type: integer
+          nullable: true
+          example: null
+          minimum: 1
+          maximum: 12
+          description: Month component of birthdate (1-12)
+        birthdate_year:
+          type: integer
+          nullable: true
+          example: null
+          description: Year component of birthdate
+        birthdate_is_age_based:
+          type: boolean
+          example: true
+          description: Whether birthdate is age-based rather than exact date
+        is_birthdate_known:
+          type: boolean
+          example: false
+          description: Required field indicating if birthdate is known
+        birthdate_age:
+          type: integer
+          nullable: true
+          example: 29
+          description: Age if birthdate_is_age_based is true
+        is_partial:
+          type: boolean
+          example: false
+          description: Required field indicating if this is a partial contact
+        is_deceased:
+          type: boolean
+          example: true
+          description: Required field indicating if contact is deceased
+        deceased_date:
+          type: string
+          nullable: true
+          example: null
+          description: Deceased date if known
+        deceased_date_is_age_based:
+          type: boolean
+          example: true
+          description: Whether deceased date is age-based
+        deceased_date_is_year_unknown:
+          type: boolean
+          example: false
+          description: Whether deceased date year is unknown
+        deceased_date_age:
+          type: integer
+          nullable: true
+          example: 98
+          description: Age at death if deceased_date_is_age_based is true
+        is_deceased_date_known:
+          type: boolean
+          example: false
+          description: Required field indicating if deceased date is known
+        company:
+          type: string
+          nullable: true
+          example: "Acme Corp"
+          description: Company name
+        job_title:
+          type: string
+          nullable: true
+          example: "Software Engineer"
+          description: Job title
+        notes:
+          type: string
+          nullable: true
+          example: "Met at conference"
+          description: Notes about the contact
+        description:
+          type: string
+          nullable: true
+          example: "Long-time friend from college"
+          description: Brief description of the contact
+        is_starred:
+          type: boolean
+          example: false
+          description: Whether contact is starred
 
     Activity:
       type: object
@@ -99,27 +438,39 @@ components:
           example: 1
         contact_id:
           type: integer
+          nullable: true
+          description: "Contact ID. Note: Not returned in GET responses, only required when creating gifts"
           example: 1
         name:
           type: string
           example: "LEGO Set"
         comment:
           type: string
+          nullable: true
           example: "Birthday gift idea"
-        is_an_idea:
-          type: boolean
-          example: true
-        has_been_offered:
-          type: boolean
-          example: false
+        status:
+          type: string
+          enum: ["idea", "offered", "received"]
+          description: "Gift status. Replaces deprecated is_an_idea and has_been_offered fields"
+          example: "idea"
         url:
           type: string
           format: uri
+          nullable: true
           example: "https://www.lego.com"
         value:
-          type: number
-          format: float
-          example: 150.00
+          type: string
+          nullable: true
+          description: "Gift value as string. API returns numeric values as strings (e.g., '150.00')"
+          example: "150.00"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
 
     Note:
       type: object
@@ -155,10 +506,14 @@ components:
         completed:
           type: boolean
           example: false
-        completed_at:
+        created_at:
           type: string
           format: date-time
-          nullable: true
+          example: "2024-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
 
     Tag:
       type: object
@@ -254,6 +609,18 @@ components:
           type: array
           items:
             type: object
+        meta:
+          type: object
+        links:
+          type: object
+
+    GenderListApiResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Gender'
         meta:
           type: object
         links:
@@ -388,6 +755,12 @@ paths:
 
     put:
       summary: Update a contact
+      description: |
+        Update an existing contact. The Monica API requires a complex birthdate structure with 
+        separate day/month/year fields instead of a single birthdate string. Required fields include:
+        - is_birthdate_known, is_deceased, is_deceased_date_known (always required)
+        - is_partial, birthdate_is_age_based, deceased_date_is_age_based, deceased_date_is_year_unknown
+        - When updating contacts with birthdates: birthdate_day, birthdate_month, birthdate_year must all be provided
       tags: [Contacts]
       parameters:
         - name: id
@@ -400,10 +773,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Contact'
+              $ref: '#/components/schemas/ContactUpdate'
       responses:
         '200':
           description: Contact updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactApiResponse'
+        '422':
+          description: Validation error - missing required fields
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      message:
+                        type: array
+                        items:
+                          type: string
+                        example: ["The day field is required.", "The month field is required.", "The is birthdate known field is required.", "The is deceased field is required.", "The is deceased date known field is required."]
+                      error_code:
+                        type: integer
+                        example: 32
 
     delete:
       summary: Delete a contact
@@ -643,6 +1038,19 @@ paths:
         '204':
           description: Gift deleted successfully
 
+  # Gender Endpoints
+  /genders:
+    get:
+      summary: List all genders
+      tags: [Genders]
+      responses:
+        '200':
+          description: List of genders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenderListApiResponse'
+
   # Tag Endpoints
   /tags:
     get:
@@ -868,6 +1276,10 @@ paths:
 
     put:
       summary: Update a task
+      description: |\
+        Update an existing task. The Monica API requires the `title` field even when
+        updating only the `completed` status. Always include the task's existing title
+        and optionally description when updating any task field.
       tags: [Tasks]
       parameters:
         - name: id
@@ -880,10 +1292,44 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  description: Task title (required even when only updating completion status)
+                  example: "Call about project"
+                description:
+                  type: string
+                  nullable: true
+                  description: Task description (optional but recommended to include existing value)
+                  example: "Discuss timeline and deliverables"
+                completed:
+                  type: boolean
+                  description: Task completion status
+                  example: false
       responses:
         '200':
           description: Task updated successfully
+        '422':
+          description: Validation error - missing required title field
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      message:
+                        type: array
+                        items:
+                          type: string
+                        example: ["The title field is required."]
+                      error_code:
+                        type: integer
+                        example: 32
 
     delete:
       summary: Delete a task
