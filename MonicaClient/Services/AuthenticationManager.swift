@@ -118,6 +118,16 @@ class AuthenticationManager: ObservableObject {
             print("⚠️ Failed to load tags: \(error.localizedDescription)")
             // Don't fail authentication if tags can't be loaded
         }
+
+        // Fetch and cache countries (used for address forms)
+        do {
+            let countries = try await apiClient.fetchCountries()
+            CacheService.shared.setCountries(countries)
+            print("✅ Loaded and cached \(countries.count) countries")
+        } catch {
+            print("⚠️ Failed to load countries: \(error.localizedDescription)")
+            // Don't fail authentication if countries can't be loaded
+        }
     }
 
     /// Manually refresh configuration variables
