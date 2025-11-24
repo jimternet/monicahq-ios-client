@@ -7,96 +7,57 @@
 //
 
 import SwiftUI
-import MapKit
 
-/// A single row displaying an address with label, formatted text, and optional map preview
+/// A single row displaying an address with label and formatted text
 struct AddressRowView: View {
 
     let address: Address
     var onTap: (() -> Void)?
     var onDirections: (() -> Void)?
 
-    @State private var region: MKCoordinateRegion?
-
     var body: some View {
-        Button(action: { onTap?() }) {
-            HStack(alignment: .top, spacing: 12) {
-                // Left side: Label and address text
-                VStack(alignment: .leading, spacing: 4) {
-                    // Label badge
-                    Text(address.displayLabel)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(labelColor)
-                        .cornerRadius(4)
+        VStack(alignment: .leading, spacing: 6) {
+            // Label badge
+            Text(address.displayLabel)
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 3)
+                .background(labelColor)
+                .cornerRadius(4)
 
-                    // Formatted address
-                    Text(address.formattedAddress)
-                        .font(.subheadline)
-                        .foregroundColor(.primary)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(4)
+            // Formatted address
+            Text(address.formattedAddress)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.leading)
+
+            // Action buttons row
+            HStack(spacing: 16) {
+                if onDirections != nil {
+                    Button {
+                        onDirections?()
+                    } label: {
+                        Label("Directions", systemImage: "arrow.triangle.turn.up.right.diamond")
+                            .font(.caption)
+                    }
                 }
 
-                Spacer()
-
-                // Right side: Map preview (if coordinates available)
-                if address.hasCoordinates, let coordinate = address.coordinate {
-                    mapPreview(coordinate: coordinate)
-                }
-            }
-            .padding(.vertical, 4)
-        }
-        .buttonStyle(.plain)
-        .contextMenu {
-            if onDirections != nil {
                 Button {
-                    onDirections?()
+                    copyToClipboard()
                 } label: {
-                    Label("Get Directions", systemImage: "arrow.triangle.turn.up.right.diamond")
+                    Label("Copy", systemImage: "doc.on.doc")
+                        .font(.caption)
                 }
             }
-
-            Button {
-                copyToClipboard()
-            } label: {
-                Label("Copy Address", systemImage: "doc.on.doc")
-            }
-
-            Button {
-                shareAddress()
-            } label: {
-                Label("Share", systemImage: "square.and.arrow.up")
-            }
+            .foregroundColor(.blue)
+            .padding(.top, 4)
         }
-        .onAppear {
-            setupRegion()
-        }
-    }
-
-    // MARK: - Map Preview
-
-    @ViewBuilder
-    private func mapPreview(coordinate: CLLocationCoordinate2D) -> some View {
-        if let region = region {
-            Map(coordinateRegion: .constant(region), annotationItems: [AddressAnnotation(coordinate: coordinate)]) { item in
-                MapMarker(coordinate: item.coordinate, tint: .red)
-            }
-            .frame(width: 80, height: 60)
-            .cornerRadius(8)
-            .disabled(true)
-        }
-    }
-
-    private func setupRegion() {
-        if let coordinate = address.coordinate {
-            region = MKCoordinateRegion(
-                center: coordinate,
-                span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
-            )
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap?()
         }
     }
 
@@ -118,25 +79,6 @@ struct AddressRowView: View {
     private func copyToClipboard() {
         UIPasteboard.general.string = address.formattedAddress
     }
-
-    private func shareAddress() {
-        let activityVC = UIActivityViewController(
-            activityItems: [address.formattedAddress],
-            applicationActivities: nil
-        )
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = windowScene.windows.first?.rootViewController {
-            rootVC.present(activityVC, animated: true)
-        }
-    }
-}
-
-// MARK: - Address Annotation
-
-struct AddressAnnotation: Identifiable {
-    let id = UUID()
-    let coordinate: CLLocationCoordinate2D
 }
 
 // MARK: - Preview
@@ -159,7 +101,8 @@ struct AddressAnnotation: Identifiable {
                 account: nil,
                 createdAt: nil,
                 updatedAt: nil
-            )
+            ),
+            onDirections: {}
         )
 
         AddressRowView(
@@ -178,7 +121,8 @@ struct AddressAnnotation: Identifiable {
                 account: nil,
                 createdAt: nil,
                 updatedAt: nil
-            )
+            ),
+            onDirections: {}
         )
     }
 }

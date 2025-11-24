@@ -2702,13 +2702,16 @@ struct AddressManagementSheet: View {
 
     var body: some View {
         NavigationView {
-            AddressListView(
-                viewModel: viewModel,
-                onAddAddress: { showingAddForm = true },
-                onEditAddress: { address in addressToEdit = address },
-                onDirections: { address in openDirections(for: address) },
-                onMapTap: { address in openDirections(for: address) }
-            )
+            List {
+                AddressListView(
+                    viewModel: viewModel,
+                    onAddAddress: { showingAddForm = true },
+                    onEditAddress: { address in addressToEdit = address },
+                    onDirections: { address in openDirections(for: address) },
+                    onMapTap: { address in openDirections(for: address) }
+                )
+            }
+            .listStyle(.insetGrouped)
             .navigationTitle("Addresses")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
