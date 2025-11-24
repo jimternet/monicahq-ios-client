@@ -1591,12 +1591,31 @@ class MonicaAPIClient {
 
         let decoder = JSONDecoder()
 
+        // Try standard array format first
         do {
             let response = try decoder.decode(CountryListResponse.self, from: data)
             print("✅ Fetched \(response.data.count) countries")
             return response.data
         } catch {
+            print("⚠️ Standard countries format failed, trying dictionary format...")
+        }
+
+        // Monica API sometimes returns countries as a dictionary keyed by ID
+        // e.g., { "data": { "1": { "id": 1, "name": "...", ... }, "2": { ... } } }
+        do {
+            struct CountryDictResponse: Codable {
+                let data: [String: Country]
+            }
+            let response = try decoder.decode(CountryDictResponse.self, from: data)
+            let countries = Array(response.data.values).sorted { $0.name < $1.name }
+            print("✅ Fetched \(countries.count) countries (dictionary format)")
+            return countries
+        } catch {
             print("❌ Countries decoding error: \(error)")
+            // Log raw response for debugging
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("📄 Raw countries response: \(responseString.prefix(500))")
+            }
             throw APIError.decodingError
         }
     }

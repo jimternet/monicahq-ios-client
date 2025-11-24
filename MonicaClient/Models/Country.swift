@@ -11,8 +11,9 @@ import Foundation
 // MARK: - Country Model
 
 /// Represents a nation from a standardized list
+/// Note: Monica API returns id as string ISO code (e.g., "US", "AF")
 struct Country: Codable, Identifiable, Hashable {
-    let id: Int
+    let id: String
     let object: String
     let name: String
     let iso: String
@@ -22,7 +23,7 @@ struct Country: Codable, Identifiable, Hashable {
     }
 
     /// Convenience initializer for testing/previews
-    init(id: Int, object: String = "country", name: String, iso: String) {
+    init(id: String, object: String = "country", name: String, iso: String) {
         self.id = id
         self.object = object
         self.name = name
@@ -88,10 +89,10 @@ struct CountryListResponse: Codable {
 // MARK: - Preview/Test Data
 
 extension Country {
-    static let unitedStates = Country(id: 1, name: "United States", iso: "US")
-    static let canada = Country(id: 2, name: "Canada", iso: "CA")
-    static let unitedKingdom = Country(id: 3, name: "United Kingdom", iso: "GB")
-    static let australia = Country(id: 4, name: "Australia", iso: "AU")
+    static let unitedStates = Country(id: "US", name: "United States", iso: "US")
+    static let canada = Country(id: "CA", name: "Canada", iso: "CA")
+    static let unitedKingdom = Country(id: "GB", name: "United Kingdom", iso: "GB")
+    static let australia = Country(id: "AU", name: "Australia", iso: "AU")
 
     static let previewCountries: [Country] = [
         unitedStates, canada, unitedKingdom, australia
