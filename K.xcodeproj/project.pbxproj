@@ -35,6 +35,21 @@
 		B7BD3A142ECD7AC2005A016F /* AuthenticatedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A132ECD7AC2005A016F /* AuthenticatedAsyncImage.swift */; };
 		B7BD3A162ECD7BE8005A016F /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A152ECD7BE8005A016F /* Extensions.swift */; };
 		B7BD3A182ECD7CBB005A016F /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A172ECD7CBB005A016F /* Activity.swift */; };
+		B7BD3A252ED41C5B005A016F /* AddressViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A1B2ED41C5B005A016F /* AddressViewModel.swift */; };
+		B7BD3A262ED41C5B005A016F /* AddressListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A1F2ED41C5B005A016F /* AddressListView.swift */; };
+		B7BD3A272ED41C5B005A016F /* AddressFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A1E2ED41C5B005A016F /* AddressFormView.swift */; };
+		B7BD3A282ED41C5B005A016F /* AddressFormViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A1A2ED41C5B005A016F /* AddressFormViewModel.swift */; };
+		B7BD3A292ED41C5B005A016F /* AddressMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A202ED41C5B005A016F /* AddressMapView.swift */; };
+		B7BD3A2A2ED41C5B005A016F /* AddressEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A1D2ED41C5B005A016F /* AddressEmptyStateView.swift */; };
+		B7BD3A2B2ED41C5B005A016F /* AddressRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A212ED41C5B005A016F /* AddressRowView.swift */; };
+		B7BD3A2C2ED41C5B005A016F /* CountryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A222ED41C5B005A016F /* CountryPickerView.swift */; };
+		B7BD3A2F2ED41C85005A016F /* Country.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A2E2ED41C85005A016F /* Country.swift */; };
+		B7BD3A302ED41C85005A016F /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A2D2ED41C85005A016F /* Address.swift */; };
+		B7BD3A322ED41CB3005A016F /* GeocodingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A312ED41CB3005A016F /* GeocodingService.swift */; };
+		B7BD3A342ED41CC0005A016F /* AddressFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A332ED41CC0005A016F /* AddressFormatter.swift */; };
+		B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A362ED41CD0005A016F /* CacheService.swift */; };
+		B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A382ED41CD0005A016F /* KeychainService.swift */; };
+		B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +82,21 @@
 		B7BD3A132ECD7AC2005A016F /* AuthenticatedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatedAsyncImage.swift; sourceTree = "<group>"; };
 		B7BD3A152ECD7BE8005A016F /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		B7BD3A172ECD7CBB005A016F /* Activity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
+		B7BD3A1A2ED41C5B005A016F /* AddressFormViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressFormViewModel.swift; sourceTree = "<group>"; };
+		B7BD3A1B2ED41C5B005A016F /* AddressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressViewModel.swift; sourceTree = "<group>"; };
+		B7BD3A1D2ED41C5B005A016F /* AddressEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressEmptyStateView.swift; sourceTree = "<group>"; };
+		B7BD3A1E2ED41C5B005A016F /* AddressFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressFormView.swift; sourceTree = "<group>"; };
+		B7BD3A1F2ED41C5B005A016F /* AddressListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressListView.swift; sourceTree = "<group>"; };
+		B7BD3A202ED41C5B005A016F /* AddressMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressMapView.swift; sourceTree = "<group>"; };
+		B7BD3A212ED41C5B005A016F /* AddressRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressRowView.swift; sourceTree = "<group>"; };
+		B7BD3A222ED41C5B005A016F /* CountryPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountryPickerView.swift; sourceTree = "<group>"; };
+		B7BD3A2D2ED41C85005A016F /* Address.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Address.swift; sourceTree = "<group>"; };
+		B7BD3A2E2ED41C85005A016F /* Country.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Country.swift; sourceTree = "<group>"; };
+		B7BD3A312ED41CB3005A016F /* GeocodingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeocodingService.swift; sourceTree = "<group>"; };
+		B7BD3A332ED41CC0005A016F /* AddressFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressFormatter.swift; sourceTree = "<group>"; };
+		B7BD3A362ED41CD0005A016F /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
+		B7BD3A382ED41CD0005A016F /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +129,7 @@
 		1A2B3C4B2B1E5F6701234567 /* MonicaClient */ = {
 			isa = PBXGroup;
 			children = (
+				B7BD3A242ED41C5B005A016F /* AddressManagement */,
 				1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */,
 				1A2B3C4E2B1E5F6701234567 /* ContentView.swift */,
 				1A2B3C702B1E5FF301234567 /* Views */,
@@ -138,6 +169,8 @@
 		1A2B3C712B1E5FFE01234567 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B7BD3A2D2ED41C85005A016F /* Address.swift */,
+				B7BD3A2E2ED41C85005A016F /* Country.swift */,
 				B7BD3A172ECD7CBB005A016F /* Activity.swift */,
 				B7BD3A112ECD7A7C005A016F /* APIResponse.swift */,
 				B7BD3A0F2ECD7A4F005A016F /* Note.swift */,
@@ -154,6 +187,8 @@
 		1A2B3C722B1E600901234567 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B7BD3A3B2ED41CD0005A016F /* Storage */,
+				B7BD3A312ED41CB3005A016F /* GeocodingService.swift */,
 				1A2B3C5A2B1E5F7A01234567 /* MonicaAPIClient.swift */,
 				1A2B3C5E2B1E5F9001234567 /* AuthenticationManager.swift */,
 				1A2B3C6A2B1E5FD201234567 /* SyncManager.swift */,
@@ -173,11 +208,53 @@
 		1A2B3C742B1E601F01234567 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				B7BD3A332ED41CC0005A016F /* AddressFormatter.swift */,
 				B7BD3A152ECD7BE8005A016F /* Extensions.swift */,
 				B7BD3A132ECD7AC2005A016F /* AuthenticatedAsyncImage.swift */,
 				1A2B3C6C2B1E5FDD01234567 /* KeychainManager.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B7BD3A1C2ED41C5B005A016F /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B7BD3A1A2ED41C5B005A016F /* AddressFormViewModel.swift */,
+				B7BD3A1B2ED41C5B005A016F /* AddressViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		B7BD3A232ED41C5B005A016F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B7BD3A1D2ED41C5B005A016F /* AddressEmptyStateView.swift */,
+				B7BD3A1E2ED41C5B005A016F /* AddressFormView.swift */,
+				B7BD3A1F2ED41C5B005A016F /* AddressListView.swift */,
+				B7BD3A202ED41C5B005A016F /* AddressMapView.swift */,
+				B7BD3A212ED41C5B005A016F /* AddressRowView.swift */,
+				B7BD3A222ED41C5B005A016F /* CountryPickerView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B7BD3A242ED41C5B005A016F /* AddressManagement */ = {
+			isa = PBXGroup;
+			children = (
+				B7BD3A1C2ED41C5B005A016F /* ViewModels */,
+				B7BD3A232ED41C5B005A016F /* Views */,
+			);
+			path = Features/AddressManagement;
+			sourceTree = "<group>";
+		};
+		B7BD3A3B2ED41CD0005A016F /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				B7BD3A362ED41CD0005A016F /* CacheService.swift */,
+				B7BD3A382ED41CD0005A016F /* KeychainService.swift */,
+				B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */,
+			);
+			path = Storage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,7 +334,18 @@
 				1A2B3C632B1E5FA601234567 /* ContactDetailView.swift in Sources */,
 				1A2B3C652B1E5FB101234567 /* LoginView.swift in Sources */,
 				B7BD3A122ECD7A7C005A016F /* APIResponse.swift in Sources */,
+				B7BD3A252ED41C5B005A016F /* AddressViewModel.swift in Sources */,
+				B7BD3A262ED41C5B005A016F /* AddressListView.swift in Sources */,
+				B7BD3A272ED41C5B005A016F /* AddressFormView.swift in Sources */,
+				B7BD3A282ED41C5B005A016F /* AddressFormViewModel.swift in Sources */,
+				B7BD3A292ED41C5B005A016F /* AddressMapView.swift in Sources */,
+				B7BD3A2A2ED41C5B005A016F /* AddressEmptyStateView.swift in Sources */,
+				B7BD3A2F2ED41C85005A016F /* Country.swift in Sources */,
+				B7BD3A302ED41C85005A016F /* Address.swift in Sources */,
+				B7BD3A2B2ED41C5B005A016F /* AddressRowView.swift in Sources */,
+				B7BD3A2C2ED41C5B005A016F /* CountryPickerView.swift in Sources */,
 				1A2B3C5B2B1E5F7A01234567 /* MonicaAPIClient.swift in Sources */,
+				B7BD3A322ED41CB3005A016F /* GeocodingService.swift in Sources */,
 				1A2B3C5D2B1E5F8501234567 /* Contact.swift in Sources */,
 				B7BD39F12ECD7791005A016F /* ContactFieldsManagementView.swift in Sources */,
 				B7BD3A052ECD781E005A016F /* Reminder.swift in Sources */,
@@ -266,6 +354,7 @@
 				B7BD3A0E2ECD7A45005A016F /* Task.swift in Sources */,
 				B7BD39F82ECD7791005A016F /* RemindersListView.swift in Sources */,
 				B7BD39F92ECD7791005A016F /* SettingsView.swift in Sources */,
+				B7BD3A342ED41CC0005A016F /* AddressFormatter.swift in Sources */,
 				1A2B3C5F2B1E5F9001234567 /* AuthenticationManager.swift in Sources */,
 				1A2B3C672B1E5FBC01234567 /* DataController.swift in Sources */,
 				B7BD3A142ECD7AC2005A016F /* AuthenticatedAsyncImage.swift in Sources */,
@@ -276,6 +365,9 @@
 				B7BD3A182ECD7CBB005A016F /* Activity.swift in Sources */,
 				1A2B3C712B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift in Sources */,
 				1A2B3C4D2B1E5F6701234567 /* MonicaClientApp.swift in Sources */,
+				B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */,
+				B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */,
+				B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

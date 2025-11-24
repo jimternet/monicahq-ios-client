@@ -1517,4 +1517,88 @@ class MonicaAPIClient {
         print("✅ Deleted reminder \(id)")
     }
 
+    // MARK: - Address Methods
+
+    /// Fetch all addresses for a contact
+    func fetchAddresses(contactId: Int) async throws -> [Address] {
+        let data = try await makeRequest(endpoint: "/contacts/\(contactId)/addresses")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(AddressListResponse.self, from: data)
+            print("✅ Fetched \(response.data.count) addresses for contact \(contactId)")
+            return response.data
+        } catch {
+            print("❌ Address decoding error: \(error)")
+            throw APIError.decodingError
+        }
+    }
+
+    /// Create a new address for a contact
+    func createAddress(contactId: Int, request: AddressCreateRequest) async throws -> Address {
+        let encoder = JSONEncoder()
+        let body = try encoder.encode(request)
+
+        // Monica API uses POST /api/addresses with contact_id in body
+        let data = try await makeRequest(endpoint: "/addresses", method: "POST", body: body)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(AddressResponse.self, from: data)
+            print("✅ Created address for contact \(contactId)")
+            return response.data
+        } catch {
+            print("❌ Address creation decoding error: \(error)")
+            throw APIError.decodingError
+        }
+    }
+
+    /// Update an existing address
+    func updateAddress(addressId: Int, request: AddressUpdateRequest) async throws -> Address {
+        let encoder = JSONEncoder()
+        let body = try encoder.encode(request)
+
+        let data = try await makeRequest(endpoint: "/addresses/\(addressId)", method: "PUT", body: body)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(AddressResponse.self, from: data)
+            print("✅ Updated address \(addressId)")
+            return response.data
+        } catch {
+            print("❌ Address update decoding error: \(error)")
+            throw APIError.decodingError
+        }
+    }
+
+    /// Delete an address
+    func deleteAddress(addressId: Int) async throws {
+        _ = try await makeRequest(endpoint: "/addresses/\(addressId)", method: "DELETE")
+        print("✅ Deleted address \(addressId)")
+    }
+
+    // MARK: - Country Methods
+
+    /// Fetch all available countries
+    func fetchCountries() async throws -> [Country] {
+        let data = try await makeRequest(endpoint: "/countries")
+
+        let decoder = JSONDecoder()
+
+        do {
+            let response = try decoder.decode(CountryListResponse.self, from: data)
+            print("✅ Fetched \(response.data.count) countries")
+            return response.data
+        } catch {
+            print("❌ Countries decoding error: \(error)")
+            throw APIError.decodingError
+        }
+    }
+
 }
