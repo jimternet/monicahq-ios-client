@@ -130,6 +130,10 @@ struct ContactDetailView: View {
                 TagsSection(contact: contact)
                     .padding(.horizontal)
 
+                // Addresses Section
+                AddressesSection(contact: contact)
+                    .padding(.horizontal)
+
                 // Gifts Section
                 GiftsSection(contact: contact)
                     .padding(.horizontal)
@@ -2608,6 +2612,206 @@ struct FlowLayout: Layout {
 
             self.size = CGSize(width: maxWidth, height: currentY + lineHeight)
         }
+    }
+}
+
+// MARK: - Addresses Section
+
+struct AddressesSection: View {
+    let contact: ContactEntity
+    @EnvironmentObject var authManager: AuthenticationManager
+    @State private var showingAddressManagement = false
+    @State private var addressesCount: Int = 0
+    @State private var isLoadingCount = true
+
+    var body: some View {
+        DetailSection(title: "Addresses") {
+            VStack(alignment: .leading, spacing: 8) {
+                if isLoadingCount {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else if addressesCount > 0 {
+                    HStack {
+                        Text("\(addressesCount) address\(addressesCount == 1 ? "" : "es")")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+
+                        Spacer()
+
+                        Button(action: { showingAddressManagement = true }) {
+                            Text("View")
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                } else {
+                    Button(action: { showingAddressManagement = true }) {
+                        Label("Add Address", systemImage: "plus.circle")
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                    }
+                }
+            }
+        }
+        .task {
+            await loadAddressesCount()
+        }
+        .sheet(isPresented: $showingAddressManagement) {
+            if let apiClient = authManager.currentAPIClient {
+                AddressManagementSheet(contactId: Int(contact.id), apiClient: apiClient)
+            }
+        }
+    }
+
+    private func loadAddressesCount() async {
+        guard let apiClient = authManager.currentAPIClient else {
+            isLoadingCount = false
+            return
+        }
+
+        do {
+            let addresses = try await apiClient.fetchAddresses(contactId: Int(contact.id))
+            addressesCount = addresses.count
+        } catch {
+            print("Failed to load addresses count: \(error)")
+            addressesCount = 0
+        }
+        isLoadingCount = false
+    }
+}
+
+/// Sheet wrapper for address management that creates and manages the ViewModel
+struct AddressManagementSheet: View {
+    let contactId: Int
+    let apiClient: MonicaAPIClient
+
+    @StateObject private var viewModel: AddressViewModel
+    @State private var showingAddForm = false
+    @State private var addressToEdit: Address?
+    @State private var addressToDelete: Address?
+    @State private var showDeleteConfirmation = false
+    @Environment(\.dismiss) private var dismiss
+
+    init(contactId: Int, apiClient: MonicaAPIClient) {
+        self.contactId = contactId
+        self.apiClient = apiClient
+        _viewModel = StateObject(wrappedValue: AddressViewModel(
+            contactId: contactId,
+            apiClient: apiClient,
+            cacheService: CacheService.shared
+        ))
+    }
+
+    var body: some View {
+        NavigationView {
+            List {
+                AddressListView(
+                    viewModel: viewModel,
+                    onAddAddress: { showingAddForm = true },
+                    onEditAddress: { address in addressToEdit = address },
+                    onDirections: { address in openDirections(for: address) },
+                    onMapTap: { address in openDirections(for: address) },
+                    onDeleteAddress: { address in
+                        addressToDelete = address
+                        showDeleteConfirmation = true
+                    }
+                )
+            }
+            .listStyle(.insetGrouped)
+            .navigationTitle("Addresses")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Done") { dismiss() }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingAddForm = true }) {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
+        }
+        .task {
+            await viewModel.loadAddresses()
+        }
+        .sheet(isPresented: $showingAddForm) {
+            AddressFormSheet(
+                contactId: contactId,
+                apiClient: apiClient,
+                mode: .create,
+                onDismiss: {
+                    showingAddForm = false
+                    Task { await viewModel.loadAddresses() }
+                }
+            )
+        }
+        .sheet(item: $addressToEdit) { address in
+            AddressFormSheet(
+                contactId: contactId,
+                apiClient: apiClient,
+                mode: .edit(address),
+                onDismiss: {
+                    addressToEdit = nil
+                    Task { await viewModel.loadAddresses() }
+                }
+            )
+        }
+        .alert("Delete Address", isPresented: $showDeleteConfirmation) {
+            Button("Cancel", role: .cancel) {
+                addressToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                if let address = addressToDelete {
+                    Task {
+                        await viewModel.deleteAddress(id: address.id)
+                    }
+                }
+                addressToDelete = nil
+            }
+        } message: {
+            Text("Are you sure you want to delete this address? This action cannot be undone.")
+        }
+    }
+
+    private func openDirections(for address: Address) {
+        let addressString = address.formattedAddress
+        if let encoded = addressString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+           let url = URL(string: "maps://?daddr=\(encoded)") {
+            UIApplication.shared.open(url)
+        }
+    }
+}
+
+/// Sheet wrapper for address form that handles navigation and callbacks
+struct AddressFormSheet: View {
+    let contactId: Int
+    let apiClient: MonicaAPIClient
+    let mode: AddressFormMode
+    let onDismiss: () -> Void
+
+    @StateObject private var formViewModel: AddressFormViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    init(contactId: Int, apiClient: MonicaAPIClient, mode: AddressFormMode, onDismiss: @escaping () -> Void) {
+        self.contactId = contactId
+        self.apiClient = apiClient
+        self.mode = mode
+        self.onDismiss = onDismiss
+        _formViewModel = StateObject(wrappedValue: AddressFormViewModel(
+            contactId: contactId,
+            apiClient: apiClient,
+            cacheService: CacheService.shared,
+            mode: mode
+        ))
+    }
+
+    var body: some View {
+        AddressFormView(viewModel: formViewModel)
+            .onChange(of: formViewModel.state) { newState in
+                if newState == .success {
+                    onDismiss()
+                }
+            }
     }
 }
 
