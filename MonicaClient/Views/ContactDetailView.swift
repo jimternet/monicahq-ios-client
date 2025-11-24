@@ -2688,6 +2688,8 @@ struct AddressManagementSheet: View {
     @StateObject private var viewModel: AddressViewModel
     @State private var showingAddForm = false
     @State private var addressToEdit: Address?
+    @State private var addressToDelete: Address?
+    @State private var showDeleteConfirmation = false
     @Environment(\.dismiss) private var dismiss
 
     init(contactId: Int, apiClient: MonicaAPIClient) {
@@ -2708,7 +2710,11 @@ struct AddressManagementSheet: View {
                     onAddAddress: { showingAddForm = true },
                     onEditAddress: { address in addressToEdit = address },
                     onDirections: { address in openDirections(for: address) },
-                    onMapTap: { address in openDirections(for: address) }
+                    onMapTap: { address in openDirections(for: address) },
+                    onDeleteAddress: { address in
+                        addressToDelete = address
+                        showDeleteConfirmation = true
+                    }
                 )
             }
             .listStyle(.insetGrouped)
@@ -2749,6 +2755,21 @@ struct AddressManagementSheet: View {
                     Task { await viewModel.loadAddresses() }
                 }
             )
+        }
+        .alert("Delete Address", isPresented: $showDeleteConfirmation) {
+            Button("Cancel", role: .cancel) {
+                addressToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                if let address = addressToDelete {
+                    Task {
+                        await viewModel.deleteAddress(id: address.id)
+                    }
+                }
+                addressToDelete = nil
+            }
+        } message: {
+            Text("Are you sure you want to delete this address? This action cannot be undone.")
         }
     }
 

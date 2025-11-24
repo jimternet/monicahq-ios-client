@@ -17,9 +17,7 @@ struct AddressListView: View {
     var onEditAddress: ((Address) -> Void)?
     var onDirections: ((Address) -> Void)?
     var onMapTap: ((Address) -> Void)?
-
-    @State private var addressToDelete: Address?
-    @State private var showDeleteConfirmation = false
+    var onDeleteAddress: ((Address) -> Void)?
 
     var body: some View {
         Group {
@@ -36,18 +34,6 @@ struct AddressListView: View {
             case .error(let message):
                 errorView(message)
             }
-        }
-        .alert("Delete Address", isPresented: $showDeleteConfirmation) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
-                if let address = addressToDelete {
-                    Task {
-                        await viewModel.deleteAddress(id: address.id)
-                    }
-                }
-            }
-        } message: {
-            Text("Are you sure you want to delete this address? This action cannot be undone.")
         }
     }
 
@@ -73,8 +59,7 @@ struct AddressListView: View {
             )
             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                 Button(role: .destructive) {
-                    addressToDelete = address
-                    showDeleteConfirmation = true
+                    onDeleteAddress?(address)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
