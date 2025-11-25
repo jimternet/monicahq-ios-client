@@ -22,6 +22,7 @@ tests/
 Swift 5.5+ with async/await suppor: Follow standard conventions
 
 ## Recent Changes
+- 001-003-avatar-authentication: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
 - 001-monica-ios-mvp: Added Swift 5.5+ with async/await suppor + SwiftUI, URLSession, Foundation, Security (Keychain) - zero external dependencies for MVP
 

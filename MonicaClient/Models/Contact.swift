@@ -57,15 +57,56 @@ struct Contact: Codable, Identifiable {
     var avatarURL: String? {
         return information?.avatar.url
     }
-    
+
     var avatarColor: String? {
         return information?.avatar.defaultAvatarColor
     }
-    
+
     var computedInitials: String {
         let first = firstName?.prefix(1) ?? ""
         let last = lastName?.prefix(1) ?? ""
         return "\(first)\(last)".uppercased()
+    }
+
+    // MARK: - Avatar Computed Properties (001-003-avatar-authentication)
+
+    /// Determines if avatar image should be loaded from network
+    var shouldLoadAvatar: Bool {
+        guard let avatar = information?.avatar else { return false }
+        // Only load if we have a URL and source is not default
+        guard let url = avatar.url, !url.isEmpty else { return false }
+        return avatar.sourceType != .default
+    }
+
+    /// Initials for fallback avatar display (uses API-provided or computes from name)
+    var initialsForAvatar: String {
+        // Prefer API-provided initials
+        if !initials.isEmpty {
+            return initials
+        }
+        // Fallback to computed
+        return computedInitials
+    }
+
+    /// Color for initials avatar (uses API color or generates from name)
+    var initialsColor: String {
+        if let color = avatarColor, !color.isEmpty {
+            return color
+        }
+        // Fallback to generated color
+        return generateColorFromName()
+    }
+
+    /// Generate a deterministic color from contact name for initials avatar
+    private func generateColorFromName() -> String {
+        let name = completeName.lowercased()
+        var hash: Int = 0
+        for char in name.unicodeScalars {
+            hash = Int(char.value) + ((hash << 5) - hash)
+        }
+        let hue = abs(hash % 360)
+        // Use HSL to generate pastel colors: saturation 45%, lightness 70%
+        return "hsl(\(hue), 45%, 70%)"
     }
     
     enum CodingKeys: String, CodingKey {
@@ -724,6 +765,14 @@ struct DateInfo: Codable {
     }
 }
 
+/// Avatar source types from Monica API
+enum AvatarSource: String, Codable {
+    case `default` = "default"
+    case photo = "photo"
+    case gravatar = "gravatar"
+    case adorable = "adorable"
+}
+
 /// Avatar information structure
 struct AvatarInfo: Codable {
     let url: String?
@@ -734,6 +783,12 @@ struct AvatarInfo: Codable {
         case url
         case source
         case defaultAvatarColor = "default_avatar_color"
+    }
+
+    /// Parsed avatar source type
+    var sourceType: AvatarSource {
+        guard let source = source else { return .default }
+        return AvatarSource(rawValue: source) ?? .default
     }
 }
 

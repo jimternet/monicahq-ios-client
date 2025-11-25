@@ -67,6 +67,9 @@ class AuthenticationManager: ObservableObject {
         self.availableRelationshipTypes = []
         self.availableRelationshipTypeGroups = []
         self.availableTags = []
+
+        // Clear image cache on logout (001-003-avatar-authentication)
+        AuthenticatedImageLoader.clearCache()
     }
 
     var currentAPIClient: MonicaAPIClient? {
