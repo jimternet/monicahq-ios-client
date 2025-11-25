@@ -14,6 +14,7 @@ struct ContactAvatar: View {
     var body: some View {
         Group {
             if let avatarURL = avatarURL, let url = URL(string: avatarURL) {
+                let _ = print("🔍 [ContactAvatar] Found avatar URL for \(contact.fullName): \(avatarURL)")
                 // Use authenticated image loader for avatar photos
                 AuthenticatedAsyncImage(
                     url: url,
@@ -24,6 +25,7 @@ struct ContactAvatar: View {
                 }
                 .clipShape(Circle())
             } else {
+                let _ = print("🔍 [ContactAvatar] No avatar URL for \(contact.fullName), using initials")
                 InitialsAvatar(initials: initials, backgroundColor: avatarColor, size: size)
             }
         }
