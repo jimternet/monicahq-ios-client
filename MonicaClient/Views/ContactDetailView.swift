@@ -3980,6 +3980,7 @@ struct BirthdayEditorView: View {
 struct ManageSection: View {
     let contactId: Int
     @EnvironmentObject var authManager: AuthenticationManager
+    @EnvironmentObject var dataController: DataController
     @State private var contact: Contact?
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -4054,7 +4055,7 @@ struct ManageSection: View {
                         destination: CallLogListView(
                             viewModel: CallLogViewModel(
                                 contactId: contact.id,
-                                storage: CallLogStorage(dataController: DataController(authManager: authManager))
+                                storage: CallLogStorage(dataController: dataController)
                             )
                         )
                     )
