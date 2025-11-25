@@ -154,5 +154,6 @@ to aid future development.
 - Use `.specify/` directory for project-specific runtime development guidance
 - Feature specifications follow SpecKit workflow: specify → clarify → plan → tasks → implement
 - When API documentation bugs are discovered, updates to `docs/monica-api-openapi.yaml` are mandatory
+- **Main Branch**: `main` is the trunk branch for this project; all features merge to `main`
 
 **Version**: 1.2.0 | **Ratified**: 2025-10-26 | **Last Amended**: 2025-01-19
