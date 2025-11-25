@@ -24,6 +24,8 @@
 		1A2B3C6F2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */; };
 		1A2B3C712B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */; };
 		241B7F3235805C76CCB46367 /* CallLogEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */; };
+		8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04370B2505784C419C296B3 /* CallLogStorage.swift */; };
+		AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBCAC5606D6009F4464B260 /* CallLogAPIService.swift */; };
 		B7BD39F12ECD7791005A016F /* ContactFieldsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */; };
 		B7BD39F62ECD7791005A016F /* ContactAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */; };
 		B7BD39F82ECD7791005A016F /* RemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39E72ECD7790005A016F /* RemindersListView.swift */; };
@@ -51,11 +53,13 @@
 		B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A362ED41CD0005A016F /* CacheService.swift */; };
 		B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A382ED41CD0005A016F /* KeychainService.swift */; };
 		B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */; };
+		F1FB6FF46432060B56870643 /* CallLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0F930D08B7A237F1C0BE18 /* CallLog.swift */; };
 		FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AD824B156B02A62A1E7F32 /* EmotionalState.swift */; };
 		FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0F0F930D08B7A237F1C0BE18 /* CallLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Models/CallLog.swift; sourceTree = SOURCE_ROOT; };
 		1A2B3C492B1E5F6701234567 /* MonicaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonicaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonicaClientApp.swift; sourceTree = "<group>"; };
 		1A2B3C4E2B1E5F6701234567 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -73,6 +77,7 @@
 		1A2B3C6E2B1E5FE801234567 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		1BBCAC5606D6009F4464B260 /* CallLogAPIService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CallLogAPIService.swift; path = MonicaClient/Features/CallLogging/Services/CallLogAPIService.swift; sourceTree = SOURCE_ROOT; };
 		24AD824B156B02A62A1E7F32 /* EmotionalState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionalState.swift; sourceTree = "<group>"; };
 		910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatar.swift; sourceTree = "<group>"; };
@@ -103,6 +108,7 @@
 		B7BD3A382ED41CD0005A016F /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
 		EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		F04370B2505784C419C296B3 /* CallLogStorage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CallLogStorage.swift; path = MonicaClient/Features/CallLogging/Services/CallLogStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +122,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		164CEA9D1998B897297B6D6B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		1A2B3C402B1E5F6701234567 = {
 			isa = PBXGroup;
 			children = (
@@ -146,6 +159,7 @@
 				1A2B3C502B1E5F6901234567 /* Assets.xcassets */,
 				1A2B3C6E2B1E5FE801234567 /* Info.plist */,
 				1A2B3C522B1E5F6901234567 /* Preview Content */,
+				EE29BD2B282D48EE17246B43 /* Features */,
 			);
 			path = MonicaClient;
 			sourceTree = "<group>";
@@ -188,6 +202,7 @@
 				1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */,
 				EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */,
 				910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */,
+				0F0F930D08B7A237F1C0BE18 /* CallLog.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -223,6 +238,15 @@
 				24AD824B156B02A62A1E7F32 /* EmotionalState.swift */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		7844D5CEE6BB91609FBB1969 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				F04370B2505784C419C296B3 /* CallLogStorage.swift */,
+				1BBCAC5606D6009F4464B260 /* CallLogAPIService.swift */,
+			);
+			name = Services;
 			sourceTree = "<group>";
 		};
 		B7BD3A1C2ED41C5B005A016F /* ViewModels */ = {
@@ -264,6 +288,31 @@
 				B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */,
 			);
 			path = Storage;
+			sourceTree = "<group>";
+		};
+		B95F568C21C8ED9A6815250F /* CallLogging */ = {
+			isa = PBXGroup;
+			children = (
+				FC81AD71AA112CD1E25A93D1 /* ViewModels */,
+				164CEA9D1998B897297B6D6B /* Views */,
+				7844D5CEE6BB91609FBB1969 /* Services */,
+			);
+			name = CallLogging;
+			sourceTree = "<group>";
+		};
+		EE29BD2B282D48EE17246B43 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				B95F568C21C8ED9A6815250F /* CallLogging */,
+			);
+			name = Features;
+			sourceTree = "<group>";
+		};
+		FC81AD71AA112CD1E25A93D1 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -380,6 +429,9 @@
 				FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */,
 				241B7F3235805C76CCB46367 /* CallLogEntity+CoreDataProperties.swift in Sources */,
 				FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */,
+				8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */,
+				AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */,
+				F1FB6FF46432060B56870643 /* CallLog.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
