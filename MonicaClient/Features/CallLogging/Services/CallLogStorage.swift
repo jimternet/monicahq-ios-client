@@ -23,7 +23,8 @@ class CallLogStorage: ObservableObject {
         let context = dataController.container.viewContext
 
         let entity = CallLogEntity(context: context)
-        entity.id = Int32(UUID().hashValue) // Temporary local ID
+        // Use negative timestamp for temporary local ID (will be replaced by server ID on sync)
+        entity.id = Int32(-Int(Date().timeIntervalSince1970))
         entity.contactId = Int32(contactId)
         entity.calledAt = calledAt
         entity.duration = Int32(duration ?? 0)
