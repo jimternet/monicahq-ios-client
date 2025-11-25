@@ -117,7 +117,7 @@ class DataController: ObservableObject {
             ("createdAt", .dateAttributeType, false, nil),
             ("updatedAt", .dateAttributeType, false, nil),
             ("lastSyncAttempt", .dateAttributeType, true, nil),
-            ("isDeleted", .booleanAttributeType, false, false)
+            ("isMarkedDeleted", .booleanAttributeType, false, false)
         ]
 
         for (name, type, isOptional, defaultValue) in callLogAttributes {

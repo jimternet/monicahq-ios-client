@@ -23,6 +23,7 @@
 		1A2B3C6D2B1E5FDD01234567 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C6C2B1E5FDD01234567 /* KeychainManager.swift */; };
 		1A2B3C6F2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */; };
 		1A2B3C712B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */; };
+		241B7F3235805C76CCB46367 /* CallLogEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */; };
 		B7BD39F12ECD7791005A016F /* ContactFieldsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */; };
 		B7BD39F62ECD7791005A016F /* ContactAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */; };
 		B7BD39F82ECD7791005A016F /* RemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39E72ECD7790005A016F /* RemindersListView.swift */; };
@@ -50,6 +51,8 @@
 		B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A362ED41CD0005A016F /* CacheService.swift */; };
 		B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A382ED41CD0005A016F /* KeychainService.swift */; };
 		B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */; };
+		FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AD824B156B02A62A1E7F32 /* EmotionalState.swift */; };
+		FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +73,8 @@
 		1A2B3C6E2B1E5FE801234567 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		24AD824B156B02A62A1E7F32 /* EmotionalState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionalState.swift; sourceTree = "<group>"; };
+		910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatar.swift; sourceTree = "<group>"; };
 		B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldsManagementView.swift; sourceTree = "<group>"; };
 		B7BD39E72ECD7790005A016F /* RemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersListView.swift; sourceTree = "<group>"; };
@@ -97,6 +102,7 @@
 		B7BD3A362ED41CD0005A016F /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
 		B7BD3A382ED41CD0005A016F /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
+		EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +186,8 @@
 				1A2B3C5C2B1E5F8501234567 /* Contact.swift */,
 				1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */,
 				1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */,
+				EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */,
+				910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -212,6 +220,7 @@
 				B7BD3A152ECD7BE8005A016F /* Extensions.swift */,
 				B7BD3A132ECD7AC2005A016F /* AuthenticatedAsyncImage.swift */,
 				1A2B3C6C2B1E5FDD01234567 /* KeychainManager.swift */,
+				24AD824B156B02A62A1E7F32 /* EmotionalState.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -368,6 +377,9 @@
 				B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */,
 				B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */,
 				B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */,
+				FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */,
+				241B7F3235805C76CCB46367 /* CallLogEntity+CoreDataProperties.swift in Sources */,
+				FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
