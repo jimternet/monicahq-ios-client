@@ -63,13 +63,16 @@ class CallLogViewModel: ObservableObject {
                 notes: notes.isEmpty ? nil : notes
             )
 
-            // Refresh list
-            loadCallLogs()
-
-            // Reset form
-            resetForm()
-
             print("✅ Call log saved successfully")
+
+            // Defer UI updates to avoid "Publishing changes from within view updates" warning
+            Task { @MainActor in
+                // Refresh list
+                loadCallLogs()
+
+                // Reset form
+                resetForm()
+            }
         } catch {
             errorMessage = "Failed to save call log: \(error.localizedDescription)"
             showingError = true
@@ -96,10 +99,13 @@ class CallLogViewModel: ObservableObject {
                 notes: notes.isEmpty ? nil : notes
             )
 
-            // Refresh list
-            loadCallLogs()
-
             print("✅ Call log updated successfully")
+
+            // Defer UI updates to avoid "Publishing changes from within view updates" warning
+            Task { @MainActor in
+                // Refresh list
+                loadCallLogs()
+            }
         } catch {
             errorMessage = "Failed to update call log: \(error.localizedDescription)"
             showingError = true
@@ -119,10 +125,13 @@ class CallLogViewModel: ObservableObject {
         do {
             try storage.deleteCallLog(entity)
 
-            // Refresh list
-            loadCallLogs()
-
             print("✅ Call log deleted successfully")
+
+            // Defer UI updates to avoid "Publishing changes from within view updates" warning
+            Task { @MainActor in
+                // Refresh list
+                loadCallLogs()
+            }
         } catch {
             errorMessage = "Failed to delete call log: \(error.localizedDescription)"
             showingError = true
