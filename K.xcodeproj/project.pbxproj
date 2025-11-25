@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E893B61F5093C87FDE79D69 /* CallLogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */; };
 		1A2B3C4D2B1E5F6701234567 /* MonicaClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */; };
 		1A2B3C4F2B1E5F6701234567 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4E2B1E5F6701234567 /* ContentView.swift */; };
 		1A2B3C512B1E5F6901234567 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C502B1E5F6901234567 /* Assets.xcassets */; };
@@ -24,6 +25,8 @@
 		1A2B3C6F2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */; };
 		1A2B3C712B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */; };
 		241B7F3235805C76CCB46367 /* CallLogEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */; };
+		29120D965A06242FD7FAF8D6 /* CallLogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2CAD1CE78A3403F6B3A06C /* CallLogViewModel.swift */; };
+		3B1CB61F2749BE0720AC10C3 /* CallLogFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E448CEEAD1A6020DAF0B52 /* CallLogFormView.swift */; };
 		8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04370B2505784C419C296B3 /* CallLogStorage.swift */; };
 		AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBCAC5606D6009F4464B260 /* CallLogAPIService.swift */; };
 		B7BD39F12ECD7791005A016F /* ContactFieldsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */; };
@@ -53,6 +56,7 @@
 		B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A362ED41CD0005A016F /* CacheService.swift */; };
 		B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A382ED41CD0005A016F /* KeychainService.swift */; };
 		B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */; };
+		EA801FD028219F338899892A /* CallLogRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EE4E5BAA49C8CFA47C07 /* CallLogRowView.swift */; };
 		F1FB6FF46432060B56870643 /* CallLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0F930D08B7A237F1C0BE18 /* CallLog.swift */; };
 		FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AD824B156B02A62A1E7F32 /* EmotionalState.swift */; };
 		FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */; };
@@ -78,8 +82,11 @@
 		1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		1BBCAC5606D6009F4464B260 /* CallLogAPIService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CallLogAPIService.swift; path = MonicaClient/Features/CallLogging/Services/CallLogAPIService.swift; sourceTree = SOURCE_ROOT; };
+		1C2CAD1CE78A3403F6B3A06C /* CallLogViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift; sourceTree = SOURCE_ROOT; };
+		21E448CEEAD1A6020DAF0B52 /* CallLogFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogFormView.swift; sourceTree = SOURCE_ROOT; };
 		24AD824B156B02A62A1E7F32 /* EmotionalState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionalState.swift; sourceTree = "<group>"; };
 		910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A403EE4E5BAA49C8CFA47C07 /* CallLogRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogRowView.swift; sourceTree = SOURCE_ROOT; };
 		B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatar.swift; sourceTree = "<group>"; };
 		B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldsManagementView.swift; sourceTree = "<group>"; };
 		B7BD39E72ECD7790005A016F /* RemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersListView.swift; sourceTree = "<group>"; };
@@ -107,6 +114,7 @@
 		B7BD3A362ED41CD0005A016F /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
 		B7BD3A382ED41CD0005A016F /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
+		CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogListView.swift; sourceTree = SOURCE_ROOT; };
 		EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F04370B2505784C419C296B3 /* CallLogStorage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CallLogStorage.swift; path = MonicaClient/Features/CallLogging/Services/CallLogStorage.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -125,6 +133,9 @@
 		164CEA9D1998B897297B6D6B /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				21E448CEEAD1A6020DAF0B52 /* CallLogFormView.swift */,
+				A403EE4E5BAA49C8CFA47C07 /* CallLogRowView.swift */,
+				CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -311,6 +322,7 @@
 		FC81AD71AA112CD1E25A93D1 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				1C2CAD1CE78A3403F6B3A06C /* CallLogViewModel.swift */,
 			);
 			name = ViewModels;
 			sourceTree = "<group>";
@@ -432,6 +444,10 @@
 				8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */,
 				AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */,
 				F1FB6FF46432060B56870643 /* CallLog.swift in Sources */,
+				29120D965A06242FD7FAF8D6 /* CallLogViewModel.swift in Sources */,
+				3B1CB61F2749BE0720AC10C3 /* CallLogFormView.swift in Sources */,
+				EA801FD028219F338899892A /* CallLogRowView.swift in Sources */,
+				0E893B61F5093C87FDE79D69 /* CallLogListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

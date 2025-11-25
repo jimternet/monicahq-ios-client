@@ -4049,6 +4049,17 @@ struct ManageSection: View {
                     // )
 
                     ManagementNavigationLink(
+                        icon: "phone",
+                        title: "Call History",
+                        destination: CallLogListView(
+                            viewModel: CallLogViewModel(
+                                contactId: contact.id,
+                                storage: CallLogStorage(dataController: DataController(authManager: authManager))
+                            )
+                        )
+                    )
+
+                    ManagementNavigationLink(
                         icon: "envelope",
                         title: "Contact Fields",
                         destination: ContactFieldsManagementView(contact: contact)
