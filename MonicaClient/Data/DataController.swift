@@ -104,20 +104,20 @@ class DataController: ObservableObject {
         callLogEntity.name = "CallLogEntity"
         callLogEntity.managedObjectClassName = "CallLogEntity"
 
-        // Add CallLogEntity attributes with default values where needed
+        // Add CallLogEntity attributes (verified against Monica v4.x source)
         let callLogAttributes: [(String, NSAttributeType, Bool, Any?)] = [
             ("id", .integer32AttributeType, false, 0),
-            ("contactId", .integer32AttributeType, false, nil),
-            ("calledAt", .dateAttributeType, false, nil),
-            ("duration", .integer32AttributeType, true, nil),
-            ("emotionalState", .stringAttributeType, true, nil),
-            ("notes", .stringAttributeType, true, nil),
-            ("syncStatus", .stringAttributeType, false, "pending"),
+            ("contactId", .integer32AttributeType, false, 0),
+            ("calledAt", .dateAttributeType, true, nil),
+            ("content", .stringAttributeType, true, nil),              // Call notes (Monica v4.x field name)
+            ("contactCalled", .booleanAttributeType, false, false),    // Direction: true = they called me
+            ("emotionsJSON", .stringAttributeType, true, nil),         // JSON array of emotion IDs
+            ("syncStatus", .stringAttributeType, true, nil),
             ("syncError", .stringAttributeType, true, nil),
-            ("createdAt", .dateAttributeType, false, nil),
-            ("updatedAt", .dateAttributeType, false, nil),
             ("lastSyncAttempt", .dateAttributeType, true, nil),
-            ("isMarkedDeleted", .booleanAttributeType, false, false)
+            ("isMarkedDeleted", .booleanAttributeType, false, false),
+            ("createdAt", .dateAttributeType, true, nil),
+            ("updatedAt", .dateAttributeType, true, nil)
         ]
 
         for (name, type, isOptional, defaultValue) in callLogAttributes {

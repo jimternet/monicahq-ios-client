@@ -41,33 +41,33 @@ class MonicaAPIClient {
         self.session = URLSession(configuration: config)
     }
     
-    private func makeRequest(endpoint: String, method: String = "GET", body: Data? = nil) async throws -> Data {
+    func makeRequest(endpoint: String, method: String = "GET", body: Data? = nil) async throws -> Data {
         guard let url = URL(string: "\(baseURL)/api\(endpoint)") else {
             print("❌ Invalid URL: \(baseURL)/api\(endpoint)")
             throw APIError.invalidURL
         }
-        
+
         print("🔗 Making request to: \(url.absoluteString)")
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         if let body = body {
             request.httpBody = body
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-        
+
         do {
             let (data, response) = try await session.data(for: request)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
             }
-            
+
             print("📡 Response status: \(httpResponse.statusCode)")
-            
+
             switch httpResponse.statusCode {
             case 200...299:
                 return data

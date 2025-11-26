@@ -1,21 +1,22 @@
 import SwiftUI
 
 /// Form view for creating or editing a call log
+/// Based on Monica v4.x Call API (verified) - Backend-only
 struct CallLogFormView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var viewModel: CallLogViewModel
 
-    let editingEntity: CallLogEntity?
+    let editingCallLog: CallLog?
     let onSave: () -> Void
 
-    init(viewModel: CallLogViewModel, editingEntity: CallLogEntity? = nil, onSave: @escaping () -> Void) {
+    init(viewModel: CallLogViewModel, editingCallLog: CallLog? = nil, onSave: @escaping () -> Void) {
         self.viewModel = viewModel
-        self.editingEntity = editingEntity
+        self.editingCallLog = editingCallLog
         self.onSave = onSave
 
         // Load existing data if editing
-        if let entity = editingEntity {
-            viewModel.loadForEditing(entity)
+        if let callLog = editingCallLog {
+            viewModel.loadForEditing(callLog)
         }
     }
 
@@ -33,45 +34,51 @@ struct CallLogFormView: View {
                     Text("When")
                 }
 
-                // Duration Section
+                // Call Direction Section
                 Section {
-                    HStack {
-                        Text("Duration (minutes)")
-                        Spacer()
-                        TextField("Optional", text: $viewModel.duration)
-                            .keyboardType(.numberPad)
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 100)
-                    }
-                } header: {
-                    Text("Call Length")
-                } footer: {
-                    Text("How long did the call last? Leave blank if you don't remember.")
-                }
-
-                // Emotional State Section
-                Section {
-                    Picker("How did they seem?", selection: $viewModel.selectedEmotion) {
-                        Text("Not recorded").tag(nil as EmotionalState?)
-
-                        ForEach(EmotionalState.allCases) { state in
-                            HStack {
-                                Text(state.emoji)
-                                Text(state.displayName)
-                            }
-                            .tag(state as EmotionalState?)
+                    Picker("Who called who?", selection: $viewModel.whoInitiated) {
+                        ForEach(CallDirection.allCases, id: \.self) { direction in
+                            Text(direction.displayName).tag(direction)
                         }
                     }
-                    .pickerStyle(.menu)
+                    .pickerStyle(.segmented)
                 } header: {
-                    Text("Mood")
+                    Text("Direction")
+                }
+
+                // Emotion Section (Monica v4.x supports multiple emotions)
+                Section {
+                    if viewModel.availableEmotions.isEmpty {
+                        Text("No emotions available")
+                            .foregroundColor(.secondary)
+                    } else {
+                        ForEach(viewModel.availableEmotions) { emotion in
+                            Toggle(isOn: Binding(
+                                get: { viewModel.selectedEmotionIds.contains(emotion.id) },
+                                set: { isSelected in
+                                    if isSelected {
+                                        viewModel.selectedEmotionIds.insert(emotion.id)
+                                    } else {
+                                        viewModel.selectedEmotionIds.remove(emotion.id)
+                                    }
+                                }
+                            )) {
+                                HStack {
+                                    Text(emotion.emoji)
+                                    Text(emotion.displayName)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Emotions")
                 } footer: {
-                    Text("Optional: How did the person seem during the call?")
+                    Text("Optional: How did you feel during this call? You can select multiple.")
                 }
 
                 // Notes Section
                 Section {
-                    TextEditor(text: $viewModel.notes)
+                    TextEditor(text: $viewModel.callDescription)
                         .frame(minHeight: 100)
                 } header: {
                     Text("Notes")
@@ -79,7 +86,7 @@ struct CallLogFormView: View {
                     Text("Optional: What did you talk about? Any important details to remember?")
                 }
             }
-            .navigationTitle(editingEntity == nil ? "Log Call" : "Edit Call")
+            .navigationTitle(editingCallLog == nil ? "Log Call" : "Edit Call")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -89,10 +96,10 @@ struct CallLogFormView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(editingEntity == nil ? "Save" : "Update") {
+                    Button(editingCallLog == nil ? "Save" : "Update") {
                         Task {
-                            if let entity = editingEntity {
-                                await viewModel.updateCallLog(entity)
+                            if let callLog = editingCallLog {
+                                await viewModel.updateCallLog(callLog)
                             } else {
                                 await viewModel.saveCallLog()
                             }
@@ -125,11 +132,14 @@ struct CallLogFormView: View {
 // MARK: - Preview
 
 #Preview {
-    let dataController = DataController(authManager: AuthenticationManager())
-    let storage = CallLogStorage(dataController: dataController)
-    let viewModel = CallLogViewModel(contactId: 1, storage: storage)
+    let apiClient = MonicaAPIClient(
+        baseURL: "https://monica.example.com",
+        apiToken: "preview-token"
+    )
+    let apiService = CallLogAPIService(apiClient: apiClient)
+    let viewModel = CallLogViewModel(contactId: 1, apiService: apiService)
 
-    return CallLogFormView(viewModel: viewModel) {
+    CallLogFormView(viewModel: viewModel) {
         print("Saved")
     }
 }

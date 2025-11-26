@@ -4,7 +4,7 @@ import SwiftUI
 struct CallLogListView: View {
     @ObservedObject var viewModel: CallLogViewModel
     @State private var showingAddSheet = false
-    @State private var editingCallLog: CallLogEntity?
+    @State private var editingCallLog: CallLog?
 
     var body: some View {
         Group {
@@ -62,19 +62,19 @@ struct CallLogListView: View {
         }
         .sheet(isPresented: $showingAddSheet) {
             CallLogFormView(viewModel: viewModel) {
-                viewModel.loadCallLogs()
+                Task { await viewModel.loadCallLogs() }
             }
         }
         .sheet(item: $editingCallLog) { callLog in
-            CallLogFormView(viewModel: viewModel, editingEntity: callLog) {
-                viewModel.loadCallLogs()
+            CallLogFormView(viewModel: viewModel, editingCallLog: callLog) {
+                Task { await viewModel.loadCallLogs() }
             }
         }
         .onAppear {
-            viewModel.loadCallLogs()
+            Task { await viewModel.loadCallLogs() }
         }
         .refreshable {
-            viewModel.loadCallLogs()
+            await viewModel.loadCallLogs()
         }
     }
 
@@ -128,15 +128,6 @@ struct CallLogListView: View {
                 Text("\(stats.withDetails)")
                     .foregroundColor(.secondary)
             }
-
-            if stats.pending > 0 {
-                HStack {
-                    Label("Pending Sync", systemImage: "arrow.triangle.2.circlepath")
-                    Spacer()
-                    Text("\(stats.pending)")
-                        .foregroundColor(.orange)
-                }
-            }
         } header: {
             Text("Statistics")
         }
@@ -146,11 +137,11 @@ struct CallLogListView: View {
 // MARK: - Preview
 
 #Preview {
-    let dataController = DataController(authManager: AuthenticationManager())
-    let storage = CallLogStorage(dataController: dataController)
-    let viewModel = CallLogViewModel(contactId: 1, storage: storage)
+    let apiClient = MonicaAPIClient(baseURL: "https://monica.example.com", apiToken: "preview-token")
+    let apiService = CallLogAPIService(apiClient: apiClient)
+    let viewModel = CallLogViewModel(contactId: 1, apiService: apiService)
 
-    return NavigationView {
+    NavigationView {
         CallLogListView(viewModel: viewModel)
     }
 }

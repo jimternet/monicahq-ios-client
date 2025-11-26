@@ -1,94 +1,156 @@
 import Foundation
 
-/// API service for call logs (backed by Monica Activities API)
-/// NOTE: This is a placeholder implementation. Full API integration will be completed
-/// when MonicaAPIClient exposes generic request methods or we add call-specific endpoints.
+/// API service for call logs using Monica v4.x /api/calls endpoint
+/// Based on verified Monica v4.x Call API structure
 @MainActor
 class CallLogAPIService {
     private let apiClient: MonicaAPIClient
-    private let activityTypeId: Int = 13 // "phone_call" activity type in Monica
 
     init(apiClient: MonicaAPIClient) {
         self.apiClient = apiClient
     }
 
-    // MARK: - Placeholder Methods
+    // MARK: - Call Log API Methods (Monica v4.x)
 
-    /// Create a call log on the server via Activities API
-    /// TODO: Implement using MonicaAPIClient once activity creation methods are added
+    /// Fetch all call logs for a contact from the server
+    /// Uses GET /api/contacts/{id}/calls endpoint
+    func fetchCallLogs(for contactId: Int) async throws -> [CallLog] {
+        let endpoint = "/contacts/\(contactId)/calls"
+        let data = try await apiClient.makeRequest(endpoint: endpoint, method: "GET")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(CallLogListResponse.self, from: data)
+            return response.data
+        } catch {
+            print("❌ Failed to decode call logs: \(error)")
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📄 Raw response: \(jsonString.prefix(500))")
+            }
+            throw APIError.decodingError
+        }
+    }
+
+    /// Create a call log on the server via POST /api/calls endpoint
+    /// Monica v4.x fields: contact_id, called_at, content, contact_called, emotions (array)
     func createCallLog(
         contactId: Int,
         calledAt: Date,
-        duration: Int?,
-        emotionalState: EmotionalState?,
-        notes: String?
+        content: String?,
+        contactCalled: Bool,
+        emotionIds: [Int]
     ) async throws -> CallLog {
-        // For MVP, we'll focus on local storage first
-        // API sync will be handled by a background sync service
-        throw APIError.invalidResponse
+        let payload = CallLogCreatePayload(
+            contactId: contactId,
+            calledAt: calledAt,
+            content: content,
+            contactCalled: contactCalled,
+            emotions: emotionIds
+        )
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let body = try encoder.encode(payload)
+
+        let data = try await apiClient.makeRequest(endpoint: "/calls", method: "POST", body: body)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(CallLogResponse.self, from: data)
+            return response.data
+        } catch {
+            print("❌ Failed to decode created call log: \(error)")
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📄 Raw response: \(jsonString.prefix(500))")
+            }
+            throw APIError.decodingError
+        }
     }
 
-    /// Fetch all call logs for a contact from the server
-    /// TODO: Implement using MonicaAPIClient.fetchActivities with filtering
-    func fetchCallLogs(for contactId: Int) async throws -> [CallLog] {
-        // For MVP, we'll use local storage
-        return []
-    }
-
-    /// Update a call log on the server
-    /// TODO: Implement using MonicaAPIClient once activity update methods are added
+    /// Update a call log on the server via PUT /api/calls/{id} endpoint
+    /// Monica v4.x fields: content, contact_called, emotions (array)
     func updateCallLog(
         id: Int,
-        duration: Int?,
-        emotionalState: EmotionalState?,
-        notes: String?
+        content: String?,
+        contactCalled: Bool?,
+        emotionIds: [Int]?
     ) async throws -> CallLog {
-        throw APIError.invalidResponse
-    }
-
-    /// Delete a call log from the server
-    /// TODO: Implement using MonicaAPIClient once activity delete methods are added
-    func deleteCallLog(id: Int) async throws {
-        // For MVP, local deletion only
-    }
-
-    // MARK: - Helper Methods
-
-    /// Parse Activity JSON into CallLog model
-    private func parseCallLogFromActivity(_ activity: Activity, contactId: Int) throws -> CallLog {
-        // Parse metadata from description field
-        var duration: Int?
-        var emotionalState: EmotionalState?
-        var notes: String?
-
-        if let description = activity.description,
-           let data = description.data(using: .utf8) {
-            let decoder = JSONDecoder()
-            if let metadata = try? decoder.decode(CallMetadata.self, from: data) {
-                duration = metadata.duration
-                if let emotion = metadata.emotion {
-                    emotionalState = EmotionalState(rawValue: emotion)
-                }
-                notes = metadata.notes
-            }
-        }
-
-        // Use the provided contactId or extract from activity
-        let finalContactId = activity.safeContacts.first?.id ?? contactId
-
-        guard let happenedAt = activity.happenedAt else {
-            throw APIError.invalidResponse
-        }
-
-        return CallLog(
-            id: activity.id,
-            contactId: finalContactId,
-            calledAt: happenedAt,
-            duration: duration,
-            emotionalState: emotionalState,
-            notes: notes,
-            createdAt: activity.createdAt,
-            updatedAt: activity.updatedAt
+        let payload = CallLogUpdatePayload(
+            content: content,
+            contactCalled: contactCalled,
+            emotions: emotionIds
         )
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let body = try encoder.encode(payload)
+
+        let data = try await apiClient.makeRequest(endpoint: "/calls/\(id)", method: "PUT", body: body)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(CallLogResponse.self, from: data)
+            return response.data
+        } catch {
+            print("❌ Failed to decode updated call log: \(error)")
+            if let jsonString = String(data: data, encoding: .utf8) {
+                print("📄 Raw response: \(jsonString.prefix(500))")
+            }
+            throw APIError.decodingError
+        }
+    }
+
+    /// Delete a call log from the server via DELETE /api/calls/{id} endpoint
+    func deleteCallLog(id: Int) async throws {
+        _ = try await apiClient.makeRequest(endpoint: "/calls/\(id)", method: "DELETE")
     }
 }
+
+// MARK: - API Request/Response Models
+
+/// Payload for creating a new call log (Monica v4.x)
+private struct CallLogCreatePayload: Codable {
+    let contactId: Int
+    let calledAt: Date
+    let content: String?
+    let contactCalled: Bool
+    let emotions: [Int]
+
+    enum CodingKeys: String, CodingKey {
+        case contactId = "contact_id"
+        case calledAt = "called_at"
+        case content
+        case contactCalled = "contact_called"
+        case emotions
+    }
+}
+
+/// Payload for updating a call log (Monica v4.x)
+private struct CallLogUpdatePayload: Codable {
+    let content: String?
+    let contactCalled: Bool?
+    let emotions: [Int]?
+
+    enum CodingKeys: String, CodingKey {
+        case content
+        case contactCalled = "contact_called"
+        case emotions
+    }
+}
+
+/// API response wrapper for a single call log
+private struct CallLogResponse: Codable {
+    let data: CallLog
+}
+
+/// API response wrapper for a list of call logs
+private struct CallLogListResponse: Codable {
+    let data: [CallLog]
+}
+

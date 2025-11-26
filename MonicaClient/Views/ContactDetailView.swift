@@ -4055,7 +4055,7 @@ struct ManageSection: View {
                         destination: CallLogListView(
                             viewModel: CallLogViewModel(
                                 contactId: contact.id,
-                                storage: CallLogStorage(dataController: dataController)
+                                apiService: CallLogAPIService(apiClient: authManager.currentAPIClient!)
                             )
                         )
                     )

@@ -1,51 +1,60 @@
 import Foundation
 import SwiftUI
-import CoreData
 
-/// ViewModel for managing call log operations
+/// ViewModel for managing call log operations (Backend-only)
+/// Based on Monica v4.x Call API (verified)
 @MainActor
 class CallLogViewModel: ObservableObject {
     // MARK: - Published Properties
 
-    @Published var callLogs: [CallLogEntity] = []
+    @Published var callLogs: [CallLog] = []  // Using API model, not Core Data
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var showingError = false
 
-    // Form state for new/edit call log
+    // Form state for new/edit call log (Monica v4.x fields only)
     @Published var selectedDate = Date()
-    @Published var duration: String = ""
-    @Published var selectedEmotion: EmotionalState?
-    @Published var notes: String = ""
+    @Published var selectedEmotionIds: Set<Int> = []  // Multiple emotions supported
+    @Published var callDescription: String = ""
+    @Published var whoInitiated: CallDirection = .me
+
+    // Emotions loaded from API
+    @Published var availableEmotions: [Emotion] = []
+    @Published var isLoadingEmotions = false
 
     // MARK: - Dependencies
 
-    private let storage: CallLogStorage
+    private let apiService: CallLogAPIService
     private let contactId: Int
 
     // MARK: - Initialization
 
-    init(contactId: Int, storage: CallLogStorage) {
+    init(contactId: Int, apiService: CallLogAPIService) {
         self.contactId = contactId
-        self.storage = storage
+        self.apiService = apiService
     }
 
     // MARK: - Data Loading
 
-    /// Load call logs for the contact
-    func loadCallLogs() {
+    /// Load call logs for the contact from the API
+    func loadCallLogs() async {
         isLoading = true
+        errorMessage = nil
 
-        // Fetch from local storage
-        callLogs = storage.fetchCallLogs(for: contactId)
+        do {
+            callLogs = try await apiService.fetchCallLogs(for: contactId)
+        } catch {
+            errorMessage = "Failed to load call logs: \(error.localizedDescription)"
+            showingError = true
+            print("❌ Failed to load call logs: \(error)")
+        }
 
         isLoading = false
-        print("📞 Loaded \(callLogs.count) call logs for contact \(contactId)")
     }
 
     // MARK: - Create/Update Operations
 
-    /// Save a new call log
+    /// Save a new call log directly to API (Monica v4.x API fields)
     func saveCallLog() async {
         guard validateForm() else { return }
 
@@ -53,26 +62,19 @@ class CallLogViewModel: ObservableObject {
         errorMessage = nil
 
         do {
-            let durationInt = duration.isEmpty ? nil : Int(duration)
-
-            _ = try storage.saveCallLog(
+            _ = try await apiService.createCallLog(
                 contactId: contactId,
                 calledAt: selectedDate,
-                duration: durationInt,
-                emotionalState: selectedEmotion,
-                notes: notes.isEmpty ? nil : notes
+                content: callDescription.isEmpty ? nil : callDescription,
+                contactCalled: whoInitiated.boolValue,
+                emotionIds: Array(selectedEmotionIds)
             )
 
-            print("✅ Call log saved successfully")
+            // Refresh list from server
+            await loadCallLogs()
 
-            // Defer UI updates to avoid "Publishing changes from within view updates" warning
-            Task { @MainActor in
-                // Refresh list
-                loadCallLogs()
-
-                // Reset form
-                resetForm()
-            }
+            // Reset form
+            resetForm()
         } catch {
             errorMessage = "Failed to save call log: \(error.localizedDescription)"
             showingError = true
@@ -82,30 +84,23 @@ class CallLogViewModel: ObservableObject {
         isLoading = false
     }
 
-    /// Update an existing call log
-    func updateCallLog(_ entity: CallLogEntity) async {
+    /// Update an existing call log directly via API (Monica v4.x API fields)
+    func updateCallLog(_ callLog: CallLog) async {
         guard validateForm() else { return }
 
         isLoading = true
         errorMessage = nil
 
         do {
-            let durationInt = duration.isEmpty ? nil : Int(duration)
-
-            try storage.updateCallLog(
-                entity,
-                duration: durationInt,
-                emotionalState: selectedEmotion,
-                notes: notes.isEmpty ? nil : notes
+            _ = try await apiService.updateCallLog(
+                id: callLog.id,
+                content: callDescription.isEmpty ? nil : callDescription,
+                contactCalled: whoInitiated.boolValue,
+                emotionIds: Array(selectedEmotionIds)
             )
 
-            print("✅ Call log updated successfully")
-
-            // Defer UI updates to avoid "Publishing changes from within view updates" warning
-            Task { @MainActor in
-                // Refresh list
-                loadCallLogs()
-            }
+            // Refresh list from server
+            await loadCallLogs()
         } catch {
             errorMessage = "Failed to update call log: \(error.localizedDescription)"
             showingError = true
@@ -117,21 +112,16 @@ class CallLogViewModel: ObservableObject {
 
     // MARK: - Delete Operations
 
-    /// Delete a call log
-    func deleteCallLog(_ entity: CallLogEntity) async {
+    /// Delete a call log directly via API
+    func deleteCallLog(_ callLog: CallLog) async {
         isLoading = true
         errorMessage = nil
 
         do {
-            try storage.deleteCallLog(entity)
+            try await apiService.deleteCallLog(id: callLog.id)
 
-            print("✅ Call log deleted successfully")
-
-            // Defer UI updates to avoid "Publishing changes from within view updates" warning
-            Task { @MainActor in
-                // Refresh list
-                loadCallLogs()
-            }
+            // Refresh list from server
+            await loadCallLogs()
         } catch {
             errorMessage = "Failed to delete call log: \(error.localizedDescription)"
             showingError = true
@@ -144,43 +134,34 @@ class CallLogViewModel: ObservableObject {
     // MARK: - Form Management
 
     /// Load call log data into form for editing
-    func loadForEditing(_ entity: CallLogEntity) {
-        if let calledAt = entity.calledAt {
-            selectedDate = calledAt
-        }
+    func loadForEditing(_ callLog: CallLog) {
+        selectedDate = callLog.calledAt
 
-        if entity.duration > 0 {
-            duration = String(entity.duration)
+        // Extract emotion IDs from the emotions array
+        if let emotions = callLog.emotions {
+            selectedEmotionIds = Set(emotions.map { $0.id })
         } else {
-            duration = ""
+            selectedEmotionIds = []
         }
 
-        selectedEmotion = entity.emotion
-        notes = entity.notes ?? ""
+        callDescription = callLog.content ?? ""
+        whoInitiated = CallDirection(contactCalled: callLog.contactCalled)
     }
 
     /// Reset form to initial state
     func resetForm() {
         selectedDate = Date()
-        duration = ""
-        selectedEmotion = nil
-        notes = ""
+        selectedEmotionIds = []
+        callDescription = ""
+        whoInitiated = .me
     }
 
     /// Validate form inputs
     private func validateForm() -> Bool {
         // Date is always valid (can't be nil)
-
-        // Duration is optional, but if provided must be a valid positive number
-        if !duration.isEmpty {
-            guard let durationInt = Int(duration), durationInt > 0 else {
-                errorMessage = "Duration must be a positive number"
-                showingError = true
-                return false
-            }
-        }
-
         // Notes are optional and don't need validation
+        // Emotions are optional
+        // Direction has a default value
 
         return true
     }
@@ -188,13 +169,26 @@ class CallLogViewModel: ObservableObject {
     // MARK: - Statistics
 
     /// Get call log statistics
-    func getStatistics() -> (total: Int, withDetails: Int, pending: Int) {
-        let stats = storage.getStatistics()
-        let withDetails = callLogs.filter { entity in
-            (entity.duration > 0) || (entity.emotion != nil) || !(entity.notes?.isEmpty ?? true)
+    func getStatistics() -> (total: Int, withDetails: Int) {
+        let withDetails = callLogs.filter { callLog in
+            !(callLog.emotions?.isEmpty ?? true) || !(callLog.content?.isEmpty ?? true)
         }.count
 
-        return (total: stats.total, withDetails: withDetails, pending: stats.pending)
+        return (total: callLogs.count, withDetails: withDetails)
+    }
+
+    // MARK: - Emotion Loading
+
+    /// Load available emotions from API
+    func loadEmotions() async {
+        // TODO: Implement EmotionService to fetch from /api/emotions
+        // For now, use empty list (will be implemented in next step)
+        isLoadingEmotions = true
+
+        // Placeholder: In production, fetch from EmotionService
+        availableEmotions = []
+
+        isLoadingEmotions = false
     }
 
     // MARK: - Computed Properties
@@ -203,23 +197,6 @@ class CallLogViewModel: ObservableObject {
     var canSave: Bool {
         // Always allow saving - even just timestamp is valid
         return true
-    }
-
-    /// Format duration for display
-    func formatDuration(_ minutes: Int32) -> String {
-        if minutes == 0 {
-            return "Not recorded"
-        } else if minutes < 60 {
-            return "\(minutes) min"
-        } else {
-            let hours = minutes / 60
-            let mins = minutes % 60
-            if mins == 0 {
-                return "\(hours)h"
-            } else {
-                return "\(hours)h \(mins)m"
-            }
-        }
     }
 
     /// Format date for display

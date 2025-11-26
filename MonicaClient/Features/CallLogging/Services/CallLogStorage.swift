@@ -2,6 +2,7 @@ import Foundation
 import CoreData
 
 /// Manages Core Data storage for call logs with offline queue support
+/// Based on Monica v4.x Call API (verified)
 @MainActor
 class CallLogStorage: ObservableObject {
     private let dataController: DataController
@@ -13,12 +14,13 @@ class CallLogStorage: ObservableObject {
     // MARK: - Create
 
     /// Save a new call log to local storage (offline-first)
+    /// Based on Monica v4.x API: called_at, content, contact_called, emotions
     func saveCallLog(
         contactId: Int,
         calledAt: Date,
-        duration: Int? = nil,
-        emotionalState: EmotionalState? = nil,
-        notes: String? = nil
+        content: String? = nil,
+        contactCalled: CallDirection = .me,
+        emotionIds: [Int] = []
     ) throws -> CallLogEntity {
         let context = dataController.container.viewContext
 
@@ -27,16 +29,16 @@ class CallLogStorage: ObservableObject {
         entity.id = Int32(-Int(Date().timeIntervalSince1970))
         entity.contactId = Int32(contactId)
         entity.calledAt = calledAt
-        entity.duration = Int32(duration ?? 0)
-        entity.setEmotion(emotionalState)
-        entity.notes = notes
+        entity.content = content
+        entity.setCallDirection(contactCalled)
+        entity.setEmotions(emotionIds)
         entity.syncStatus = "pending"
         entity.createdAt = Date()
         entity.updatedAt = Date()
         entity.isMarkedDeleted = false
 
         try context.save()
-        print("✅ Saved call log locally (contactId=\(contactId), pending sync)")
+        print("✅ Saved call log locally (contactId=\(contactId), direction=\(contactCalled.displayName), emotions=\(emotionIds.count), pending sync)")
 
         return entity
     }
@@ -76,20 +78,21 @@ class CallLogStorage: ObservableObject {
     // MARK: - Update
 
     /// Update an existing call log
+    /// Based on Monica v4.x API fields
     func updateCallLog(
         _ entity: CallLogEntity,
-        duration: Int? = nil,
-        emotionalState: EmotionalState? = nil,
-        notes: String? = nil
+        content: String? = nil,
+        contactCalled: CallDirection? = nil,
+        emotionIds: [Int]? = nil
     ) throws {
-        if let duration = duration {
-            entity.duration = Int32(duration)
+        if let content = content {
+            entity.content = content
         }
-        if let emotionalState = emotionalState {
-            entity.setEmotion(emotionalState)
+        if let contactCalled = contactCalled {
+            entity.setCallDirection(contactCalled)
         }
-        if let notes = notes {
-            entity.notes = notes
+        if let emotionIds = emotionIds {
+            entity.setEmotions(emotionIds)
         }
 
         entity.updatedAt = Date()

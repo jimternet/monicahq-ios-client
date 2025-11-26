@@ -10,9 +10,9 @@ extension CallLogEntity {
     @NSManaged public var id: Int32
     @NSManaged public var contactId: Int32
     @NSManaged public var calledAt: Date?
-    @NSManaged public var duration: Int32
-    @NSManaged public var emotionalState: String?
-    @NSManaged public var notes: String?
+    @NSManaged public var content: String?            // Call notes/description (matches Monica v4.x 'content' field)
+    @NSManaged public var contactCalled: Bool         // Direction: true = they called me, false = I called them
+    @NSManaged public var emotionsJSON: String?       // JSON array of emotion IDs for sync
     @NSManaged public var syncStatus: String?
     @NSManaged public var syncError: String?
     @NSManaged public var createdAt: Date?
@@ -24,15 +24,34 @@ extension CallLogEntity {
 
 extension CallLogEntity: Identifiable {
 
-    /// Computed property to get EmotionalState enum from string
-    var emotion: EmotionalState? {
-        guard let stateString = emotionalState else { return nil }
-        return EmotionalState(rawValue: stateString)
+    /// Computed property to get CallDirection enum from boolean
+    var callDirection: CallDirection {
+        return CallDirection(contactCalled: contactCalled)
     }
 
-    /// Set emotional state from enum
-    func setEmotion(_ state: EmotionalState?) {
-        self.emotionalState = state?.rawValue
+    /// Set call direction from enum
+    func setCallDirection(_ direction: CallDirection) {
+        self.contactCalled = direction.boolValue
+    }
+
+    /// Parse emotions from JSON string
+    var emotions: [Int] {
+        guard let json = emotionsJSON,
+              let data = json.data(using: .utf8),
+              let array = try? JSONDecoder().decode([Int].self, from: data) else {
+            return []
+        }
+        return array
+    }
+
+    /// Set emotions from array
+    func setEmotions(_ emotionIds: [Int]) {
+        guard let data = try? JSONEncoder().encode(emotionIds),
+              let json = String(data: data, encoding: .utf8) else {
+            emotionsJSON = nil
+            return
+        }
+        emotionsJSON = json
     }
 
     /// Check if sync is needed

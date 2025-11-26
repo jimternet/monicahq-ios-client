@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		81A281708C79415899B72A9A /* Emotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */; };
 		0E893B61F5093C87FDE79D69 /* CallLogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */; };
 		1A2B3C4D2B1E5F6701234567 /* MonicaClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */; };
 		1A2B3C4F2B1E5F6701234567 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4E2B1E5F6701234567 /* ContentView.swift */; };
@@ -63,6 +64,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotion.swift; sourceTree = "<group>"; };
 		0F0F930D08B7A237F1C0BE18 /* CallLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Models/CallLog.swift; sourceTree = SOURCE_ROOT; };
 		1A2B3C492B1E5F6701234567 /* MonicaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonicaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonicaClientApp.swift; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 				EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */,
 				910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */,
 				0F0F930D08B7A237F1C0BE18 /* CallLog.swift */,
+				7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -444,6 +447,7 @@
 				8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */,
 				AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */,
 				F1FB6FF46432060B56870643 /* CallLog.swift in Sources */,
+				81A281708C79415899B72A9A /* Emotion.swift in Sources */,
 				29120D965A06242FD7FAF8D6 /* CallLogViewModel.swift in Sources */,
 				3B1CB61F2749BE0720AC10C3 /* CallLogFormView.swift in Sources */,
 				EA801FD028219F338899892A /* CallLogRowView.swift in Sources */,
