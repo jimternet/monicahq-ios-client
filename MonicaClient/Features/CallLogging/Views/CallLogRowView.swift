@@ -75,7 +75,7 @@ struct CallLogRowView: View {
     let apiService = CallLogAPIService(apiClient: apiClient)
     let viewModel = CallLogViewModel(contactId: 1, apiService: apiService)
 
-    List {
+    return List {
         CallLogRowView(callLog: sampleCallLog, viewModel: viewModel)
     }
 }

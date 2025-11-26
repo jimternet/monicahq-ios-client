@@ -141,7 +141,7 @@ struct CallLogListView: View {
     let apiService = CallLogAPIService(apiClient: apiClient)
     let viewModel = CallLogViewModel(contactId: 1, apiService: apiService)
 
-    NavigationView {
+    return NavigationView {
         CallLogListView(viewModel: viewModel)
     }
 }

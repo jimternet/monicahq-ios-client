@@ -139,7 +139,7 @@ struct CallLogFormView: View {
     let apiService = CallLogAPIService(apiClient: apiClient)
     let viewModel = CallLogViewModel(contactId: 1, apiService: apiService)
 
-    CallLogFormView(viewModel: viewModel) {
+    return CallLogFormView(viewModel: viewModel) {
         print("Saved")
     }
 }
