@@ -865,6 +865,21 @@ struct Conversation: Codable, Identifiable {
     let createdAt: Date
     let updatedAt: Date
 
+    /// Check if conversation has notes/content
+    var hasNotes: Bool {
+        !(content?.isEmpty ?? true)
+    }
+
+    /// Check if this is a quick log (no notes)
+    var isQuickLog: Bool {
+        !hasNotes
+    }
+
+    /// Alias for content to match API naming
+    var notes: String? {
+        content
+    }
+
     enum CodingKeys: String, CodingKey {
         case id
         case contactId = "contact_id"
@@ -873,6 +888,17 @@ struct Conversation: Codable, Identifiable {
         case content
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+    }
+
+    // Memberwise initializer for tests and previews
+    init(id: Int, contactId: Int, happenedAt: Date, contactFieldTypeId: Int?, content: String?, createdAt: Date, updatedAt: Date) {
+        self.id = id
+        self.contactId = contactId
+        self.happenedAt = happenedAt
+        self.contactFieldTypeId = contactFieldTypeId
+        self.content = content
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
     }
 }
 
@@ -893,6 +919,19 @@ struct ConversationCreatePayload: Codable {
         case happenedAt = "happened_at"
         case content
         case contactFieldTypeId = "contact_field_type_id"
+    }
+}
+
+/// Request payload for updating existing conversations
+struct ConversationUpdatePayload: Codable {
+    let happenedAt: String?
+    let contactFieldTypeId: Int?
+    let content: String?
+
+    enum CodingKeys: String, CodingKey {
+        case happenedAt = "happened_at"
+        case contactFieldTypeId = "contact_field_type_id"
+        case content
     }
 }
 

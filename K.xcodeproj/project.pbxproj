@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D553360E32294EFE990B6645 /* ConversationAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A250B9DAF2FF4819A235A1D2 /* ConversationAPIService.swift */; };
+		2E9F4179FE304C2ABB30E324 /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3942E7D8A4354835AD0B813C /* ConversationViewModel.swift */; };
+		A1F08C8379A9426FB73F4794 /* ConversationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E327B9A4674025A8B850F3 /* ConversationFormView.swift */; };
+		7D0369EC5D704497AD27E4BC /* ConversationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4045A62378F24493AA95AD37 /* ConversationListView.swift */; };
+		876D9AE3B10F457190C1291B /* ConversationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A214D6B8119A41948EABE3B9 /* ConversationRowView.swift */; };
 		81A281708C79415899B72A9A /* Emotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */; };
 		0E893B61F5093C87FDE79D69 /* CallLogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */; };
 		1A2B3C4D2B1E5F6701234567 /* MonicaClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */; };
@@ -64,6 +69,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A250B9DAF2FF4819A235A1D2 /* ConversationAPIService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift; sourceTree = SOURCE_ROOT; };
+		3942E7D8A4354835AD0B813C /* ConversationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
+		78E327B9A4674025A8B850F3 /* ConversationFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift; sourceTree = SOURCE_ROOT; };
+		4045A62378F24493AA95AD37 /* ConversationListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift; sourceTree = SOURCE_ROOT; };
+		A214D6B8119A41948EABE3B9 /* ConversationRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift; sourceTree = SOURCE_ROOT; };
 		7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotion.swift; sourceTree = "<group>"; };
 		0F0F930D08B7A237F1C0BE18 /* CallLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Models/CallLog.swift; sourceTree = SOURCE_ROOT; };
 		1A2B3C492B1E5F6701234567 /* MonicaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonicaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -401,6 +411,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D553360E32294EFE990B6645 /* ConversationAPIService.swift in Sources */,
+				2E9F4179FE304C2ABB30E324 /* ConversationViewModel.swift in Sources */,
+				A1F08C8379A9426FB73F4794 /* ConversationFormView.swift in Sources */,
+				7D0369EC5D704497AD27E4BC /* ConversationListView.swift in Sources */,
+				876D9AE3B10F457190C1291B /* ConversationRowView.swift in Sources */,
 				1A2B3C4F2B1E5F6701234567 /* ContentView.swift in Sources */,
 				1A2B3C612B1E5F9B01234567 /* ContactsListView.swift in Sources */,
 				B7BD3A102ECD7A4F005A016F /* Note.swift in Sources */,
