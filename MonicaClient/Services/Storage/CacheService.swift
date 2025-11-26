@@ -2,17 +2,22 @@ import Foundation
 
 /// In-memory caching service for contact data and API responses
 class CacheService: ObservableObject {
-    
+
+    static let shared = CacheService()
+
     private var contactsCache: [Contact] = []
     private var activitiesCache: [Int: [Activity]] = [:]
     private var notesCache: [Int: [Note]] = [:]
-    private var tasksCache: [Int: [Task]] = [:]
+    private var tasksCache: [Int: [MonicaTask]] = [:]
     private var giftsCache: [Int: [Gift]] = [:]
     private var tagsCache: [Tag] = []
-    
+    private var addressesCache: [Int: [Address]] = [:]
+    private var countriesCache: [Country] = []
+
     private var cacheTimestamps: [String: Date] = [:]
     private let cacheExpirationTime: TimeInterval = 300 // 5 minutes
-    
+    private let countryCacheExpirationTime: TimeInterval = 86400 // 24 hours for countries
+
     private let queue = DispatchQueue(label: "com.monicahq.cache", attributes: .concurrent)
     
     // MARK: - Contacts Cache
@@ -83,14 +88,14 @@ class CacheService: ObservableObject {
     
     // MARK: - Tasks Cache
     
-    func cacheTasks(_ tasks: [Task], for contactId: Int) {
+    func cacheTasks(_ tasks: [MonicaTask], for contactId: Int) {
         queue.async(flags: .barrier) {
             self.tasksCache[contactId] = tasks
             self.setCacheTimestamp(for: "tasks_\(contactId)")
         }
     }
     
-    func getCachedTasks(for contactId: Int) -> [Task]? {
+    func getCachedTasks(for contactId: Int) -> [MonicaTask]? {
         return queue.sync {
             guard isCacheValid(for: "tasks_\(contactId)") else { return nil }
             return tasksCache[contactId]
@@ -128,7 +133,49 @@ class CacheService: ObservableObject {
             return tagsCache
         }
     }
-    
+
+    // MARK: - Addresses Cache
+
+    func setAddresses(_ addresses: [Address], for contactId: Int) {
+        queue.async(flags: .barrier) {
+            self.addressesCache[contactId] = addresses
+            self.setCacheTimestamp(for: "addresses_\(contactId)")
+        }
+    }
+
+    func getAddresses(for contactId: Int) -> [Address]? {
+        return queue.sync {
+            guard isCacheValid(for: "addresses_\(contactId)") else { return nil }
+            return addressesCache[contactId]
+        }
+    }
+
+    func invalidateAddresses(for contactId: Int) {
+        queue.async(flags: .barrier) {
+            self.addressesCache.removeValue(forKey: contactId)
+            self.cacheTimestamps.removeValue(forKey: "addresses_\(contactId)")
+        }
+    }
+
+    // MARK: - Countries Cache
+
+    func setCountries(_ countries: [Country]) {
+        queue.async(flags: .barrier) {
+            self.countriesCache = countries
+            self.setCacheTimestamp(for: "countries")
+        }
+    }
+
+    func getCountries() -> [Country]? {
+        return queue.sync {
+            guard let timestamp = cacheTimestamps["countries"],
+                  Date().timeIntervalSince(timestamp) < countryCacheExpirationTime else {
+                return nil
+            }
+            return countriesCache.isEmpty ? nil : countriesCache
+        }
+    }
+
     // MARK: - Cache Management
     
     private func setCacheTimestamp(for key: String) {
@@ -154,6 +201,8 @@ class CacheService: ObservableObject {
             self.tasksCache.removeAll()
             self.giftsCache.removeAll()
             self.tagsCache.removeAll()
+            self.addressesCache.removeAll()
+            self.countriesCache.removeAll()
             self.cacheTimestamps.removeAll()
         }
     }

@@ -91,17 +91,51 @@ class DataController: ObservableObject {
             attribute.name = name
             attribute.attributeType = type
             attribute.isOptional = isOptional
-            
+
             if let defaultValue = defaultValue {
                 attribute.defaultValue = defaultValue
             }
-            
+
             contactEntity.properties.append(attribute)
         }
-        
-        model.entities = [contactEntity]
-        print("✅ Created Core Data model programmatically with \(contactEntity.properties.count) attributes")
-        
+
+        // Create CallLogEntity
+        let callLogEntity = NSEntityDescription()
+        callLogEntity.name = "CallLogEntity"
+        callLogEntity.managedObjectClassName = "CallLogEntity"
+
+        // Add CallLogEntity attributes (verified against Monica v4.x source)
+        let callLogAttributes: [(String, NSAttributeType, Bool, Any?)] = [
+            ("id", .integer32AttributeType, false, 0),
+            ("contactId", .integer32AttributeType, false, 0),
+            ("calledAt", .dateAttributeType, true, nil),
+            ("content", .stringAttributeType, true, nil),              // Call notes (Monica v4.x field name)
+            ("contactCalled", .booleanAttributeType, false, false),    // Direction: true = they called me
+            ("emotionsJSON", .stringAttributeType, true, nil),         // JSON array of emotion IDs
+            ("syncStatus", .stringAttributeType, true, nil),
+            ("syncError", .stringAttributeType, true, nil),
+            ("lastSyncAttempt", .dateAttributeType, true, nil),
+            ("isMarkedDeleted", .booleanAttributeType, false, false),
+            ("createdAt", .dateAttributeType, true, nil),
+            ("updatedAt", .dateAttributeType, true, nil)
+        ]
+
+        for (name, type, isOptional, defaultValue) in callLogAttributes {
+            let attribute = NSAttributeDescription()
+            attribute.name = name
+            attribute.attributeType = type
+            attribute.isOptional = isOptional
+
+            if let defaultValue = defaultValue {
+                attribute.defaultValue = defaultValue
+            }
+
+            callLogEntity.properties.append(attribute)
+        }
+
+        model.entities = [contactEntity, callLogEntity]
+        print("✅ Created Core Data model programmatically with \(contactEntity.properties.count) Contact attributes and \(callLogEntity.properties.count) CallLog attributes")
+
         return model
     }
     

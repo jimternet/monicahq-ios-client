@@ -32,4 +32,24 @@
         <attribute name="foodPreferences" optional="YES" attributeType="String"/>
         <attribute name="contactDescription" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="CallLogEntity" representedClassName="CallLogEntity" syncable="YES" codeGenerationType="category">
+        <attribute name="id" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="contactId" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="callReasonId" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+        <attribute name="authorId" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+        <attribute name="emotionId" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+        <attribute name="authorName" optional="YES" attributeType="String"/>
+        <attribute name="calledAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="duration" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+        <attribute name="type" attributeType="String" defaultValueString="audio"/>
+        <attribute name="callDescription" optional="YES" attributeType="String"/>
+        <attribute name="answered" attributeType="Boolean" defaultValueString="YES" usesScalarValueType="YES"/>
+        <attribute name="whoInitiated" attributeType="String" defaultValueString="me"/>
+        <attribute name="syncStatus" optional="YES" attributeType="String"/>
+        <attribute name="syncError" optional="YES" attributeType="String"/>
+        <attribute name="lastSyncAttempt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isMarkedDeleted" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
 </model>

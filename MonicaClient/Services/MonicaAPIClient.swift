@@ -41,33 +41,33 @@ class MonicaAPIClient {
         self.session = URLSession(configuration: config)
     }
     
-    private func makeRequest(endpoint: String, method: String = "GET", body: Data? = nil) async throws -> Data {
+    func makeRequest(endpoint: String, method: String = "GET", body: Data? = nil) async throws -> Data {
         guard let url = URL(string: "\(baseURL)/api\(endpoint)") else {
             print("❌ Invalid URL: \(baseURL)/api\(endpoint)")
             throw APIError.invalidURL
         }
-        
+
         print("🔗 Making request to: \(url.absoluteString)")
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("Bearer \(apiToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         if let body = body {
             request.httpBody = body
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         }
-        
+
         do {
             let (data, response) = try await session.data(for: request)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw APIError.invalidResponse
             }
-            
+
             print("📡 Response status: \(httpResponse.statusCode)")
-            
+
             switch httpResponse.statusCode {
             case 200...299:
                 return data
@@ -1515,6 +1515,109 @@ class MonicaAPIClient {
     func deleteReminder(id: Int) async throws {
         _ = try await makeRequest(endpoint: "/reminders/\(id)", method: "DELETE")
         print("✅ Deleted reminder \(id)")
+    }
+
+    // MARK: - Address Methods
+
+    /// Fetch all addresses for a contact
+    func fetchAddresses(contactId: Int) async throws -> [Address] {
+        let data = try await makeRequest(endpoint: "/contacts/\(contactId)/addresses")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(AddressListResponse.self, from: data)
+            print("✅ Fetched \(response.data.count) addresses for contact \(contactId)")
+            return response.data
+        } catch {
+            print("❌ Address decoding error: \(error)")
+            throw APIError.decodingError
+        }
+    }
+
+    /// Create a new address for a contact
+    func createAddress(contactId: Int, request: AddressCreateRequest) async throws -> Address {
+        let encoder = JSONEncoder()
+        let body = try encoder.encode(request)
+
+        // Monica API uses POST /api/addresses with contact_id in body
+        let data = try await makeRequest(endpoint: "/addresses", method: "POST", body: body)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(AddressResponse.self, from: data)
+            print("✅ Created address for contact \(contactId)")
+            return response.data
+        } catch {
+            print("❌ Address creation decoding error: \(error)")
+            throw APIError.decodingError
+        }
+    }
+
+    /// Update an existing address
+    func updateAddress(addressId: Int, request: AddressUpdateRequest) async throws -> Address {
+        let encoder = JSONEncoder()
+        let body = try encoder.encode(request)
+
+        let data = try await makeRequest(endpoint: "/addresses/\(addressId)", method: "PUT", body: body)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        do {
+            let response = try decoder.decode(AddressResponse.self, from: data)
+            print("✅ Updated address \(addressId)")
+            return response.data
+        } catch {
+            print("❌ Address update decoding error: \(error)")
+            throw APIError.decodingError
+        }
+    }
+
+    /// Delete an address
+    func deleteAddress(addressId: Int) async throws {
+        _ = try await makeRequest(endpoint: "/addresses/\(addressId)", method: "DELETE")
+        print("✅ Deleted address \(addressId)")
+    }
+
+    // MARK: - Country Methods
+
+    /// Fetch all available countries
+    func fetchCountries() async throws -> [Country] {
+        let data = try await makeRequest(endpoint: "/countries")
+
+        let decoder = JSONDecoder()
+
+        // Try standard array format first
+        do {
+            let response = try decoder.decode(CountryListResponse.self, from: data)
+            print("✅ Fetched \(response.data.count) countries")
+            return response.data
+        } catch {
+            print("⚠️ Standard countries format failed, trying dictionary format...")
+        }
+
+        // Monica API sometimes returns countries as a dictionary keyed by ID
+        // e.g., { "data": { "1": { "id": 1, "name": "...", ... }, "2": { ... } } }
+        do {
+            struct CountryDictResponse: Codable {
+                let data: [String: Country]
+            }
+            let response = try decoder.decode(CountryDictResponse.self, from: data)
+            let countries = Array(response.data.values).sorted { $0.name < $1.name }
+            print("✅ Fetched \(countries.count) countries (dictionary format)")
+            return countries
+        } catch {
+            print("❌ Countries decoding error: \(error)")
+            // Log raw response for debugging
+            if let responseString = String(data: data, encoding: .utf8) {
+                print("📄 Raw countries response: \(responseString.prefix(500))")
+            }
+            throw APIError.decodingError
+        }
     }
 
 }
