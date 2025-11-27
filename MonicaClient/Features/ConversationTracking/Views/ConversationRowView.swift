@@ -229,7 +229,7 @@ struct MessageBubbleView: View {
         messages: []
     )
 
-    List {
+    return List {
         ConversationRowView(conversation: conversationWithMessages, viewModel: viewModel, contactName: "Aaron")
         ConversationRowView(conversation: quickLog, viewModel: viewModel, contactName: "Aaron")
     }

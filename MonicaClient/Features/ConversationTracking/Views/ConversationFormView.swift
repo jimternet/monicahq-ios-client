@@ -236,7 +236,7 @@ struct MessageInputView: View {
     let apiService = ConversationAPIService(apiClient: apiClient)
     let viewModel = ConversationViewModel(contactId: 1, contactName: "Aaron", apiService: apiService)
 
-    ConversationFormView(viewModel: viewModel) {
+    return ConversationFormView(viewModel: viewModel) {
         print("Saved")
     }
 }

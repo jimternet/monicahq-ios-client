@@ -224,7 +224,7 @@ struct ConversationListView: View {
     let apiService = ConversationAPIService(apiClient: apiClient)
     let viewModel = ConversationViewModel(contactId: 1, apiService: apiService)
 
-    NavigationView {
+    return NavigationView {
         ConversationListView(viewModel: viewModel)
     }
 }
