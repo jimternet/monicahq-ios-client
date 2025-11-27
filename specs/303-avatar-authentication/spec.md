@@ -1,6 +1,6 @@
 # Feature Specification: Contact Avatar Display
 
-**Feature Branch**: `001-003-avatar-authentication`
+**Feature Branch**: `303-avatar-authentication`
 **Created**: 2025-11-19
 **Status**: Draft
 **Input**: User description: "Contact avatar images are not loading in the iOS app due to authentication issues with the Monica server's static file serving"

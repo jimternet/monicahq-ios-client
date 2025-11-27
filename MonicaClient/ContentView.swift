@@ -48,6 +48,12 @@ struct SimpleSettingsView: View {
     @State private var showingClearCacheAlert = false
     @State private var isRefreshingConfig = false
     @AppStorage("isDemoModeEnabled") private var isDemoModeEnabled = false
+
+    // Conversation settings
+    @State private var contactFieldTypes: [ContactFieldType] = []
+    @State private var isLoadingFieldTypes = false
+    @State private var selectedDefaultConversationType: Int?
+    private let userDefaultsService = UserDefaultsService()
     
     var body: some View {
         NavigationView {
@@ -92,7 +98,45 @@ struct SimpleSettingsView: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                
+
+                Section("Conversations") {
+                    if isLoadingFieldTypes {
+                        HStack {
+                            Text("Default Type")
+                            Spacer()
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                    } else if contactFieldTypes.isEmpty {
+                        HStack {
+                            Text("Default Type")
+                            Spacer()
+                            Text("Unable to load")
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Picker("Default Type", selection: $selectedDefaultConversationType) {
+                            Text("First available").tag(nil as Int?)
+                            ForEach(contactFieldTypes) { fieldType in
+                                Text(fieldType.name).tag(fieldType.id as Int?)
+                            }
+                        }
+                        .onChange(of: selectedDefaultConversationType) { newValue in
+                            userDefaultsService.defaultConversationType = newValue
+                            if let typeId = newValue {
+                                let typeName = contactFieldTypes.first(where: { $0.id == typeId })?.name ?? "Unknown"
+                                print("💾 Settings: Saved default conversation type: \(typeName) (id: \(typeId))")
+                            } else {
+                                print("💾 Settings: Cleared default conversation type")
+                            }
+                        }
+                    }
+
+                    Text("Default type for Quick Log and new conversations")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
                 Section("Account") {
                     Button("Sign Out") {
                         showingLogoutAlert = true
@@ -127,8 +171,33 @@ struct SimpleSettingsView: View {
         } message: {
             Text("This will clear all cached data and fetch fresh contact information including avatars.")
         }
+        .task {
+            await loadConversationSettings()
+        }
     }
-    
+
+    private func loadConversationSettings() async {
+        // Load saved default
+        selectedDefaultConversationType = userDefaultsService.defaultConversationType
+
+        // Load field types from API
+        guard let apiURL = authManager.apiURL,
+              let apiToken = authManager.apiToken else { return }
+
+        isLoadingFieldTypes = true
+
+        do {
+            let apiClient = MonicaAPIClient(baseURL: apiURL, apiToken: apiToken)
+            let response = try await apiClient.getContactFieldTypes()
+            contactFieldTypes = response.data
+            print("✅ Settings: Loaded \(contactFieldTypes.count) contact field types")
+        } catch {
+            print("❌ Settings: Failed to load contact field types: \(error)")
+        }
+
+        isLoadingFieldTypes = false
+    }
+
     private func clearCacheAndResync() {
         Task {
             print("🗑️ Clearing cache and forcing re-sync...")

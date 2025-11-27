@@ -16,6 +16,7 @@ class UserDefaultsService {
         case darkModePreference = "darkModePreference"
         case searchDebounceTime = "searchDebounceTime"
         case debugMode = "debugMode"
+        case defaultConversationType = "defaultConversationType"
     }
     
     // MARK: - Generic Storage Methods
@@ -83,7 +84,20 @@ class UserDefaultsService {
         get { get(Bool.self, for: .debugMode) ?? false }
         set { set(newValue, for: .debugMode) }
     }
-    
+
+    /// Default conversation type ID for quick logging
+    /// nil means use the first available type from the API
+    var defaultConversationType: Int? {
+        get { get(Int.self, for: .defaultConversationType) }
+        set {
+            if let value = newValue {
+                set(value, for: .defaultConversationType)
+            } else {
+                remove(for: .defaultConversationType)
+            }
+        }
+    }
+
     // MARK: - Utility Methods
     
     func resetToDefaults() {

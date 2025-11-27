@@ -515,6 +515,141 @@ components:
           format: date-time
           example: "2024-01-15T10:30:00Z"
 
+    Conversation:
+      type: object
+      description: |
+        A conversation record with a contact. Conversations use a two-step creation process:
+        1. Create the conversation container (POST /conversations)
+        2. Add messages to it (POST /conversations/{id}/messages)
+
+        Messages are returned embedded in the conversation response when fetching conversations.
+      properties:
+        id:
+          type: integer
+          example: 17
+        contact_id:
+          type: integer
+          example: 123
+        happened_at:
+          type: string
+          format: date-time
+          description: When the conversation occurred
+          example: "2025-01-15T14:30:00Z"
+        contact_field_type_id:
+          type: integer
+          description: The type of conversation (e.g., Phone, Email, In person). References ContactFieldType.
+          example: 1
+        contact_field_type:
+          $ref: '#/components/schemas/ContactFieldType'
+        content:
+          type: string
+          nullable: true
+          description: Legacy field - use messages array instead
+        messages:
+          type: array
+          description: Messages in this conversation thread
+          items:
+            $ref: '#/components/schemas/ConversationMessage'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ConversationMessage:
+      type: object
+      description: |
+        A single message within a conversation thread.
+
+        **IMPORTANT**: When creating/updating messages, use snake_case field names:
+        - `written_by_me` (boolean) - NOT `written` or `writtenByMe`
+        - `written_at` (date string: "yyyy-MM-dd")
+        - `content` (string)
+      properties:
+        id:
+          type: integer
+          example: 16
+        written_at:
+          type: string
+          format: date
+          description: When this message was written (date only, format yyyy-MM-dd)
+          example: "2025-01-15"
+        written_by_me:
+          type: boolean
+          description: True if the user wrote this message, false if the contact wrote it
+          example: true
+        content:
+          type: string
+          description: The message content
+          example: "Hi, how are you doing?"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ConversationMessageCreate:
+      type: object
+      description: |
+        Payload for creating or updating a conversation message.
+
+        **CRITICAL**: Field names must be snake_case:
+        - ✅ `written_by_me` - Correct
+        - ❌ `written` - Will be ignored
+        - ❌ `writtenByMe` - Will be ignored
+      required:
+        - contact_id
+        - written_at
+        - written_by_me
+        - content
+      properties:
+        contact_id:
+          type: integer
+          description: The contact ID this conversation is with
+          example: 123
+        written_at:
+          type: string
+          format: date
+          description: Date when message was written (format yyyy-MM-dd)
+          example: "2025-01-15"
+        written_by_me:
+          type: boolean
+          description: True if user wrote this, false if contact wrote it
+          example: true
+        content:
+          type: string
+          description: The message content
+          example: "Hi, how are you doing?"
+
+    ContactFieldType:
+      type: object
+      description: Types used to categorize conversations (e.g., Phone, Email, In person)
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Phone"
+        protocol:
+          type: string
+          nullable: true
+          example: "tel:"
+        delible:
+          type: boolean
+          example: false
+        type:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
     Tag:
       type: object
       properties:
@@ -1344,6 +1479,291 @@ paths:
         '204':
           description: Task deleted successfully
 
+  # Conversation Endpoints
+  /contacts/{id}/conversations:
+    get:
+      summary: List conversations for a contact
+      description: |
+        Get all conversations for a specific contact. Messages are embedded in the response.
+      tags: [Conversations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Contact ID
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of conversations with embedded messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Conversation'
+
+  /conversations:
+    post:
+      summary: Create a new conversation
+      description: |
+        Create a conversation container. This is step 1 of the two-step process.
+        After creating the conversation, add messages using POST /conversations/{id}/messages.
+
+        **Required fields:**
+        - contact_id
+        - happened_at (ISO 8601 format)
+        - contact_field_type_id
+      tags: [Conversations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - contact_id
+                - happened_at
+                - contact_field_type_id
+              properties:
+                contact_id:
+                  type: integer
+                  description: The contact this conversation is with
+                  example: 123
+                happened_at:
+                  type: string
+                  format: date-time
+                  description: When the conversation occurred (ISO 8601)
+                  example: "2025-01-15T14:30:00Z"
+                contact_field_type_id:
+                  type: integer
+                  description: Type of conversation (from /contactfieldtypes)
+                  example: 1
+      responses:
+        '201':
+          description: Conversation created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Conversation'
+
+  /conversations/{id}:
+    get:
+      summary: Get a specific conversation
+      tags: [Conversations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Conversation details with messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Conversation'
+
+    put:
+      summary: Update a conversation
+      description: Update conversation metadata (happened_at, contact_field_type_id)
+      tags: [Conversations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                happened_at:
+                  type: string
+                  format: date-time
+                contact_field_type_id:
+                  type: integer
+      responses:
+        '200':
+          description: Conversation updated successfully
+
+    delete:
+      summary: Delete a conversation
+      description: Deletes the conversation and all its messages
+      tags: [Conversations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Conversation deleted successfully
+
+  /conversations/{id}/messages:
+    get:
+      summary: List messages in a conversation
+      tags: [Conversations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Conversation ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationMessage'
+
+    post:
+      summary: Add a message to a conversation
+      description: |
+        Add a message to an existing conversation. This is step 2 of the two-step process.
+
+        **CRITICAL - Field Names:**
+        - ✅ `written_by_me` (boolean) - Correct field name
+        - ❌ `written` - Will be IGNORED, message won't save sender correctly
+        - ❌ `writtenByMe` - Wrong casing, will be IGNORED
+      tags: [Conversations]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Conversation ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationMessageCreate'
+            example:
+              contact_id: 123
+              written_at: "2025-01-15"
+              written_by_me: true
+              content: "Hi, how are you doing?"
+      responses:
+        '201':
+          description: Message added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationMessage'
+
+  /conversations/{conversationId}/messages/{messageId}:
+    put:
+      summary: Update a message
+      description: |
+        Update an existing message's content and/or sender.
+        All messages are fully editable (matches Monica web app behavior).
+
+        **CRITICAL - Field Names:**
+        - ✅ `written_by_me` (boolean) - Correct field name
+        - ❌ `written` - Will be IGNORED
+        - ❌ `writtenByMe` - Will be IGNORED
+      tags: [Conversations]
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversationMessageCreate'
+      responses:
+        '200':
+          description: Message updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConversationMessage'
+
+    delete:
+      summary: Delete a message
+      description: Remove a message from a conversation
+      tags: [Conversations]
+      parameters:
+        - name: conversationId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: messageId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Message deleted successfully
+
+  # Contact Field Types Endpoints
+  /contactfieldtypes:
+    get:
+      summary: List all contact field types
+      description: |
+        Get available contact field types. These are used to categorize conversations
+        (e.g., "Phone", "Email", "In person", etc.).
+
+        Each conversation requires a contact_field_type_id.
+      tags: [ContactFieldTypes]
+      responses:
+        '200':
+          description: List of contact field types
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContactFieldType'
+
 tags:
   - name: Contacts
     description: Contact management operations
@@ -1357,3 +1777,7 @@ tags:
     description: Notes and observations
   - name: Tasks
     description: Task and todo management
+  - name: Conversations
+    description: Conversation tracking with message threads
+  - name: ContactFieldTypes
+    description: Contact field types (used for categorizing conversations)

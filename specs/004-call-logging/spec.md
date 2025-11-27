@@ -1,6 +1,6 @@
 # Feature Specification: Phone Call Logging
 
-**Feature Branch**: `001-004-call-logging`
+**Feature Branch**: `004-call-logging`
 **Created**: 2025-11-19
 **Status**: Draft
 **Input**: User description: "Log phone calls with contacts - duration, notes about conversation, emotional state. Track call history to maintain better communication patterns."

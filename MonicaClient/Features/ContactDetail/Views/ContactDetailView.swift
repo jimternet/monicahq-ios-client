@@ -45,7 +45,13 @@ struct EnhancedContactDetailView: View {
                                 hasMoreActivities: viewModel.hasMoreActivities,
                                 isLoadingMore: viewModel.isLoadingMoreActivities
                             )
-                            
+
+                            // Call Logging Section
+                            callLoggingSection(contactId: contact.id)
+
+                            // Conversation Tracking Section
+                            conversationTrackingSection(contactId: contact.id)
+
                             // Relationships section
                             if let relationships = contact.relationships, !relationships.isEmpty {
                                 RelationshipsSection(
@@ -215,6 +221,80 @@ struct EnhancedContactDetailView: View {
         let cleanedPhone = phone.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
         if let phoneURL = URL(string: "tel:\(cleanedPhone)") {
             UIApplication.shared.open(phoneURL)
+        }
+    }
+
+    @ViewBuilder
+    private func callLoggingSection(contactId: Int) -> some View {
+        NavigationLink {
+            if let apiClient = viewModel.apiClient as? MonicaAPIClient {
+                let callLogAPIService = CallLogAPIService(apiClient: apiClient)
+                let callLogViewModel = CallLogViewModel(contactId: contactId, apiService: callLogAPIService)
+                CallLogListView(viewModel: callLogViewModel)
+            } else {
+                Text("Unable to load call logs")
+                    .foregroundColor(.secondary)
+            }
+        } label: {
+            HStack {
+                Image(systemName: "phone.circle.fill")
+                    .foregroundColor(.blue)
+                    .font(.title2)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Call History")
+                        .font(.headline)
+                    Text("View and log phone calls")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+            }
+            .padding()
+            .background(Color(UIColor.systemGroupedBackground))
+            .cornerRadius(12)
+        }
+    }
+
+    @ViewBuilder
+    private func conversationTrackingSection(contactId: Int) -> some View {
+        NavigationLink {
+            if let apiClient = viewModel.apiClient as? MonicaAPIClient {
+                let conversationAPIService = ConversationAPIService(apiClient: apiClient)
+                let conversationViewModel = ConversationViewModel(contactId: contactId, apiService: conversationAPIService)
+                ConversationListView(viewModel: conversationViewModel)
+            } else {
+                Text("Unable to load conversations")
+                    .foregroundColor(.secondary)
+            }
+        } label: {
+            HStack {
+                Image(systemName: "message.circle.fill")
+                    .foregroundColor(.green)
+                    .font(.title2)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Conversations")
+                        .font(.headline)
+                    Text("Track in-person and written conversations")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+            }
+            .padding()
+            .background(Color(UIColor.systemGroupedBackground))
+            .cornerRadius(12)
         }
     }
 }

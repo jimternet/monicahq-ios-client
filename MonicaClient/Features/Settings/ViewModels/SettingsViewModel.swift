@@ -13,7 +13,12 @@ class SettingsViewModel: ObservableObject {
     @Published var buildNumber: String = ""
     @Published var debugMode: Bool = false
     @Published var instanceType: AuthCredentials.InstanceType?
-    
+
+    // Conversation settings
+    @Published var contactFieldTypes: [ContactFieldType] = []
+    @Published var isLoadingFieldTypes = false
+    @Published var selectedDefaultConversationType: Int?
+
     private let keychainService = KeychainService()
     private let userDefaultsService = UserDefaultsService()
     private let cacheService = CacheService()
@@ -159,7 +164,46 @@ class SettingsViewModel: ObservableObject {
     private func loadDebugMode() {
         debugMode = userDefaultsService.getDebugMode()
     }
-    
+
+    // MARK: - Conversation Settings
+
+    func loadConversationSettings() async {
+        // Load saved default
+        selectedDefaultConversationType = userDefaultsService.defaultConversationType
+
+        // Load field types from API
+        guard let credentials = keychainService.getCredentials() else { return }
+
+        isLoadingFieldTypes = true
+
+        do {
+            let apiClient = MonicaAPIClient(
+                baseURL: credentials.apiURL,
+                apiToken: credentials.apiToken,
+                cacheService: cacheService
+            )
+            let response = try await apiClient.getContactFieldTypes()
+            contactFieldTypes = response.data
+            print("✅ Settings: Loaded \(contactFieldTypes.count) contact field types")
+        } catch {
+            print("❌ Settings: Failed to load contact field types: \(error)")
+        }
+
+        isLoadingFieldTypes = false
+    }
+
+    func setDefaultConversationType(_ typeId: Int?) {
+        selectedDefaultConversationType = typeId
+        userDefaultsService.defaultConversationType = typeId
+
+        if let typeId = typeId {
+            let typeName = contactFieldTypes.first(where: { $0.id == typeId })?.name ?? "Unknown"
+            print("💾 Settings: Saved default conversation type: \(typeName) (id: \(typeId))")
+        } else {
+            print("💾 Settings: Cleared default conversation type")
+        }
+    }
+
     private func formatBytes(_ bytes: Int64) -> String {
         let formatter = ByteCountFormatter()
         formatter.countStyle = .file
