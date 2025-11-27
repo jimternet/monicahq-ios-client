@@ -21,11 +21,6 @@ struct ConversationFormView: View {
         self.viewModel = viewModel
         self.editingConversation = editingConversation
         self.onSave = onSave
-
-        // Load existing data if editing
-        if let conversation = editingConversation {
-            viewModel.loadForEditing(conversation)
-        }
     }
 
     var body: some View {
@@ -47,40 +42,79 @@ struct ConversationFormView: View {
                     Text("When did this conversation happen? (Cannot be in the future)")
                 }
 
-                // Notes Section
+                // Messages Section (all messages are editable)
                 Section {
-                    TextEditor(text: $viewModel.notes)
-                        .frame(minHeight: 150)
-                        .accessibilityLabel("Conversation notes")
-                        .accessibilityHint("Enter details about what was discussed")
-
-                    // Character counter
-                    let (count, color) = viewModel.notesCharacterCount()
-                    HStack {
-                        Spacer()
-                        Text("\(count) / 10,000")
-                            .font(.caption)
-                            .foregroundColor(color)
+                    ForEach(Array(viewModel.formMessages.enumerated()), id: \.element.id) { index, _ in
+                        MessageInputView(
+                            message: $viewModel.formMessages[index],
+                            contactName: viewModel.contactName,
+                            canDelete: viewModel.formMessages.count > 1,
+                            onDelete: {
+                                viewModel.removeMessage(at: index)
+                            }
+                        )
                     }
+
+                    // Add another message button
+                    Button(action: { viewModel.addMessage() }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                                .foregroundColor(.blue)
+                            Text("Add another message")
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    .accessibilityLabel("Add another message")
+                    .accessibilityHint("Add another message to this conversation")
                 } header: {
-                    Text("Notes")
+                    Text("Messages")
                 } footer: {
-                    Text("What did you talk about? Any important details to remember? (Optional, max 10,000 characters)")
+                    Text("Add messages exchanged during this conversation. Leave empty for a quick log.")
                 }
 
-                // Conversation Type Section (optional)
+                // Conversation Type Section
                 Section {
-                    Picker("Type", selection: $viewModel.selectedConversationType) {
-                        Text("None").tag(nil as Int?)
-                        // TODO: Load conversation types from API when available
-                        // For now, just show None option
+                    if viewModel.isLoadingFieldTypes {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Text("Loading types...")
+                                .foregroundColor(.secondary)
+                            Spacer()
+                        }
+                    } else if viewModel.contactFieldTypes.isEmpty {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle")
+                                .foregroundColor(.orange)
+                            Text("No conversation types available")
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Picker("Type", selection: $viewModel.selectedConversationType) {
+                            Text("Select a type").tag(nil as Int?)
+                            ForEach(viewModel.contactFieldTypes) { fieldType in
+                                HStack {
+                                    Text(fieldType.name)
+                                    if fieldType.id == viewModel.defaultConversationTypeId {
+                                        Spacer()
+                                        Image(systemName: "star.fill")
+                                            .foregroundColor(.yellow)
+                                            .font(.caption)
+                                    }
+                                }.tag(fieldType.id as Int?)
+                            }
+                        }
+                        .accessibilityLabel("Conversation type")
+                        .accessibilityHint("Select the type of conversation")
                     }
-                    .accessibilityLabel("Conversation type")
-                    .accessibilityHint("Optional: categorize the type of conversation")
                 } header: {
-                    Text("Type (Optional)")
+                    Text("Type")
                 } footer: {
-                    Text("Categorize this conversation (e.g., in-person, phone, email)")
+                    if viewModel.selectedConversationType == viewModel.defaultConversationTypeId {
+                        Text("Using your default type. Change in Settings.")
+                    } else {
+                        Text("How did this conversation happen? Change default in Settings.")
+                    }
                 }
             }
             .navigationTitle(editingConversation == nil ? "Log Conversation" : "Edit Conversation")
@@ -128,7 +162,67 @@ struct ConversationFormView: View {
                         .accessibilityLabel("Loading")
                 }
             }
+            .task {
+                // Load existing data if editing, or initialize empty form
+                if let conversation = editingConversation {
+                    viewModel.loadForEditing(conversation)
+                } else if viewModel.formMessages.isEmpty {
+                    // Initialize with one empty message for new conversations
+                    viewModel.formMessages = [ConversationViewModel.FormMessage()]
+                }
+                // Load contact field types when form appears
+                await viewModel.loadContactFieldTypes()
+            }
         }
+    }
+}
+
+// MARK: - Message Input View
+
+/// Individual message input with sender toggle (for new messages)
+struct MessageInputView: View {
+    @Binding var message: ConversationViewModel.FormMessage
+    let contactName: String
+    let canDelete: Bool
+    let onDelete: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Sender picker
+            HStack {
+                Text("From:")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                Picker("Sender", selection: $message.writtenByMe) {
+                    Text("You").tag(true)
+                    Text(contactName).tag(false)
+                }
+                .pickerStyle(.segmented)
+                .frame(maxWidth: 200)
+
+                Spacer()
+
+                // Delete button
+                if canDelete {
+                    Button(action: onDelete) {
+                        Image(systemName: "trash")
+                            .foregroundColor(.red)
+                            .font(.caption)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Delete this message")
+                }
+            }
+
+            // Message content
+            TextField("What was said?", text: $message.content, axis: .vertical)
+                .lineLimit(3...6)
+                .textFieldStyle(.roundedBorder)
+                .accessibilityLabel("Message content")
+                .accessibilityHint("Enter what was said in this message")
+        }
+        .padding(.vertical, 4)
     }
 }
 
@@ -140,7 +234,7 @@ struct ConversationFormView: View {
         apiToken: "preview-token"
     )
     let apiService = ConversationAPIService(apiClient: apiClient)
-    let viewModel = ConversationViewModel(contactId: 1, apiService: apiService)
+    let viewModel = ConversationViewModel(contactId: 1, contactName: "Aaron", apiService: apiService)
 
     ConversationFormView(viewModel: viewModel) {
         print("Saved")

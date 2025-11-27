@@ -132,7 +132,67 @@ Users can quickly log a conversation with minimal input (just marking that a con
 - Monica v4.x Conversations API must be available
 - Contact management feature must be implemented
 - Authentication system must be in place
-- Follows the same architecture as call logging feature (001-004-call-logging)
+- Follows the same architecture as call logging feature (004-call-logging)
+
+## API Implementation Notes
+
+### Monica v4.x Conversations API Learnings
+
+The following documentation captures implementation learnings from integrating with the Monica v4.x Conversations API.
+
+#### Two-Step Creation Process
+Creating a conversation with messages requires two API calls:
+1. **Create conversation container**: `POST /api/conversations`
+   - Required fields: `contact_id`, `happened_at`, `contact_field_type_id`
+   - Returns a conversation object with an ID
+2. **Add messages**: `POST /api/conversations/{id}/messages`
+   - Required fields: `contact_id`, `written_at`, `written_by_me`, `content`
+   - Call once per message
+
+#### Critical: Message Field Names
+The API is strict about field names in the message payload. Using incorrect field names will cause messages to be created without proper sender attribution.
+
+| Field | Status | Notes |
+|-------|--------|-------|
+| `written_by_me` | ✅ Correct | Boolean - true if user wrote it, false if contact |
+| `written` | ❌ IGNORED | Will be silently ignored |
+| `writtenByMe` | ❌ IGNORED | Wrong casing, will be silently ignored |
+
+#### Message Payload Structure
+```json
+{
+    "contact_id": 123,
+    "written_at": "2025-01-15",
+    "written_by_me": true,
+    "content": "Message text here"
+}
+```
+
+#### Full Message Editing Support
+Unlike initial assumptions, Monica fully supports editing existing messages:
+- `PUT /api/conversations/{id}/messages/{messageId}` - Update content and sender
+- `DELETE /api/conversations/{id}/messages/{messageId}` - Remove a message
+
+This matches the Monica web app behavior where all messages in a conversation are fully editable.
+
+#### Contact Field Types
+- Conversations require a `contact_field_type_id` to categorize the conversation type
+- Types are fetched from `GET /api/contactfieldtypes`
+- Common types include: "Phone", "Email", "In person", etc.
+- Users can configure a default type in app settings
+
+#### API Endpoints Summary
+| Operation | Method | Endpoint |
+|-----------|--------|----------|
+| List conversations | GET | `/api/contacts/{id}/conversations` |
+| Create conversation | POST | `/api/conversations` |
+| Update conversation | PUT | `/api/conversations/{id}` |
+| Delete conversation | DELETE | `/api/conversations/{id}` |
+| List messages | GET | `/api/conversations/{id}/messages` |
+| Add message | POST | `/api/conversations/{id}/messages` |
+| Update message | PUT | `/api/conversations/{id}/messages/{msgId}` |
+| Delete message | DELETE | `/api/conversations/{id}/messages/{msgId}` |
+| List field types | GET | `/api/contactfieldtypes` |
 
 ## Out of Scope
 

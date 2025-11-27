@@ -1,7 +1,7 @@
 # Implementation Plan: Phone Call Logging
 
-**Branch**: `001-004-call-logging` | **Date**: 2025-01-19 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-004-call-logging/spec.md`
+**Branch**: `004-call-logging` | **Date**: 2025-01-19 | **Spec**: [spec.md](./spec.md)
+**Input**: Feature specification from `/specs/004-call-logging/spec.md`
 
 ## Summary
 
@@ -46,7 +46,7 @@ Implement phone call logging feature for Monica iOS Client, enabling users to re
 ### Documentation (this feature)
 
 ```text
-specs/001-004-call-logging/
+specs/004-call-logging/
 ├── spec.md              # Feature specification (completed via /speckit.specify)
 ├── plan.md              # This file (completed via /speckit.plan)
 ├── research.md          # Phase 0 research findings (N/A - straightforward implementation)

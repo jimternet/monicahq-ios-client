@@ -974,23 +974,70 @@ class MonicaAPIClient {
     }
 
     // MARK: - Conversations CRUD
+    //
+    // Monica v4.x Conversations API Documentation:
+    // ============================================
+    //
+    // CREATING CONVERSATIONS:
+    // The Monica API uses a two-step process for creating conversations with messages:
+    // 1. Create the conversation container: POST /api/conversations
+    //    - Required fields: contact_id, happened_at, contact_field_type_id
+    //    - Returns a conversation object with an ID
+    // 2. Add messages to the conversation: POST /api/conversations/{id}/messages
+    //    - Required fields: contact_id, written_at, written_by_me, content
+    //
+    // IMPORTANT - Message Field Names:
+    // - The API expects "written_by_me" (boolean) - NOT "written" or "writtenByMe"
+    // - The API expects "written_at" (date string: "yyyy-MM-dd")
+    // - The API expects "content" (string) for the message body
+    //
+    // MESSAGE CRUD OPERATIONS:
+    // - GET    /api/conversations/{id}/messages         - List messages
+    // - POST   /api/conversations/{id}/messages         - Add a message
+    // - PUT    /api/conversations/{id}/messages/{msgId} - Update a message
+    // - DELETE /api/conversations/{id}/messages/{msgId} - Delete a message
+    //
+    // All messages are fully editable (content and written_by_me can be changed).
+    // This matches the Monica web app behavior.
+    //
+    // CONTACT FIELD TYPES:
+    // - Used to categorize conversations (e.g., "Phone", "Email", "In person")
+    // - GET /api/contactfieldtypes returns available types
+    // - Each conversation must have a contact_field_type_id
+    //
 
     func getConversations(for contactId: Int, limit: Int = 10) async throws -> APIResponse<[Conversation]> {
-        let endpoint = "/conversations?contact_id=\(contactId)&limit=\(limit)"
+        let endpoint = "/contacts/\(contactId)/conversations?limit=\(limit)"
         let data = try await makeRequest(endpoint: endpoint)
+
+        // Log raw response to see what fields are available
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("📄 Raw conversations response: \(jsonString.prefix(2000))")
+        }
 
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         return try decoder.decode(APIResponse<[Conversation]>.self, from: data)
     }
 
-    func createConversation(for contactId: Int, happenedAt: Date, content: String?) async throws -> APIResponse<Conversation> {
+    func createConversation(for contactId: Int, happenedAt: Date, contactFieldTypeId: Int, content: String?) async throws -> APIResponse<Conversation> {
         let formatter = ISO8601DateFormatter()
-        let body = [
+        var body: [String: Any] = [
             "contact_id": contactId,
             "happened_at": formatter.string(from: happenedAt),
-            "content": content ?? ""
-        ] as [String: Any]
+            "contact_field_type_id": contactFieldTypeId
+        ]
+
+        // Include content if provided
+        if let content = content, !content.isEmpty {
+            body["content"] = content
+            print("📝 Including content: \(content.prefix(100))...")
+        } else {
+            print("📝 No content provided (content is nil or empty)")
+        }
+
+        print("📤 Creating conversation with contact_field_type_id: \(contactFieldTypeId)")
+        print("📤 Full payload: \(body)")
 
         let bodyData = try JSONSerialization.data(withJSONObject: body)
         let data = try await makeRequest(endpoint: "/conversations", method: "POST", body: bodyData)
@@ -1002,6 +1049,94 @@ class MonicaAPIClient {
 
     func deleteConversation(id: Int) async throws {
         _ = try await makeRequest(endpoint: "/conversations/\(id)", method: "DELETE")
+    }
+
+    /// Add a message to an existing conversation
+    /// POST /conversations/:id/messages
+    func addMessageToConversation(conversationId: Int, contactId: Int, content: String, writtenByMe: Bool = true, writtenAt: Date = Date()) async throws {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        // Monica API uses "written_by_me" for messages
+        let body: [String: Any] = [
+            "contact_id": contactId,
+            "written_at": dateFormatter.string(from: writtenAt),
+            "written_by_me": writtenByMe,
+            "content": content
+        ]
+
+        print("📝 Adding message to conversation \(conversationId)")
+        print("📤 Message payload: \(body)")
+
+        let bodyData = try JSONSerialization.data(withJSONObject: body)
+        do {
+            let responseData = try await makeRequest(endpoint: "/conversations/\(conversationId)/messages", method: "POST", body: bodyData)
+            if let responseString = String(data: responseData, encoding: .utf8) {
+                print("✅ Message added to conversation \(conversationId)")
+                print("📄 Response: \(responseString.prefix(200))")
+            }
+        } catch {
+            print("❌ Failed to add message to conversation \(conversationId): \(error)")
+            throw error
+        }
+    }
+
+    /// Get messages for a conversation
+    /// GET /conversations/:id/messages
+    func getConversationMessages(conversationId: Int) async throws -> APIResponse<[ConversationMessage]> {
+        let data = try await makeRequest(endpoint: "/conversations/\(conversationId)/messages")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(APIResponse<[ConversationMessage]>.self, from: data)
+    }
+
+    /// Delete a message from a conversation
+    /// DELETE /conversations/:conversationId/messages/:messageId
+    func deleteMessageFromConversation(conversationId: Int, messageId: Int) async throws {
+        print("🗑️ Deleting message \(messageId) from conversation \(conversationId)")
+        _ = try await makeRequest(endpoint: "/conversations/\(conversationId)/messages/\(messageId)", method: "DELETE")
+        print("✅ Message \(messageId) deleted")
+    }
+
+    /// Update an existing message in a conversation
+    /// PUT /conversations/:conversationId/messages/:messageId
+    func updateMessageInConversation(conversationId: Int, messageId: Int, contactId: Int, content: String, writtenByMe: Bool, writtenAt: Date = Date()) async throws {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+
+        let body: [String: Any] = [
+            "contact_id": contactId,
+            "written_at": dateFormatter.string(from: writtenAt),
+            "written_by_me": writtenByMe,
+            "content": content
+        ]
+
+        print("📝 Updating message \(messageId) in conversation \(conversationId)")
+        print("📤 Update payload: \(body)")
+
+        let bodyData = try JSONSerialization.data(withJSONObject: body)
+        do {
+            let responseData = try await makeRequest(endpoint: "/conversations/\(conversationId)/messages/\(messageId)", method: "PUT", body: bodyData)
+            if let responseString = String(data: responseData, encoding: .utf8) {
+                print("✅ Message \(messageId) updated")
+                print("📄 Response: \(responseString.prefix(200))")
+            }
+        } catch {
+            print("❌ Failed to update message \(messageId): \(error)")
+            throw error
+        }
+    }
+
+    // MARK: - Contact Field Types
+
+    func getContactFieldTypes() async throws -> APIResponse<[ContactFieldType]> {
+        let endpoint = "/contactfieldtypes"
+        let data = try await makeRequest(endpoint: endpoint)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(APIResponse<[ContactFieldType]>.self, from: data)
     }
 
     // MARK: - Reminders CRUD

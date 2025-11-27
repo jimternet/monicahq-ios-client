@@ -30,7 +30,7 @@ struct ConversationListView: View {
                 // List of conversations
                 List {
                     ForEach(viewModel.sortedConversations) { conversation in
-                        ConversationRowView(conversation: conversation, viewModel: viewModel)
+                        ConversationRowView(conversation: conversation, viewModel: viewModel, contactName: viewModel.contactName)
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 editingConversation = conversation
@@ -113,8 +113,9 @@ struct ConversationListView: View {
         } message: { _ in
             Text("Are you sure you want to delete this conversation? This action cannot be undone.")
         }
-        .onAppear {
-            Task { await viewModel.loadConversations() }
+        .task {
+            await viewModel.loadConversations()
+            await viewModel.loadContactFieldTypes()
         }
         .refreshable {
             await viewModel.loadConversations()

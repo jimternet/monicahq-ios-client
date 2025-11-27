@@ -120,6 +120,42 @@ struct SettingsView: View {
                     Text("About")
                 }
                 
+                // Conversation Settings Section
+                Section {
+                    if viewModel.isLoadingFieldTypes {
+                        HStack {
+                            Label("Default Type", systemImage: "bubble.left.and.bubble.right")
+                            Spacer()
+                            ProgressView()
+                                .scaleEffect(0.8)
+                        }
+                    } else if viewModel.contactFieldTypes.isEmpty {
+                        HStack {
+                            Label("Default Type", systemImage: "bubble.left.and.bubble.right")
+                            Spacer()
+                            Text("Unable to load")
+                                .foregroundColor(.secondary)
+                        }
+                    } else {
+                        Picker(selection: $viewModel.selectedDefaultConversationType) {
+                            Text("First available").tag(nil as Int?)
+                            ForEach(viewModel.contactFieldTypes) { fieldType in
+                                Text(fieldType.name).tag(fieldType.id as Int?)
+                            }
+                        } label: {
+                            Label("Default Type", systemImage: "bubble.left.and.bubble.right")
+                        }
+                        .onChange(of: viewModel.selectedDefaultConversationType) { _, newValue in
+                            viewModel.setDefaultConversationType(newValue)
+                        }
+                    }
+                } header: {
+                    Text("Conversations")
+                } footer: {
+                    Text("Default conversation type used for Quick Log and new conversations.")
+                        .font(.caption)
+                }
+
                 // Advanced Section
                 Section {
                     Button(action: {
@@ -130,7 +166,7 @@ struct SettingsView: View {
                             Spacer()
                         }
                     }
-                    
+
                     Toggle(isOn: $viewModel.debugMode) {
                         Label("Debug Mode", systemImage: "ant")
                     }
@@ -147,6 +183,7 @@ struct SettingsView: View {
         .task {
             await viewModel.loadSettings()
             await viewModel.calculateCacheSize()
+            await viewModel.loadConversationSettings()
         }
         .alert("Sign Out", isPresented: $showingLogoutAlert) {
             Button("Cancel", role: .cancel) { }

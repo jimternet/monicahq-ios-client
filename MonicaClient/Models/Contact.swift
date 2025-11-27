@@ -853,54 +853,167 @@ struct PhoneCallCreatePayload: Codable {
     }
 }
 
+// MARK: - Contact Field Types
+
+/// Contact field type (e.g., Phone, Email, Twitter, etc.)
+struct ContactFieldType: Codable, Identifiable {
+    let id: Int
+    let uuid: String?
+    let name: String
+    let fontawesomeIcon: String?
+    let `protocol`: String?
+    let delible: Bool
+    let type: String?
+    let createdAt: Date?
+    let updatedAt: Date?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case uuid
+        case name
+        case fontawesomeIcon = "fontawesome_icon"
+        case `protocol`
+        case delible
+        case type
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+typealias ContactFieldTypesResponse = APIResponse<[ContactFieldType]>
+
 // MARK: - Conversations
 
 /// Conversation record (SMS, social media, etc.)
+/// Monica API returns nested objects for contact, contact_field_type, and messages
 struct Conversation: Codable, Identifiable {
     let id: Int
-    let contactId: Int
     let happenedAt: Date
-    let contactFieldTypeId: Int?
-    let content: String?
+    let content: String?  // May be nil - actual content is in messages
     let createdAt: Date
     let updatedAt: Date
 
-    /// Check if conversation has notes/content
-    var hasNotes: Bool {
-        !(content?.isEmpty ?? true)
+    // Nested objects from API
+    let contact: ConversationContact?
+    let contactFieldType: ConversationContactFieldType?
+
+    // Messages embedded in API response
+    let messages: [ConversationMessage]
+
+    // Computed properties for backwards compatibility
+    var contactId: Int {
+        contact?.id ?? 0
     }
 
-    /// Check if this is a quick log (no notes)
+    var contactFieldTypeId: Int {
+        contactFieldType?.id ?? 0
+    }
+
+    /// Check if conversation has messages
+    var hasMessages: Bool {
+        !messages.isEmpty
+    }
+
+    /// Check if this is a quick log (no messages)
     var isQuickLog: Bool {
-        !hasNotes
+        !hasMessages
     }
 
-    /// Alias for content to match API naming
+    /// Get combined content from all messages
+    var combinedMessageContent: String? {
+        guard !messages.isEmpty else { return nil }
+        return messages.map { $0.content }.joined(separator: "\n\n")
+    }
+
+    /// Alias for combined message content (backwards compat)
     var notes: String? {
-        content
+        combinedMessageContent
+    }
+
+    /// Check if conversation has notes (via messages)
+    var hasNotes: Bool {
+        hasMessages
     }
 
     enum CodingKeys: String, CodingKey {
         case id
-        case contactId = "contact_id"
         case happenedAt = "happened_at"
-        case contactFieldTypeId = "contact_field_type_id"
         case content
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+        case contact
+        case contactFieldType = "contact_field_type"
+        case messages
     }
 
     // Memberwise initializer for tests and previews
-    init(id: Int, contactId: Int, happenedAt: Date, contactFieldTypeId: Int?, content: String?, createdAt: Date, updatedAt: Date) {
+    init(id: Int, contactId: Int, happenedAt: Date, contactFieldTypeId: Int, content: String?, createdAt: Date, updatedAt: Date, messages: [ConversationMessage] = []) {
         self.id = id
-        self.contactId = contactId
         self.happenedAt = happenedAt
-        self.contactFieldTypeId = contactFieldTypeId
         self.content = content
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.contact = ConversationContact(id: contactId)
+        self.contactFieldType = ConversationContactFieldType(id: contactFieldTypeId, name: "Unknown")
+        self.messages = messages
     }
 }
+
+/// Nested contact object in conversation response
+struct ConversationContact: Codable {
+    let id: Int
+
+    init(id: Int) {
+        self.id = id
+    }
+}
+
+/// Nested contact field type object in conversation response
+struct ConversationContactFieldType: Codable {
+    let id: Int
+    let name: String?
+
+    init(id: Int, name: String?) {
+        self.id = id
+        self.name = name
+    }
+}
+
+/// Message within a conversation
+/// Fetched via GET /conversations/:id/messages
+struct ConversationMessage: Codable, Identifiable {
+    let id: Int
+    let writtenAt: Date
+    let writtenByMe: Bool
+    let content: String
+    let createdAt: Date
+    let updatedAt: Date
+
+    // Nested contact object (same as conversation)
+    let contact: ConversationContact?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case writtenAt = "written_at"
+        case writtenByMe = "written_by_me"
+        case content
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case contact
+    }
+
+    init(id: Int, writtenAt: Date, writtenByMe: Bool, content: String, createdAt: Date, updatedAt: Date, contact: ConversationContact? = nil) {
+        self.id = id
+        self.writtenAt = writtenAt
+        self.writtenByMe = writtenByMe
+        self.content = content
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.contact = contact
+    }
+}
+
+typealias ConversationMessagesResponse = APIResponse<[ConversationMessage]>
 
 typealias ConversationsResponse = APIResponse<[Conversation]>
 
@@ -911,14 +1024,14 @@ struct ConversationSingleResponse: Codable {
 struct ConversationCreatePayload: Codable {
     let contactId: Int
     let happenedAt: String
+    let contactFieldTypeId: Int
     let content: String?
-    let contactFieldTypeId: Int?
 
     enum CodingKeys: String, CodingKey {
         case contactId = "contact_id"
         case happenedAt = "happened_at"
-        case content
         case contactFieldTypeId = "contact_field_type_id"
+        case content
     }
 }
 

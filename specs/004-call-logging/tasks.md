@@ -1,6 +1,6 @@
 # Tasks: Phone Call Logging
 
-**Input**: Design documents from `/specs/001-004-call-logging/`
+**Input**: Design documents from `/specs/004-call-logging/`
 **Prerequisites**: plan.md (✅), spec.md (✅)
 
 **Tests**: Tests are deferred to post-MVP per constitution principle 7 (focus on business logic, 70% coverage target).

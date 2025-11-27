@@ -4051,20 +4051,35 @@ struct ManageSection: View {
 
                     ManagementNavigationLink(
                         icon: "phone",
-                        title: "Call History",
-                        destination: CallLogListView(
+                        title: "Call History"
+                    ) {
+                        CallLogListView(
                             viewModel: CallLogViewModel(
                                 contactId: contact.id,
                                 apiService: CallLogAPIService(apiClient: authManager.currentAPIClient!)
                             )
                         )
-                    )
+                    }
+
+                    ManagementNavigationLink(
+                        icon: "message",
+                        title: "Conversations"
+                    ) {
+                        ConversationListView(
+                            viewModel: ConversationViewModel(
+                                contactId: contact.id,
+                                contactName: contact.completeName,
+                                apiService: ConversationAPIService(apiClient: authManager.currentAPIClient!)
+                            )
+                        )
+                    }
 
                     ManagementNavigationLink(
                         icon: "envelope",
-                        title: "Contact Fields",
-                        destination: ContactFieldsManagementView(contact: contact)
-                    )
+                        title: "Contact Fields"
+                    ) {
+                        ContactFieldsManagementView(contact: contact)
+                    }
                 }
                 .background(Color(UIColor.systemGroupedBackground))
             } else if let errorMessage = errorMessage {
@@ -4102,10 +4117,16 @@ struct ManageSection: View {
 struct ManagementNavigationLink<Destination: View>: View {
     let icon: String
     let title: String
-    let destination: Destination
+    let destination: () -> Destination
+
+    init(icon: String, title: String, @ViewBuilder destination: @escaping () -> Destination) {
+        self.icon = icon
+        self.title = title
+        self.destination = destination
+    }
 
     var body: some View {
-        NavigationLink(destination: destination) {
+        NavigationLink(destination: LazyView(destination)) {
             HStack {
                 Image(systemName: icon)
                     .frame(width: 24)
@@ -4124,6 +4145,19 @@ struct ManagementNavigationLink<Destination: View>: View {
         }
         Divider()
             .padding(.leading, 48)
+    }
+}
+
+/// Helper view that defers view creation until it's actually needed
+struct LazyView<Content: View>: View {
+    let build: () -> Content
+
+    init(_ build: @escaping () -> Content) {
+        self.build = build
+    }
+
+    var body: Content {
+        build()
     }
 }
 

@@ -104,7 +104,7 @@ This is an iOS mobile project with feature-based organization:
 - [X] T037 [US2] Add empty state view for contacts with no conversations in ConversationListView.swift
 - [X] T038 [US2] Add loading state (ProgressView) in ConversationListView.swift
 - [X] T039 [US2] Add pull-to-refresh functionality in ConversationListView.swift
-- [ ] T040 [US2] Add navigation from ContactDetailView to ConversationListView
+- [X] T040 [US2] Add navigation from ContactDetailView to ConversationListView
 - [X] T041 [US2] Implement formattedDate helper in Conversation model extension
 - [X] T042 [US2] Add visual indicator for conversations without notes in ConversationRowView.swift
 
@@ -166,7 +166,7 @@ This is an iOS mobile project with feature-based organization:
 - [X] T064 [P] Add accessibility labels to ConversationRowView.swift
 - [X] T065 Add error message display with retry button in ConversationListView.swift
 - [X] T066 Add optimistic UI updates (show conversation immediately, rollback on error)
-- [ ] T067 Verify and update docs/monica-api-openapi.yaml with Conversations API endpoints (Constitution Principle 11)
+- [X] T067 Verify and update docs/monica-api-openapi.yaml with Conversations API endpoints (Constitution Principle 11)
 - [X] T068 Add conversation type labels/icons if contactFieldTypeId is supported
 - [X] T069 Implement character count color coding (green/yellow/red) for notes field in ConversationFormView.swift
 - [X] T070 Add keyboard dismissal on form save/cancel
@@ -283,7 +283,7 @@ Due to dependencies between stories (US2 needs US1, US3 needs US1&2), sequential
 - Tests deferred to post-MVP per constitution (Testing Standards principle 7)
 - Backend-only architecture: no Core Data, no offline support
 - All API operations are async/await with error handling
-- Follow call logging patterns for consistency (001-004-call-logging)
+- Follow call logging patterns for consistency (004-call-logging)
 - Verify OpenAPI spec updates per Constitution Principle 11
 - Each checkpoint = independently testable increment
 - Commit after each task or logical group

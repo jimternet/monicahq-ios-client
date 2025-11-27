@@ -54,7 +54,7 @@ specs/005-conversation-tracking/
 └── tasks.md             # Phase 2 output (/speckit.tasks command)
 ```
 
-Note: research.md and quickstart.md omitted as conversation tracking follows established patterns from call logging (001-004-call-logging).
+Note: research.md and quickstart.md omitted as conversation tracking follows established patterns from call logging (004-call-logging).
 
 ### Source Code (repository root)
 

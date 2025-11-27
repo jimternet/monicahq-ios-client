@@ -13,12 +13,19 @@ import SwiftUI
 struct ConversationRowView: View {
     let conversation: Conversation
     let viewModel: ConversationViewModel
+    let contactName: String
 
     @State private var isExpanded = false
 
+    init(conversation: Conversation, viewModel: ConversationViewModel, contactName: String = "Contact") {
+        self.conversation = conversation
+        self.viewModel = viewModel
+        self.contactName = contactName
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Header: Date
+            // Header: Date and conversation type
             HStack {
                 Image(systemName: "bubble.left.and.bubble.right")
                     .foregroundColor(.blue)
@@ -29,6 +36,12 @@ struct ConversationRowView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
+                if let typeName = conversation.contactFieldType?.name {
+                    Text("via \(typeName)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
                 Spacer()
 
                 // Quick log indicator
@@ -38,68 +51,119 @@ struct ConversationRowView: View {
                         .font(.caption)
                         .accessibilityLabel("Quick logged")
                 }
+
+                // Message count badge
+                if conversation.messages.count > 1 {
+                    Text("\(conversation.messages.count)")
+                        .font(.caption2)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Color.blue)
+                        .clipShape(Capsule())
+                        .accessibilityLabel("\(conversation.messages.count) messages")
+                }
             }
             .accessibilityElement(children: .combine)
 
-            // Notes preview or empty state
-            if let notes = conversation.notes, !notes.isEmpty {
-                if isExpanded {
-                    // Full notes
-                    Text(notes)
-                        .font(.callout)
-                        .foregroundColor(.primary)
-                        .padding(.top, 4)
-                        .accessibilityLabel("Notes: \(notes)")
-                } else {
-                    // Preview (first 100 chars)
-                    let preview = String(notes.prefix(100))
-                    let needsTruncation = notes.count > 100
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(preview + (needsTruncation ? "..." : ""))
-                            .font(.callout)
-                            .foregroundColor(.primary)
-                            .lineLimit(2)
-
-                        if needsTruncation {
-                            Button(action: { isExpanded = true }) {
-                                Text("Show more")
-                                    .font(.caption)
-                                    .foregroundColor(.blue)
-                            }
-                            .accessibilityLabel("Show full notes")
-                        }
-                    }
-                    .padding(.top, 4)
-                }
-
-                // Collapse button when expanded
-                if isExpanded {
-                    Button(action: { isExpanded = false }) {
-                        Text("Show less")
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                    }
-                    .accessibilityLabel("Show less")
-                }
+            // Messages thread or empty state
+            if conversation.hasMessages {
+                messagesThreadView
             } else {
-                // No notes indicator
+                // No messages indicator (quick log)
                 HStack {
-                    Image(systemName: "note.text.badge.plus")
+                    Image(systemName: "clock.badge.checkmark")
                         .foregroundColor(.secondary)
                         .font(.caption)
 
-                    Text("No notes")
+                    Text("Quick log - no messages")
                         .font(.callout)
                         .foregroundColor(.secondary)
                         .italic()
                 }
                 .padding(.top, 4)
-                .accessibilityLabel("No notes added")
-                .accessibilityHint("Tap to edit and add notes")
+                .accessibilityLabel("Quick log with no messages")
+                .accessibilityHint("Tap to edit and add messages")
             }
         }
         .padding(.vertical, 4)
+    }
+
+    // MARK: - Messages Thread View
+
+    @ViewBuilder
+    private var messagesThreadView: some View {
+        let messagesToShow = isExpanded ? conversation.messages : Array(conversation.messages.prefix(2))
+        let hasMore = conversation.messages.count > 2
+
+        VStack(alignment: .leading, spacing: 6) {
+            ForEach(messagesToShow) { message in
+                MessageBubbleView(
+                    message: message,
+                    contactName: contactName
+                )
+            }
+
+            // Show more/less toggle
+            if hasMore {
+                Button(action: { isExpanded.toggle() }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                            .font(.caption2)
+                        Text(isExpanded ? "Show less" : "Show \(conversation.messages.count - 2) more")
+                            .font(.caption)
+                    }
+                    .foregroundColor(.blue)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(isExpanded ? "Show less messages" : "Show all \(conversation.messages.count) messages")
+            }
+        }
+        .padding(.top, 4)
+    }
+}
+
+// MARK: - Message Bubble View
+
+/// Individual message bubble in a conversation thread
+struct MessageBubbleView: View {
+    let message: ConversationMessage
+    let contactName: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            // Sender indicator
+            VStack(spacing: 2) {
+                Image(systemName: message.writtenByMe ? "person.fill" : "person")
+                    .font(.caption)
+                    .foregroundColor(message.writtenByMe ? .blue : .secondary)
+
+                Text(message.writtenByMe ? "You" : contactName)
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+            }
+            .frame(width: 50)
+
+            // Message content
+            VStack(alignment: .leading, spacing: 2) {
+                Text(message.content)
+                    .font(.callout)
+                    .foregroundColor(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(message.writtenByMe ? Color.blue.opacity(0.1) : Color.secondary.opacity(0.1))
+            )
+
+            Spacer(minLength: 0)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(message.writtenByMe ? "You" : contactName) said: \(message.content)")
     }
 }
 
@@ -111,32 +175,62 @@ struct ConversationRowView: View {
         apiToken: "preview-token"
     )
     let apiService = ConversationAPIService(apiClient: apiClient)
-    let viewModel = ConversationViewModel(contactId: 1, apiService: apiService)
+    let viewModel = ConversationViewModel(contactId: 1, contactName: "Aaron", apiService: apiService)
 
-    // Sample conversation with notes
-    let conversationWithNotes = Conversation(
+    // Sample messages
+    let sampleMessages = [
+        ConversationMessage(
+            id: 1,
+            writtenAt: Date(),
+            writtenByMe: true,
+            content: "Hey, how's it going?",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        ConversationMessage(
+            id: 2,
+            writtenAt: Date(),
+            writtenByMe: false,
+            content: "Great! Just finished the project we discussed.",
+            createdAt: Date(),
+            updatedAt: Date()
+        ),
+        ConversationMessage(
+            id: 3,
+            writtenAt: Date(),
+            writtenByMe: true,
+            content: "That's awesome news!",
+            createdAt: Date(),
+            updatedAt: Date()
+        )
+    ]
+
+    // Sample conversation with messages
+    let conversationWithMessages = Conversation(
         id: 1,
         contactId: 1,
         happenedAt: Date(),
-        contactFieldTypeId: nil,
-        content: "Had a great conversation about the project. They're excited about the progress and want to schedule a follow-up meeting next week. We discussed the timeline and potential challenges. Everything looks good!",
+        contactFieldTypeId: 1,
+        content: nil,
         createdAt: Date(),
-        updatedAt: Date()
+        updatedAt: Date(),
+        messages: sampleMessages
     )
 
-    // Sample quick log (no notes)
+    // Sample quick log (no messages)
     let quickLog = Conversation(
         id: 2,
         contactId: 1,
         happenedAt: Date().addingTimeInterval(-3600),
-        contactFieldTypeId: nil,
+        contactFieldTypeId: 1,
         content: nil,
         createdAt: Date(),
-        updatedAt: Date()
+        updatedAt: Date(),
+        messages: []
     )
 
     List {
-        ConversationRowView(conversation: conversationWithNotes, viewModel: viewModel)
-        ConversationRowView(conversation: quickLog, viewModel: viewModel)
+        ConversationRowView(conversation: conversationWithMessages, viewModel: viewModel, contactName: "Aaron")
+        ConversationRowView(conversation: quickLog, viewModel: viewModel, contactName: "Aaron")
     }
 }

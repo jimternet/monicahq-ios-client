@@ -1,6 +1,6 @@
 # Feature Specification: Contact Photo Gallery
 
-**Feature Branch**: `001-012-photo-gallery`
+**Feature Branch**: `312-photo-gallery`
 **Created**: 2025-11-19
 **Status**: Draft
 **Input**: User description: "Upload and manage photos for contacts - beyond just avatars, maintain a photo gallery of memories with each contact."

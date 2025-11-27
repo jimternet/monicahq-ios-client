@@ -305,13 +305,13 @@ ContactDetailView
 
 ## Migration Notes
 
-This feature follows the backend-only architecture established by call logging (001-004-call-logging). Key differences from call logging:
+This feature follows the backend-only architecture established by call logging (004-call-logging). Key differences from call logging:
 
 1. **No Core Data**: Call logging uses Core Data for offline storage; conversations do not
 2. **Simpler sync**: No sync status tracking needed - all operations are synchronous API calls
 3. **Different API endpoint**: Uses `/api/conversations` instead of `/api/activities`
 
-This architecture aligns with spec dependency: "Follows the same architecture as call logging feature (001-004-call-logging)" but adapts to backend-only pattern as specified in spec assumptions.
+This architecture aligns with spec dependency: "Follows the same architecture as call logging feature (004-call-logging)" but adapts to backend-only pattern as specified in spec assumptions.
 
 ---
 
