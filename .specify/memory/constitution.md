@@ -1,21 +1,21 @@
 <!-- Sync Impact Report
-Version change: 1.1.0 → 1.2.0
-Modified principles: None
+Version change: 1.2.0 → 1.3.0
+Modified principles:
+  - Principle 5: "API-First Design" - Added reference codebase requirement
 Added sections:
-  - Principle 11: "API Documentation Accuracy" (new principle requiring OpenAPI spec updates when API discrepancies are discovered)
-  - Governance: Added mandate for docs/monica-api-openapi.yaml updates
+  - Reference Codebase guidance for Monica v4.x at /tmp/monica-v4/
+  - Key paths: routes/api.php, routes/web.php, app/Models/, app/Http/Controllers/
 Removed sections: None
 Templates requiring updates:
-  ✅ .specify/templates/plan-template.md (verified - no changes needed, constitution check will include new principle)
+  ✅ .specify/templates/plan-template.md (verified - no changes needed)
   ✅ .specify/templates/spec-template.md (verified - no changes needed)
   ✅ .specify/templates/tasks-template.md (verified - no changes needed)
-  ✅ .specify/templates/commands/*.md (N/A - no command templates exist)
-Follow-up TODOs: None
+Follow-up TODOs:
+  - Ensure /tmp/monica-v4/ is cloned (git clone --branch 4.x https://github.com/monicahq/monica.git /tmp/monica-v4)
 Bump rationale: MINOR version bump warranted due to:
-  - New principle added (API Documentation Accuracy)
-  - Expands project governance to cover API documentation maintenance
-  - Non-breaking addition that doesn't remove or redefine existing principles
-  - Establishes new requirement for docs/monica-api-openapi.yaml maintenance
+  - Extended Principle 5 with reference codebase requirement
+  - Non-breaking addition that enhances existing principle
+  - Establishes ground truth source for API verification
 -->
 
 # Monica iOS Client Constitution
@@ -75,9 +75,17 @@ makes future feature additions predictable and safe.
 - Handle API errors gracefully with user-friendly messages
 - Cache appropriately; respect API rate limits
 - Document API assumptions and version requirements
+- **Reference Codebase**: Monica v4.x source code is cloned at `/tmp/monica-v4/`
+  - Use this to verify API endpoints, models, and behavior before implementation
+  - API routes: `/tmp/monica-v4/routes/api.php` (API endpoints)
+  - Web routes: `/tmp/monica-v4/routes/web.php` (web-only features)
+  - Models: `/tmp/monica-v4/app/Models/`
+  - Controllers: `/tmp/monica-v4/app/Http/Controllers/`
+  - Always verify against actual source when API documentation is unclear
 
 **Rationale**: Monica's API is the contract. Any implementation that
-bypasses it creates fragility and security risks.
+bypasses it creates fragility and security risks. The reference codebase
+at `/tmp/monica-v4/` provides ground truth when documentation is incomplete.
 
 ### 6. Performance & Responsiveness
 - List views load quickly (lazy loading, pagination where needed)
@@ -156,4 +164,4 @@ to aid future development.
 - When API documentation bugs are discovered, updates to `docs/monica-api-openapi.yaml` are mandatory
 - **Main Branch**: `main` is the trunk branch for this project; all features merge to `main`
 
-**Version**: 1.2.0 | **Ratified**: 2025-10-26 | **Last Amended**: 2025-01-19
+**Version**: 1.3.0 | **Ratified**: 2025-10-26 | **Last Amended**: 2025-12-03
