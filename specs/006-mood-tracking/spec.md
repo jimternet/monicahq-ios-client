@@ -1,6 +1,6 @@
 # Feature Specification: Day and Mood Tracking
 
-**Feature Branch**: `001-006-mood-tracking`
+**Feature Branch**: `006-mood-tracking`
 **Created**: 2025-11-19
 **Status**: Draft
 **Input**: User description: "Day/Mood entries missing from journal view - users can rate their day with emoji mood indicators and text descriptions in the web app, but these don't appear in mobile app"
@@ -149,8 +149,8 @@ Users can look back at their mood history over weeks or months to identify patte
 
 ## Assumptions
 
-- Monica backend provides day entries API endpoints at `/api/days` or similar path
-- Day entry data from backend includes all necessary fields (id, date, rating value, comment, timestamps)
+- Monica v4.x API does NOT have a separate `/api/days` endpoint - day ratings are fetched via `/api/journal` alongside journal entries
+- Day entries are returned as part of the journal feed with a different structure than manual journal entries
 - Mood ratings use a standardized scale (e.g., 1-5, or predefined mood categories)
 - The web app's day entry functionality serves as the reference implementation for behavior
 - Journal feed combines day entries with manual entries and activities chronologically
@@ -159,3 +159,11 @@ Users can look back at their mood history over weeks or months to identify patte
 - Day ratings are personal to the user and not shared with others
 - Standard mobile data connectivity is available but offline entry creation should queue for sync
 - Visual indicators for moods can be implemented without requiring new backend data
+
+## API Implementation Notes (Added during implementation)
+
+**Discovery**: The Monica v4.x `/api/journal` endpoint returns ALL journal items including:
+1. Manual journal entries (`object: "journalentry"`)
+2. Day/mood rating entries (structure TBD - needs API testing)
+
+The current implementation only parses `JournalEntry` objects. Day entries need to be identified and parsed from the same API response.

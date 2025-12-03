@@ -7,7 +7,8 @@ enum APIError: LocalizedError {
     case serverError(Int)
     case decodingError
     case networkError(Error)
-    
+    case featureNotSupported(String)
+
     var errorDescription: String? {
         switch self {
         case .invalidURL:
@@ -22,6 +23,8 @@ enum APIError: LocalizedError {
             return "Failed to decode server response"
         case .networkError(let error):
             return "Network error: \(error.localizedDescription)"
+        case .featureNotSupported(let feature):
+            return "\(feature) is not available via the Monica API"
         }
     }
 }
@@ -755,6 +758,56 @@ class MonicaAPIClient {
     func deleteJournalEntry(id: Int) async throws {
         _ = try await makeRequest(endpoint: "/journal/\(id)", method: "DELETE")
         print("✅ Deleted journal entry \(id)")
+    }
+
+    // MARK: - Day Entry Methods (Mood Tracking)
+    //
+    // ⚠️ IMPORTANT: Monica v4.x does NOT expose Day entries via API.
+    // Day/mood tracking is web-only in Monica v4.x. The web routes are:
+    //   POST   /journal/day              - Create day rating
+    //   PUT    /journal/day/{day}/update - Update day rating
+    //   DELETE /journal/day/{day}        - Delete day rating
+    //   GET    /journal/entries          - List all journal items (includes days)
+    //
+    // These routes require web session auth (CSRF), not API token auth.
+    // The iOS app cannot use these endpoints with Bearer token authentication.
+    //
+    // The methods below are kept for future compatibility if Monica adds API support.
+
+    /// Fetch day entries (mood ratings) from the API
+    /// Note: Monica v4.x does NOT have an API endpoint for day entries
+    func fetchDayEntries(page: Int = 1, limit: Int = 50) async throws -> [DayEntry] {
+        // Monica v4.x does not have /api/days endpoint
+        // Day entries are only available via web session routes
+        print("⚠️ Day entries API not available in Monica v4.x - feature is web-only")
+        return []
+    }
+
+    /// Create a new day entry (mood rating)
+    /// Note: Monica v4.x does NOT support this via API
+    func createDayEntry(date: Date, rate: Int, comment: String?) async throws -> DayEntry {
+        // Monica v4.x only supports day entry creation via web session routes
+        // POST /journal/day requires web authentication (CSRF token)
+        print("❌ Day entry creation not available via API - Monica v4.x is web-only for this feature")
+        throw APIError.featureNotSupported("Day/mood tracking")
+    }
+
+    /// Update an existing day entry
+    /// Note: Monica v4.x does NOT support this via API
+    func updateDayEntry(id: Int, rate: Int, comment: String?) async throws -> DayEntry {
+        // Monica v4.x only supports day entry updates via web session routes
+        // PUT /journal/day/{id}/update requires web authentication
+        print("❌ Day entry update not available via API - Monica v4.x is web-only for this feature")
+        throw APIError.featureNotSupported("Day/mood tracking")
+    }
+
+    /// Delete a day entry
+    /// Note: Monica v4.x does NOT support this via API
+    func deleteDayEntry(id: Int) async throws {
+        // Monica v4.x only supports day entry deletion via web session routes
+        // DELETE /journal/day/{id} requires web authentication
+        print("❌ Day entry deletion not available via API - Monica v4.x is web-only for this feature")
+        throw APIError.featureNotSupported("Day/mood tracking")
     }
 
     func fetchTags() async throws -> [Tag] {

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct Contact: Codable, Identifiable {
     let id: Int
@@ -232,6 +233,135 @@ typealias JournalResponse = APIResponse<[JournalEntry]>
 struct JournalEntryPayload: Codable {
     let title: String
     let post: String
+}
+
+// MARK: - Day Entries (Mood Tracking)
+
+/// Mood rating enum for type-safe mood handling
+enum MoodRating: Int, CaseIterable, Codable {
+    case bad = 1
+    case okay = 2
+    case great = 3
+
+    var emoji: String {
+        switch self {
+        case .bad: return "😞"
+        case .okay: return "😐"
+        case .great: return "😊"
+        }
+    }
+
+    var label: String {
+        switch self {
+        case .bad: return "Bad"
+        case .okay: return "Okay"
+        case .great: return "Great"
+        }
+    }
+
+    var color: String {
+        switch self {
+        case .bad: return "red"
+        case .okay: return "yellow"
+        case .great: return "green"
+        }
+    }
+
+    init?(rate: Int) {
+        self.init(rawValue: rate)
+    }
+}
+
+/// Day entry representing a mood rating for a specific date
+struct DayEntry: Codable, Identifiable, Hashable {
+    let id: Int
+    let rate: Int
+    let comment: String?
+    let date: Date
+    let createdAt: Date
+    let updatedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case rate
+        case comment
+        case date
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+    }
+}
+
+extension DayEntry {
+    /// Emoji representation of mood rating
+    var moodEmoji: String {
+        MoodRating(rate: rate)?.emoji ?? "😐"
+    }
+
+    /// Human-readable mood description
+    var moodDescription: String {
+        switch rate {
+        case 1: return "Bad day"
+        case 2: return "Okay day"
+        case 3: return "Great day"
+        default: return "Day"
+        }
+    }
+
+    /// MoodRating enum value
+    var moodRating: MoodRating? {
+        MoodRating(rate: rate)
+    }
+
+    /// Whether entry has a comment
+    var hasComment: Bool {
+        comment != nil && !(comment?.isEmpty ?? true)
+    }
+
+    /// Formatted date for display
+    var formattedDate: String {
+        date.formatted(date: .abbreviated, time: .omitted)
+    }
+
+    /// Check if this is today's entry
+    var isToday: Bool {
+        Calendar.current.isDateInToday(date)
+    }
+
+    /// Check if entry was edited
+    var wasEdited: Bool {
+        createdAt != updatedAt
+    }
+
+    /// SwiftUI Color for mood visual indicator
+    var moodColor: Color {
+        switch rate {
+        case 1: return .red
+        case 2: return .orange
+        case 3: return .green
+        default: return .gray
+        }
+    }
+}
+
+/// API response wrapper for day entries
+typealias DayEntriesResponse = APIResponse<[DayEntry]>
+
+/// Single day entry response wrapper
+struct DayEntrySingleResponse: Codable {
+    let data: DayEntry
+}
+
+/// Payload for creating day entries
+struct DayEntryCreatePayload: Codable {
+    let date: String  // Format: "yyyy-MM-dd"
+    let rate: Int
+    let comment: String?
+}
+
+/// Payload for updating day entries
+struct DayEntryUpdatePayload: Codable {
+    let rate: Int
+    let comment: String?
 }
 
 struct ContactsResponse: Codable {

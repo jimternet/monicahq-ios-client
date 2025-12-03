@@ -4,6 +4,7 @@ import SwiftUI
 enum JournalItem: Identifiable {
     case manualEntry(JournalEntry)
     case activity(Activity)
+    case dayEntry(DayEntry)
 
     var id: String {
         switch self {
@@ -11,6 +12,8 @@ enum JournalItem: Identifiable {
             return "entry-\(entry.id)"
         case .activity(let activity):
             return "activity-\(activity.id)"
+        case .dayEntry(let day):
+            return "day-\(day.id)"
         }
     }
 
@@ -20,11 +23,20 @@ enum JournalItem: Identifiable {
             return entry.createdAt
         case .activity(let activity):
             return activity.happenedAt ?? activity.createdAt
+        case .dayEntry(let day):
+            return day.date
         }
     }
 
     var isManualEntry: Bool {
         if case .manualEntry = self {
+            return true
+        }
+        return false
+    }
+
+    var isDayEntry: Bool {
+        if case .dayEntry = self {
             return true
         }
         return false
@@ -38,6 +50,7 @@ struct JournalView: View {
     @State private var errorMessage: String?
     @State private var showingNewEntry = false
     @State private var showingInfo = false
+    // Note: Day rating (mood tracking) state variables removed - feature not available via Monica v4.x API
 
     var body: some View {
         NavigationView {
@@ -121,6 +134,10 @@ struct JournalView: View {
                                     }
                                 case .activity(let activity):
                                     ActivityJournalRow(activity: activity)
+                                case .dayEntry(let dayEntry):
+                                    // Day entries are read-only since Monica v4.x doesn't expose
+                                    // create/edit/delete for days via API
+                                    DayEntryRowView(dayEntry: dayEntry)
                                 }
                             }
                         }
@@ -149,6 +166,9 @@ struct JournalView: View {
                         Image(systemName: "plus")
                     }
                 }
+                // Note: "Rate Your Day" (mood tracking) is not available via Monica API.
+                // Monica v4.x only exposes this feature via web session routes.
+                // Day entry creation/editing is disabled in this iOS app.
             }
             .sheet(isPresented: $showingNewEntry) {
                 NewJournalEntryView(onSave: { newEntry in
@@ -163,6 +183,7 @@ struct JournalView: View {
                 })
                 .environmentObject(authManager)
             }
+            // Note: Day rating sheets removed - Monica v4.x doesn't expose day entry CRUD via API
             .task {
                 await loadJournalItems()
             }
@@ -207,12 +228,26 @@ struct JournalView: View {
             print("⚠️ Could not load activities (endpoint may not be supported): \(error)")
         }
 
+        // Fetch day entries (mood ratings) - this is optional, some servers may not support it
+        do {
+            let dayEntries = try await apiClient.fetchDayEntries(page: 1, limit: 100)
+            for dayEntry in dayEntries {
+                items.append(.dayEntry(dayEntry))
+            }
+            print("✅ Loaded \(dayEntries.count) day entries")
+        } catch {
+            // Day entries endpoint may not be supported on this server version
+            print("⚠️ Could not load day entries (endpoint may not be supported): \(error)")
+        }
+
         // Sort by date (most recent first)
         items.sort { $0.date > $1.date }
 
         journalItems = items
         isLoading = false
     }
+
+    // Note: deleteDayEntry removed - Monica v4.x doesn't expose day entry deletion via API
 }
 
 struct JournalEntryRow: View {
