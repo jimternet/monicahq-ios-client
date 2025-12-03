@@ -66,6 +66,12 @@
 		F1FB6FF46432060B56870643 /* CallLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0F930D08B7A237F1C0BE18 /* CallLog.swift */; };
 		FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AD824B156B02A62A1E7F32 /* EmotionalState.swift */; };
 		FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */; };
+		JV0001012B1E600001234567 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JV0001002B1E600001234567 /* JournalView.swift */; };
+		JV0001032B1E600001234567 /* JournalEntryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JV0001022B1E600001234567 /* JournalEntryDetailView.swift */; };
+		MT0001012B1E700001234567 /* MoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001002B1E700001234567 /* MoodPickerView.swift */; };
+		MT0001032B1E700001234567 /* DayRatingFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001022B1E700001234567 /* DayRatingFormView.swift */; };
+		MT0001052B1E700001234567 /* DayEntryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001042B1E700001234567 /* DayEntryViewModel.swift */; };
+		MT0001072B1E700001234567 /* DayEntryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001062B1E700001234567 /* DayEntryRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -129,6 +135,12 @@
 		CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogListView.swift; sourceTree = SOURCE_ROOT; };
 		EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F04370B2505784C419C296B3 /* CallLogStorage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CallLogStorage.swift; path = MonicaClient/Features/CallLogging/Services/CallLogStorage.swift; sourceTree = SOURCE_ROOT; };
+		JV0001002B1E600001234567 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
+		JV0001022B1E600001234567 /* JournalEntryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalEntryDetailView.swift; sourceTree = "<group>"; };
+		MT0001002B1E700001234567 /* MoodPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift; sourceTree = SOURCE_ROOT; };
+		MT0001022B1E700001234567 /* DayRatingFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift; sourceTree = SOURCE_ROOT; };
+		MT0001042B1E700001234567 /* DayEntryViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift; sourceTree = SOURCE_ROOT; };
+		MT0001062B1E700001234567 /* DayEntryRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -205,6 +217,8 @@
 				1A2B3C642B1E5FB101234567 /* LoginView.swift */,
 				1A2B3C602B1E5F9B01234567 /* ContactsListView.swift */,
 				1A2B3C622B1E5FA601234567 /* ContactDetailView.swift */,
+				JV0001002B1E600001234567 /* JournalView.swift */,
+				JV0001022B1E600001234567 /* JournalEntryDetailView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -467,6 +481,12 @@
 				3B1CB61F2749BE0720AC10C3 /* CallLogFormView.swift in Sources */,
 				EA801FD028219F338899892A /* CallLogRowView.swift in Sources */,
 				0E893B61F5093C87FDE79D69 /* CallLogListView.swift in Sources */,
+				JV0001012B1E600001234567 /* JournalView.swift in Sources */,
+				JV0001032B1E600001234567 /* JournalEntryDetailView.swift in Sources */,
+				MT0001012B1E700001234567 /* MoodPickerView.swift in Sources */,
+				MT0001032B1E700001234567 /* DayRatingFormView.swift in Sources */,
+				MT0001052B1E700001234567 /* DayEntryViewModel.swift in Sources */,
+				MT0001072B1E700001234567 /* DayEntryRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
