@@ -4,40 +4,74 @@ import SwiftUI
 struct RelationshipsSection: View {
     let relationships: [Relationship]
     let onRelationshipTap: ((RelatedContact) -> Void)?
-    
+    let onAddRelationship: (() -> Void)?
+    let onViewAll: (() -> Void)?
+
     @State private var isExpanded = true
-    
+
+    init(
+        relationships: [Relationship],
+        onRelationshipTap: ((RelatedContact) -> Void)? = nil,
+        onAddRelationship: (() -> Void)? = nil,
+        onViewAll: (() -> Void)? = nil
+    ) {
+        self.relationships = relationships
+        self.onRelationshipTap = onRelationshipTap
+        self.onAddRelationship = onAddRelationship
+        self.onViewAll = onViewAll
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: Constants.UI.Spacing.medium) {
             // Section Header
-            Button(action: {
-                withAnimation(.easeInOut(duration: Constants.UI.Animation.defaultDuration)) {
-                    isExpanded.toggle()
+            HStack {
+                Button(action: {
+                    withAnimation(.easeInOut(duration: Constants.UI.Animation.defaultDuration)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "person.2.fill")
+                            .foregroundColor(.monicaBlue)
+                            .font(.system(size: 16, weight: .medium))
+
+                        Text("Relationships")
+                            .font(.headline)
+                            .foregroundColor(.primaryText)
+
+                        Text("(\(relationships.count))")
+                            .font(.caption)
+                            .foregroundColor(.secondaryText)
+                    }
                 }
-            }) {
-                HStack {
-                    Image(systemName: "person.2.fill")
-                        .foregroundColor(.monicaBlue)
-                        .font(.system(size: 16, weight: .medium))
-                    
-                    Text("Relationships")
-                        .font(.headline)
-                        .foregroundColor(.primaryText)
-                    
-                    Text("(\(relationships.count))")
-                        .font(.caption)
-                        .foregroundColor(.secondaryText)
-                    
-                    Spacer()
-                    
+                .buttonStyle(PlainButtonStyle())
+
+                Spacer()
+
+                // Add relationship button
+                if let onAdd = onAddRelationship {
+                    Button(action: onAdd) {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.monicaBlue)
+                            .font(.system(size: 20))
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+
+                // Expand/collapse chevron
+                Button(action: {
+                    withAnimation(.easeInOut(duration: Constants.UI.Animation.defaultDuration)) {
+                        isExpanded.toggle()
+                    }
+                }) {
                     Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
                         .foregroundColor(.tertiaryText)
                         .font(.system(size: 12, weight: .medium))
                         .rotationEffect(.degrees(isExpanded ? 0 : -90))
                         .animation(.easeInOut(duration: Constants.UI.Animation.fastDuration), value: isExpanded)
                 }
+                .buttonStyle(PlainButtonStyle())
             }
-            .buttonStyle(PlainButtonStyle())
             
             if isExpanded {
                 VStack(spacing: Constants.UI.Spacing.small) {
@@ -74,16 +108,34 @@ struct RelationshipsSection: View {
             Image(systemName: "person.2.badge.plus")
                 .font(.system(size: 24))
                 .foregroundColor(.tertiaryText)
-            
+
             Text("No Relationships")
                 .font(.subheadline)
                 .fontWeight(.medium)
                 .foregroundColor(.secondaryText)
-            
+
             Text("Family members and friends will appear here when they're connected to this contact.")
                 .font(.caption)
                 .foregroundColor(.tertiaryText)
                 .multilineTextAlignment(.center)
+
+            if let onAdd = onAddRelationship {
+                Button(action: onAdd) {
+                    HStack(spacing: Constants.UI.Spacing.small) {
+                        Image(systemName: "plus")
+                        Text("Add First Relationship")
+                    }
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, Constants.UI.Spacing.medium)
+                    .padding(.vertical, Constants.UI.Spacing.small)
+                    .background(Color.monicaBlue)
+                    .cornerRadius(Constants.UI.CornerRadius.small)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .padding(.top, Constants.UI.Spacing.small)
+            }
         }
         .padding(Constants.UI.Spacing.large)
         .frame(maxWidth: .infinity)
@@ -227,6 +279,12 @@ struct RelationshipRowView: View {
                 relationships: Relationship.mockRelationships,
                 onRelationshipTap: { contact in
                     print("Tapped on \(contact.displayName)")
+                },
+                onAddRelationship: {
+                    print("Add relationship tapped")
+                },
+                onViewAll: {
+                    print("View all tapped")
                 }
             )
         }

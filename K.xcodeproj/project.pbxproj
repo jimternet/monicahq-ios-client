@@ -233,8 +233,6 @@
 		1A2B3C702B1E5FF301234567 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B7261BB22EE3D3F500BDB1B1 /* DebtsTabView.swift */,
-				B7261BB32EE3D3F500BDB1B1 /* GlobalDebtView.swift */,
 				B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */,
 				B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */,
 				B7BD39E72ECD7790005A016F /* RemindersListView.swift */,
@@ -357,10 +355,12 @@
 		B7261BA72EE3D03B00BDB1B1 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B7261BB22EE3D3F500BDB1B1 /* DebtsTabView.swift */,
 				B7261BA32EE3D03B00BDB1B1 /* DebtFormView.swift */,
 				B7261BA42EE3D03B00BDB1B1 /* DebtListView.swift */,
 				B7261BA52EE3D03B00BDB1B1 /* DebtRowView.swift */,
 				B7261BA62EE3D03B00BDB1B1 /* DebtSummaryView.swift */,
+				B7261BB32EE3D3F500BDB1B1 /* GlobalDebtView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";

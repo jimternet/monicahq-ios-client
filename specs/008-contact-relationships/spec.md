@@ -114,16 +114,17 @@ Users can modify or delete relationships to correct mistakes or update connectio
 - **FR-006**: System MUST allow navigation between related contacts
 - **FR-007**: System MUST persist relationship data to the Monica backend
 - **FR-008**: System MUST support standard relationship types (father, mother, spouse, partner, friend, boss, colleague, etc.)
-- **FR-009**: System MUST show appropriate reverse relationships (father ↔ son/daughter, spouse ↔ spouse)
+- **FR-009**: System MUST show appropriate reverse relationships (father ↔ son/daughter, spouse ↔ spouse), inferring gendered reverse types from the related contact's gender field; when gender is unknown, use gender-neutral fallback if available
 - **FR-010**: System MUST allow users to delete relationships
 - **FR-011**: System MUST allow users to edit relationship types
-- **FR-012**: System MUST prevent duplicate relationships between same two contacts with same type
+- **FR-012**: System MUST prevent duplicate relationships between same two contacts with same type, showing inline error with link to existing relationship
 - **FR-013**: System MUST handle contact deletion by removing associated relationships
 - **FR-014**: System MUST load relationship types from the backend
 - **FR-015**: System MUST cache relationship types locally for performance
 - **FR-016**: System MUST display empty states when contacts have no relationships
 - **FR-017**: System MUST maintain relationship consistency when editing or deleting
 - **FR-018**: System MUST support searching for contacts when adding relationships
+- **FR-019**: System MUST prevent creating relationships with self, showing clear error message
 
 ### Key Entities
 
@@ -147,6 +148,16 @@ Users can modify or delete relationships to correct mistakes or update connectio
 - **SC-008**: Deleting or editing relationships updates both contacts immediately
 - **SC-009**: Users can find and select the correct relationship type in under 10 seconds
 - **SC-010**: The feature helps users understand their social network structure (measured by usage patterns and network navigation)
+
+## Clarifications
+
+### Session 2025-12-05
+
+- Q: When creating a gendered reverse relationship (e.g., Father → Son/Daughter), how should the system determine which reverse type to use? → A: Infer from related contact's gender field in Monica
+- Q: When a user attempts to create a duplicate relationship (same two contacts, same type), what should happen? → A: Block with inline error message showing existing relationship
+- Q: When a user tries to create a relationship with themselves, what should happen? → A: Prevent with clear error message ("Cannot create relationship with self")
+- Q: When a contact's gender is unknown and gendered reverse type is needed, what should happen? → A: Use gender-neutral fallback (e.g., "Child" instead of Son/Daughter) if available
+- Q: Where should the "Add Relationship" action be accessible from? → A: Relationships section in ContactDetailView with button in the section header
 
 ## Assumptions
 
