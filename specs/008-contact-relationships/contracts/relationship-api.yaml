@@ -1,0 +1,305 @@
+openapi: 3.0.3
+info:
+  title: Monica Relationships API
+  description: API endpoints for managing contact relationships in Monica CRM
+  version: 4.x
+
+paths:
+  /api/contacts/{contactId}/relationships:
+    get:
+      summary: Get relationships for a contact
+      description: Returns all relationships where the specified contact is involved
+      parameters:
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Contact ID
+      responses:
+        '200':
+          description: List of relationships
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipsResponse'
+
+  /api/relationships:
+    post:
+      summary: Create a new relationship
+      description: Creates a relationship between two contacts. The API automatically creates the reverse relationship.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelationshipCreatePayload'
+      responses:
+        '201':
+          description: Relationship created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipSingleResponse'
+        '422':
+          description: Validation error (duplicate, self-reference, etc.)
+
+  /api/relationships/{id}:
+    put:
+      summary: Update a relationship
+      description: Updates the relationship type for an existing relationship
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Relationship ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RelationshipUpdatePayload'
+      responses:
+        '200':
+          description: Relationship updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipSingleResponse'
+        '404':
+          description: Relationship not found
+
+    delete:
+      summary: Delete a relationship
+      description: Deletes a relationship. Note - may need to delete reverse relationship separately.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Relationship ID
+      responses:
+        '204':
+          description: Relationship deleted
+        '404':
+          description: Relationship not found
+
+  /api/relationshiptypes:
+    get:
+      summary: Get all relationship types
+      description: Returns paginated list of relationship types
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        '200':
+          description: List of relationship types
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipTypesResponse'
+
+  /api/relationshiptypegroups:
+    get:
+      summary: Get relationship type groups
+      description: Returns all relationship type groups (Family, Love, Friends, Work)
+      responses:
+        '200':
+          description: List of relationship type groups
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RelationshipTypeGroupsResponse'
+
+components:
+  schemas:
+    Relationship:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        object:
+          type: string
+          example: "relationship"
+        contact_is:
+          $ref: '#/components/schemas/RelatedContact'
+        relationship_type:
+          $ref: '#/components/schemas/RelationshipType'
+        of_contact:
+          $ref: '#/components/schemas/RelatedContact'
+        url:
+          type: string
+        account:
+          $ref: '#/components/schemas/Account'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - contact_is
+        - relationship_type
+        - of_contact
+
+    RelationshipType:
+      type: object
+      properties:
+        id:
+          type: integer
+        object:
+          type: string
+          example: "relationshiptype"
+        name:
+          type: string
+          description: Display name (e.g., "father", "spouse")
+        name_reverse_relationship:
+          type: string
+          description: Generic reverse name (e.g., "child", "spouse")
+        relationship_type_group_id:
+          type: integer
+          description: Links to RelationshipTypeGroup
+        delible:
+          type: boolean
+        account:
+          $ref: '#/components/schemas/Account'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - name_reverse_relationship
+        - relationship_type_group_id
+
+    RelationshipTypeGroup:
+      type: object
+      properties:
+        id:
+          type: integer
+        object:
+          type: string
+          example: "relationshiptypegroup"
+        name:
+          type: string
+          description: Group name (Family, Love, Friends, Work)
+        delible:
+          type: boolean
+        account:
+          $ref: '#/components/schemas/Account'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+
+    RelatedContact:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        hash_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        complete_name:
+          type: string
+        initials:
+          type: string
+        gender:
+          type: string
+          nullable: true
+          description: Used for gender-specific display of reverse relationship names
+        avatar_url:
+          type: string
+          nullable: true
+      required:
+        - id
+        - complete_name
+
+    Account:
+      type: object
+      properties:
+        id:
+          type: integer
+
+    RelationshipCreatePayload:
+      type: object
+      properties:
+        contact_is:
+          type: integer
+          description: ID of the source contact
+        relationship_type_id:
+          type: integer
+          description: ID of the relationship type
+        of_contact:
+          type: integer
+          description: ID of the target contact
+      required:
+        - contact_is
+        - relationship_type_id
+        - of_contact
+
+    RelationshipUpdatePayload:
+      type: object
+      properties:
+        relationship_type_id:
+          type: integer
+          description: New relationship type ID
+      required:
+        - relationship_type_id
+
+    RelationshipsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Relationship'
+
+    RelationshipSingleResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Relationship'
+
+    RelationshipTypesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelationshipType'
+
+    RelationshipTypeGroupsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/RelationshipTypeGroup'
