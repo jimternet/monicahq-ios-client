@@ -1395,9 +1395,24 @@ class MonicaAPIClient {
     }
 
     // MARK: - Debts CRUD
+    //
+    // Monica v4.x Debt API Documentation:
+    // ====================================
+    // - GET    /api/debts                    - List all debts across contacts
+    // - GET    /api/debts?contact_id={id}    - List debts for a specific contact
+    // - GET    /api/contacts/{id}/debts      - List debts for a specific contact
+    // - POST   /api/debts                    - Create a debt
+    // - PUT    /api/debts/{id}               - Update a debt
+    // - DELETE /api/debts/{id}               - Delete a debt
+    //
+    // IMPORTANT Field Values:
+    // - in_debt: "yes" (contact owes user) or "no" (user owes contact) - NOT boolean
+    // - status: "inprogress" (outstanding) or "completed" (settled)
+    //
 
-    func getDebts(for contactId: Int) async throws -> APIResponse<[Debt]> {
-        let endpoint = "/debts?contact_id=\(contactId)"
+    /// Get all debts across all contacts (for global debt view)
+    func getAllDebts(limit: Int = 100) async throws -> APIResponse<[Debt]> {
+        let endpoint = "/debts?limit=\(limit)"
         let data = try await makeRequest(endpoint: endpoint)
 
         let decoder = JSONDecoder()
@@ -1405,7 +1420,24 @@ class MonicaAPIClient {
         return try decoder.decode(APIResponse<[Debt]>.self, from: data)
     }
 
-    func createDebt(for contactId: Int, inDebt: Bool, status: String, amount: Double, reason: String?) async throws -> APIResponse<Debt> {
+    /// Get debts for a specific contact
+    func getDebts(for contactId: Int) async throws -> APIResponse<[Debt]> {
+        let endpoint = "/contacts/\(contactId)/debts"
+        let data = try await makeRequest(endpoint: endpoint)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(APIResponse<[Debt]>.self, from: data)
+    }
+
+    /// Create a new debt
+    /// - Parameters:
+    ///   - contactId: The contact ID
+    ///   - inDebt: "yes" if contact owes user, "no" if user owes contact
+    ///   - status: "inprogress" for outstanding, "completed" for settled
+    ///   - amount: The debt amount (must be > 0)
+    ///   - reason: Optional reason/description
+    func createDebt(for contactId: Int, inDebt: String, status: String, amount: Double, reason: String?) async throws -> APIResponse<Debt> {
         var body: [String: Any] = [
             "contact_id": contactId,
             "in_debt": inDebt,
@@ -1413,7 +1445,7 @@ class MonicaAPIClient {
             "amount": amount
         ]
 
-        if let reason = reason {
+        if let reason = reason, !reason.isEmpty {
             body["reason"] = reason
         }
 
@@ -1425,9 +1457,22 @@ class MonicaAPIClient {
         return try decoder.decode(APIResponse<Debt>.self, from: data)
     }
 
-    func updateDebt(id: Int, status: String?, amount: Double?, reason: String?) async throws -> APIResponse<Debt> {
-        var body: [String: Any] = [:]
+    /// Update an existing debt
+    /// - Parameters:
+    ///   - id: The debt ID
+    ///   - contactId: Required by API
+    ///   - inDebt: Optional new direction ("yes" or "no")
+    ///   - status: Optional new status ("inprogress" or "completed")
+    ///   - amount: Optional new amount
+    ///   - reason: Optional new reason
+    func updateDebt(id: Int, contactId: Int, inDebt: String?, status: String?, amount: Double?, reason: String?) async throws -> APIResponse<Debt> {
+        var body: [String: Any] = [
+            "contact_id": contactId
+        ]
 
+        if let inDebt = inDebt {
+            body["in_debt"] = inDebt
+        }
         if let status = status {
             body["status"] = status
         }

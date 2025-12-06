@@ -1,0 +1,322 @@
+# Debt API Contract
+# Verified against Monica v4.x source code at /tmp/monica-v4/
+# Reference: app/Http/Controllers/Api/ApiDebtController.php
+
+openapi: 3.0.3
+info:
+  title: Monica Debt API
+  version: 4.x
+  description: Debt tracking endpoints for Monica CRM
+
+paths:
+  /api/debts:
+    get:
+      summary: List all debts
+      description: Returns paginated list of all debts across all contacts
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          schema:
+            type: string
+            default: created_at
+        - name: sort_direction
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: List of debts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtListResponse'
+
+    post:
+      summary: Create a debt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtCreateRequest'
+      responses:
+        '200':
+          description: Created debt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtResponse'
+        '422':
+          description: Validation error
+
+  /api/debts/{id}:
+    get:
+      summary: Get a single debt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Debt details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtResponse'
+        '404':
+          description: Debt not found
+
+    put:
+      summary: Update a debt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DebtUpdateRequest'
+      responses:
+        '200':
+          description: Updated debt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtResponse'
+        '404':
+          description: Debt not found
+        '422':
+          description: Validation error
+
+    delete:
+      summary: Delete a debt
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Debt deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                  id:
+                    type: integer
+
+  /api/contacts/{contactId}/debts:
+    get:
+      summary: List debts for a contact
+      parameters:
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of contact's debts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtListResponse'
+        '404':
+          description: Contact not found
+
+components:
+  schemas:
+    Debt:
+      type: object
+      required:
+        - id
+        - uuid
+        - in_debt
+        - status
+        - amount
+        - value
+        - amount_with_currency
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          description: Unique identifier
+        uuid:
+          type: string
+          format: uuid
+        object:
+          type: string
+          enum: [debt]
+        in_debt:
+          type: string
+          enum: [yes, no]
+          description: "yes = contact owes user, no = user owes contact"
+        status:
+          type: string
+          enum: [inprogress, completed]
+          description: "inprogress = outstanding, completed = settled"
+        amount:
+          type: number
+          description: Raw amount value
+        value:
+          type: string
+          description: Formatted decimal value (e.g., "50.00")
+        amount_with_currency:
+          type: string
+          description: Display value with currency (e.g., "$50.00")
+        reason:
+          type: string
+          nullable: true
+          maxLength: 1000000
+        contact:
+          $ref: '#/components/schemas/ContactShort'
+        account:
+          type: object
+          properties:
+            id:
+              type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ContactShort:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+        hash_id:
+          type: string
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        complete_name:
+          type: string
+        initials:
+          type: string
+
+    DebtCreateRequest:
+      type: object
+      required:
+        - contact_id
+        - in_debt
+        - status
+        - amount
+      properties:
+        contact_id:
+          type: integer
+        in_debt:
+          type: string
+          enum: [yes, no]
+        status:
+          type: string
+          enum: [inprogress, completed]
+        amount:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+        reason:
+          type: string
+          nullable: true
+
+    DebtUpdateRequest:
+      type: object
+      required:
+        - contact_id
+        - in_debt
+        - status
+        - amount
+      properties:
+        contact_id:
+          type: integer
+        in_debt:
+          type: string
+          enum: [yes, no]
+        status:
+          type: string
+          enum: [inprogress, completed]
+        amount:
+          type: number
+        reason:
+          type: string
+          nullable: true
+
+    DebtResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Debt'
+
+    DebtListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Debt'
+        links:
+          type: object
+          properties:
+            first:
+              type: string
+            last:
+              type: string
+            prev:
+              type: string
+              nullable: true
+            next:
+              type: string
+              nullable: true
+        meta:
+          type: object
+          properties:
+            current_page:
+              type: integer
+            from:
+              type: integer
+            last_page:
+              type: integer
+            per_page:
+              type: integer
+            to:
+              type: integer
+            total:
+              type: integer

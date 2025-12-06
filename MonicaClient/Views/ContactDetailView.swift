@@ -4075,6 +4075,19 @@ struct ManageSection: View {
                     }
 
                     ManagementNavigationLink(
+                        icon: "dollarsign.circle",
+                        title: "Debts"
+                    ) {
+                        DebtListView(
+                            viewModel: DebtViewModel(
+                                apiService: DebtAPIService(apiClient: authManager.currentAPIClient!)
+                            ),
+                            contactId: contact.id,
+                            contactName: contact.completeName
+                        )
+                    }
+
+                    ManagementNavigationLink(
                         icon: "envelope",
                         title: "Contact Fields"
                     ) {

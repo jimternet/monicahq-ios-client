@@ -7,13 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D553360E32294EFE990B6645 /* ConversationAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A250B9DAF2FF4819A235A1D2 /* ConversationAPIService.swift */; };
-		2E9F4179FE304C2ABB30E324 /* ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3942E7D8A4354835AD0B813C /* ConversationViewModel.swift */; };
-		A1F08C8379A9426FB73F4794 /* ConversationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E327B9A4674025A8B850F3 /* ConversationFormView.swift */; };
-		7D0369EC5D704497AD27E4BC /* ConversationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4045A62378F24493AA95AD37 /* ConversationListView.swift */; };
-		876D9AE3B10F457190C1291B /* ConversationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A214D6B8119A41948EABE3B9 /* ConversationRowView.swift */; };
-		81A281708C79415899B72A9A /* Emotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */; };
-		0E893B61F5093C87FDE79D69 /* CallLogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */; };
+		0E893B61F5093C87FDE79D69 /* MonicaClient/Features/CallLogging/Views/CallLogListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA8C77E212609C0F89C2ADC /* MonicaClient/Features/CallLogging/Views/CallLogListView.swift */; };
 		1A2B3C4D2B1E5F6701234567 /* MonicaClientApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */; };
 		1A2B3C4F2B1E5F6701234567 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C4E2B1E5F6701234567 /* ContentView.swift */; };
 		1A2B3C512B1E5F6901234567 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1A2B3C502B1E5F6901234567 /* Assets.xcassets */; };
@@ -31,10 +25,26 @@
 		1A2B3C6F2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */; };
 		1A2B3C712B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */; };
 		241B7F3235805C76CCB46367 /* CallLogEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */; };
-		29120D965A06242FD7FAF8D6 /* CallLogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2CAD1CE78A3403F6B3A06C /* CallLogViewModel.swift */; };
-		3B1CB61F2749BE0720AC10C3 /* CallLogFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E448CEEAD1A6020DAF0B52 /* CallLogFormView.swift */; };
+		29120D965A06242FD7FAF8D6 /* MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C2CAD1CE78A3403F6B3A06C /* MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift */; };
+		2E9F4179FE304C2ABB30E324 /* MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3942E7D8A4354835AD0B813C /* MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift */; };
+		3B1CB61F2749BE0720AC10C3 /* MonicaClient/Features/CallLogging/Views/CallLogFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E448CEEAD1A6020DAF0B52 /* MonicaClient/Features/CallLogging/Views/CallLogFormView.swift */; };
+		7D0369EC5D704497AD27E4BC /* MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4045A62378F24493AA95AD37 /* MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift */; };
+		81A281708C79415899B72A9A /* Emotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */; };
+		876D9AE3B10F457190C1291B /* MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A214D6B8119A41948EABE3B9 /* MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift */; };
 		8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04370B2505784C419C296B3 /* CallLogStorage.swift */; };
+		A1F08C8379A9426FB73F4794 /* MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78E327B9A4674025A8B850F3 /* MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift */; };
 		AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BBCAC5606D6009F4464B260 /* CallLogAPIService.swift */; };
+		B7261BA92EE3D03B00BDB1B1 /* DebtExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261B9C2EE3D03B00BDB1B1 /* DebtExtensions.swift */; };
+		B7261BAA2EE3D03B00BDB1B1 /* DebtRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261BA52EE3D03B00BDB1B1 /* DebtRowView.swift */; };
+		B7261BAB2EE3D03B00BDB1B1 /* DebtViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261BA12EE3D03B00BDB1B1 /* DebtViewModel.swift */; };
+		B7261BAC2EE3D03B00BDB1B1 /* DebtFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261BA32EE3D03B00BDB1B1 /* DebtFormView.swift */; };
+		B7261BAD2EE3D03B00BDB1B1 /* DebtListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261BA42EE3D03B00BDB1B1 /* DebtListView.swift */; };
+		B7261BAE2EE3D03B00BDB1B1 /* DebtAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261B9F2EE3D03B00BDB1B1 /* DebtAPIService.swift */; };
+		B7261BAF2EE3D03B00BDB1B1 /* DebtSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261BA62EE3D03B00BDB1B1 /* DebtSummaryView.swift */; };
+		B7261BB02EE3D03B00BDB1B1 /* DebtEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261B9B2EE3D03B00BDB1B1 /* DebtEnums.swift */; };
+		B7261BB12EE3D03B00BDB1B1 /* NetBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261B9D2EE3D03B00BDB1B1 /* NetBalance.swift */; };
+		B7261BB42EE3D3F500BDB1B1 /* GlobalDebtView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261BB32EE3D3F500BDB1B1 /* GlobalDebtView.swift */; };
+		B7261BB52EE3D3F500BDB1B1 /* DebtsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7261BB22EE3D3F500BDB1B1 /* DebtsTabView.swift */; };
 		B7BD39F12ECD7791005A016F /* ContactFieldsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */; };
 		B7BD39F62ECD7791005A016F /* ContactAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */; };
 		B7BD39F82ECD7791005A016F /* RemindersListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD39E72ECD7790005A016F /* RemindersListView.swift */; };
@@ -62,26 +72,21 @@
 		B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A362ED41CD0005A016F /* CacheService.swift */; };
 		B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A382ED41CD0005A016F /* KeychainService.swift */; };
 		B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */; };
-		EA801FD028219F338899892A /* CallLogRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EE4E5BAA49C8CFA47C07 /* CallLogRowView.swift */; };
-		F1FB6FF46432060B56870643 /* CallLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0F930D08B7A237F1C0BE18 /* CallLog.swift */; };
+		D553360E32294EFE990B6645 /* MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A250B9DAF2FF4819A235A1D2 /* MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift */; };
+		EA801FD028219F338899892A /* MonicaClient/Features/CallLogging/Views/CallLogRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EE4E5BAA49C8CFA47C07 /* MonicaClient/Features/CallLogging/Views/CallLogRowView.swift */; };
+		F1FB6FF46432060B56870643 /* MonicaClient/Models/CallLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0F930D08B7A237F1C0BE18 /* MonicaClient/Models/CallLog.swift */; };
 		FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AD824B156B02A62A1E7F32 /* EmotionalState.swift */; };
 		FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */; };
 		JV0001012B1E600001234567 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JV0001002B1E600001234567 /* JournalView.swift */; };
 		JV0001032B1E600001234567 /* JournalEntryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JV0001022B1E600001234567 /* JournalEntryDetailView.swift */; };
-		MT0001012B1E700001234567 /* MoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001002B1E700001234567 /* MoodPickerView.swift */; };
-		MT0001032B1E700001234567 /* DayRatingFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001022B1E700001234567 /* DayRatingFormView.swift */; };
-		MT0001052B1E700001234567 /* DayEntryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001042B1E700001234567 /* DayEntryViewModel.swift */; };
-		MT0001072B1E700001234567 /* DayEntryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001062B1E700001234567 /* DayEntryRowView.swift */; };
+		MT0001012B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001002B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift */; };
+		MT0001032B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001022B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift */; };
+		MT0001052B1E700001234567 /* MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001042B1E700001234567 /* MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift */; };
+		MT0001072B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = MT0001062B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A250B9DAF2FF4819A235A1D2 /* ConversationAPIService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift; sourceTree = SOURCE_ROOT; };
-		3942E7D8A4354835AD0B813C /* ConversationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
-		78E327B9A4674025A8B850F3 /* ConversationFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift; sourceTree = SOURCE_ROOT; };
-		4045A62378F24493AA95AD37 /* ConversationListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift; sourceTree = SOURCE_ROOT; };
-		A214D6B8119A41948EABE3B9 /* ConversationRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift; sourceTree = SOURCE_ROOT; };
-		7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotion.swift; sourceTree = "<group>"; };
-		0F0F930D08B7A237F1C0BE18 /* CallLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Models/CallLog.swift; sourceTree = SOURCE_ROOT; };
+		0F0F930D08B7A237F1C0BE18 /* MonicaClient/Models/CallLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Models/CallLog.swift; sourceTree = SOURCE_ROOT; };
 		1A2B3C492B1E5F6701234567 /* MonicaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonicaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonicaClientApp.swift; sourceTree = "<group>"; };
 		1A2B3C4E2B1E5F6701234567 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -100,11 +105,28 @@
 		1A2B3C6E2B1E5FEE01234567 /* ContactEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		1BBCAC5606D6009F4464B260 /* CallLogAPIService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CallLogAPIService.swift; path = MonicaClient/Features/CallLogging/Services/CallLogAPIService.swift; sourceTree = SOURCE_ROOT; };
-		1C2CAD1CE78A3403F6B3A06C /* CallLogViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift; sourceTree = SOURCE_ROOT; };
-		21E448CEEAD1A6020DAF0B52 /* CallLogFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogFormView.swift; sourceTree = SOURCE_ROOT; };
+		1C2CAD1CE78A3403F6B3A06C /* MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift; sourceTree = SOURCE_ROOT; };
+		21E448CEEAD1A6020DAF0B52 /* MonicaClient/Features/CallLogging/Views/CallLogFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogFormView.swift; sourceTree = SOURCE_ROOT; };
 		24AD824B156B02A62A1E7F32 /* EmotionalState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmotionalState.swift; sourceTree = "<group>"; };
+		3942E7D8A4354835AD0B813C /* MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift; sourceTree = SOURCE_ROOT; };
+		4045A62378F24493AA95AD37 /* MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift; sourceTree = SOURCE_ROOT; };
+		78E327B9A4674025A8B850F3 /* MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift; sourceTree = SOURCE_ROOT; };
+		7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emotion.swift; sourceTree = "<group>"; };
 		910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		A403EE4E5BAA49C8CFA47C07 /* CallLogRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogRowView.swift; sourceTree = SOURCE_ROOT; };
+		A214D6B8119A41948EABE3B9 /* MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift; sourceTree = SOURCE_ROOT; };
+		A250B9DAF2FF4819A235A1D2 /* MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift; sourceTree = SOURCE_ROOT; };
+		A403EE4E5BAA49C8CFA47C07 /* MonicaClient/Features/CallLogging/Views/CallLogRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogRowView.swift; sourceTree = SOURCE_ROOT; };
+		B7261B9B2EE3D03B00BDB1B1 /* DebtEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtEnums.swift; sourceTree = "<group>"; };
+		B7261B9C2EE3D03B00BDB1B1 /* DebtExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtExtensions.swift; sourceTree = "<group>"; };
+		B7261B9D2EE3D03B00BDB1B1 /* NetBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetBalance.swift; sourceTree = "<group>"; };
+		B7261B9F2EE3D03B00BDB1B1 /* DebtAPIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtAPIService.swift; sourceTree = "<group>"; };
+		B7261BA12EE3D03B00BDB1B1 /* DebtViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtViewModel.swift; sourceTree = "<group>"; };
+		B7261BA32EE3D03B00BDB1B1 /* DebtFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtFormView.swift; sourceTree = "<group>"; };
+		B7261BA42EE3D03B00BDB1B1 /* DebtListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtListView.swift; sourceTree = "<group>"; };
+		B7261BA52EE3D03B00BDB1B1 /* DebtRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtRowView.swift; sourceTree = "<group>"; };
+		B7261BA62EE3D03B00BDB1B1 /* DebtSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtSummaryView.swift; sourceTree = "<group>"; };
+		B7261BB22EE3D3F500BDB1B1 /* DebtsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebtsTabView.swift; sourceTree = "<group>"; };
+		B7261BB32EE3D3F500BDB1B1 /* GlobalDebtView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalDebtView.swift; sourceTree = "<group>"; };
 		B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAvatar.swift; sourceTree = "<group>"; };
 		B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactFieldsManagementView.swift; sourceTree = "<group>"; };
 		B7BD39E72ECD7790005A016F /* RemindersListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersListView.swift; sourceTree = "<group>"; };
@@ -132,15 +154,15 @@
 		B7BD3A362ED41CD0005A016F /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
 		B7BD3A382ED41CD0005A016F /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
 		B7BD3A3A2ED41CD0005A016F /* UserDefaultsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsService.swift; sourceTree = "<group>"; };
-		CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogListView.swift; sourceTree = SOURCE_ROOT; };
+		CCA8C77E212609C0F89C2ADC /* MonicaClient/Features/CallLogging/Views/CallLogListView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/CallLogging/Views/CallLogListView.swift; sourceTree = SOURCE_ROOT; };
 		EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "CallLogEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
 		F04370B2505784C419C296B3 /* CallLogStorage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CallLogStorage.swift; path = MonicaClient/Features/CallLogging/Services/CallLogStorage.swift; sourceTree = SOURCE_ROOT; };
 		JV0001002B1E600001234567 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
 		JV0001022B1E600001234567 /* JournalEntryDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalEntryDetailView.swift; sourceTree = "<group>"; };
-		MT0001002B1E700001234567 /* MoodPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift; sourceTree = SOURCE_ROOT; };
-		MT0001022B1E700001234567 /* DayRatingFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift; sourceTree = SOURCE_ROOT; };
-		MT0001042B1E700001234567 /* DayEntryViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift; sourceTree = SOURCE_ROOT; };
-		MT0001062B1E700001234567 /* DayEntryRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift; sourceTree = SOURCE_ROOT; };
+		MT0001002B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift; sourceTree = SOURCE_ROOT; };
+		MT0001022B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift; sourceTree = SOURCE_ROOT; };
+		MT0001042B1E700001234567 /* MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift; sourceTree = SOURCE_ROOT; };
+		MT0001062B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,9 +179,9 @@
 		164CEA9D1998B897297B6D6B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				21E448CEEAD1A6020DAF0B52 /* CallLogFormView.swift */,
-				A403EE4E5BAA49C8CFA47C07 /* CallLogRowView.swift */,
-				CCA8C77E212609C0F89C2ADC /* CallLogListView.swift */,
+				21E448CEEAD1A6020DAF0B52 /* MonicaClient/Features/CallLogging/Views/CallLogFormView.swift */,
+				A403EE4E5BAA49C8CFA47C07 /* MonicaClient/Features/CallLogging/Views/CallLogRowView.swift */,
+				CCA8C77E212609C0F89C2ADC /* MonicaClient/Features/CallLogging/Views/CallLogListView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -169,6 +191,7 @@
 			children = (
 				1A2B3C4B2B1E5F6701234567 /* MonicaClient */,
 				1A2B3C4A2B1E5F6701234567 /* Products */,
+				B7261B9A2EE3A94D00BDB1B1 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -183,7 +206,7 @@
 		1A2B3C4B2B1E5F6701234567 /* MonicaClient */ = {
 			isa = PBXGroup;
 			children = (
-				B7BD3A242ED41C5B005A016F /* AddressManagement */,
+				B7BD3A242ED41C5B005A016F /* Features/AddressManagement */,
 				1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */,
 				1A2B3C4E2B1E5F6701234567 /* ContentView.swift */,
 				1A2B3C702B1E5FF301234567 /* Views */,
@@ -210,6 +233,8 @@
 		1A2B3C702B1E5FF301234567 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B7261BB22EE3D3F500BDB1B1 /* DebtsTabView.swift */,
+				B7261BB32EE3D3F500BDB1B1 /* GlobalDebtView.swift */,
 				B7BD39DD2ECD7790005A016F /* ContactAvatar.swift */,
 				B7BD39DE2ECD7790005A016F /* ContactFieldsManagementView.swift */,
 				B7BD39E72ECD7790005A016F /* RemindersListView.swift */,
@@ -239,7 +264,7 @@
 				1A2B3C702B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift */,
 				EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */,
 				910D5A127D5777A8CE22E373 /* CallLogEntity+CoreDataProperties.swift */,
-				0F0F930D08B7A237F1C0BE18 /* CallLog.swift */,
+				0F0F930D08B7A237F1C0BE18 /* MonicaClient/Models/CallLog.swift */,
 				7CB2C8C06C8D4A1FA292B028 /* Emotion.swift */,
 			);
 			path = Models;
@@ -287,6 +312,70 @@
 			name = Services;
 			sourceTree = "<group>";
 		};
+		B7261B9A2EE3A94D00BDB1B1 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				A250B9DAF2FF4819A235A1D2 /* MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift */,
+				3942E7D8A4354835AD0B813C /* MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift */,
+				78E327B9A4674025A8B850F3 /* MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift */,
+				4045A62378F24493AA95AD37 /* MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift */,
+				A214D6B8119A41948EABE3B9 /* MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift */,
+				MT0001002B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift */,
+				MT0001022B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift */,
+				MT0001042B1E700001234567 /* MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift */,
+				MT0001062B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
+		B7261B9E2EE3D03B00BDB1B1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B7261B9B2EE3D03B00BDB1B1 /* DebtEnums.swift */,
+				B7261B9C2EE3D03B00BDB1B1 /* DebtExtensions.swift */,
+				B7261B9D2EE3D03B00BDB1B1 /* NetBalance.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B7261BA02EE3D03B00BDB1B1 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B7261B9F2EE3D03B00BDB1B1 /* DebtAPIService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		B7261BA22EE3D03B00BDB1B1 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				B7261BA12EE3D03B00BDB1B1 /* DebtViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		B7261BA72EE3D03B00BDB1B1 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B7261BA32EE3D03B00BDB1B1 /* DebtFormView.swift */,
+				B7261BA42EE3D03B00BDB1B1 /* DebtListView.swift */,
+				B7261BA52EE3D03B00BDB1B1 /* DebtRowView.swift */,
+				B7261BA62EE3D03B00BDB1B1 /* DebtSummaryView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		B7261BA82EE3D03B00BDB1B1 /* DebtTracking */ = {
+			isa = PBXGroup;
+			children = (
+				B7261B9E2EE3D03B00BDB1B1 /* Models */,
+				B7261BA02EE3D03B00BDB1B1 /* Services */,
+				B7261BA22EE3D03B00BDB1B1 /* ViewModels */,
+				B7261BA72EE3D03B00BDB1B1 /* Views */,
+			);
+			path = DebtTracking;
+			sourceTree = "<group>";
+		};
 		B7BD3A1C2ED41C5B005A016F /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
@@ -309,7 +398,7 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		B7BD3A242ED41C5B005A016F /* AddressManagement */ = {
+		B7BD3A242ED41C5B005A016F /* Features/AddressManagement */ = {
 			isa = PBXGroup;
 			children = (
 				B7BD3A1C2ED41C5B005A016F /* ViewModels */,
@@ -341,6 +430,7 @@
 		EE29BD2B282D48EE17246B43 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				B7261BA82EE3D03B00BDB1B1 /* DebtTracking */,
 				B95F568C21C8ED9A6815250F /* CallLogging */,
 			);
 			name = Features;
@@ -349,7 +439,7 @@
 		FC81AD71AA112CD1E25A93D1 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				1C2CAD1CE78A3403F6B3A06C /* CallLogViewModel.swift */,
+				1C2CAD1CE78A3403F6B3A06C /* MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift */,
 			);
 			name = ViewModels;
 			sourceTree = "<group>";
@@ -425,11 +515,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D553360E32294EFE990B6645 /* ConversationAPIService.swift in Sources */,
-				2E9F4179FE304C2ABB30E324 /* ConversationViewModel.swift in Sources */,
-				A1F08C8379A9426FB73F4794 /* ConversationFormView.swift in Sources */,
-				7D0369EC5D704497AD27E4BC /* ConversationListView.swift in Sources */,
-				876D9AE3B10F457190C1291B /* ConversationRowView.swift in Sources */,
+				D553360E32294EFE990B6645 /* MonicaClient/Features/ConversationTracking/Services/ConversationAPIService.swift in Sources */,
+				2E9F4179FE304C2ABB30E324 /* MonicaClient/Features/ConversationTracking/ViewModels/ConversationViewModel.swift in Sources */,
+				A1F08C8379A9426FB73F4794 /* MonicaClient/Features/ConversationTracking/Views/ConversationFormView.swift in Sources */,
+				7D0369EC5D704497AD27E4BC /* MonicaClient/Features/ConversationTracking/Views/ConversationListView.swift in Sources */,
+				876D9AE3B10F457190C1291B /* MonicaClient/Features/ConversationTracking/Views/ConversationRowView.swift in Sources */,
 				1A2B3C4F2B1E5F6701234567 /* ContentView.swift in Sources */,
 				1A2B3C612B1E5F9B01234567 /* ContactsListView.swift in Sources */,
 				B7BD3A102ECD7A4F005A016F /* Note.swift in Sources */,
@@ -439,6 +529,15 @@
 				B7BD3A252ED41C5B005A016F /* AddressViewModel.swift in Sources */,
 				B7BD3A262ED41C5B005A016F /* AddressListView.swift in Sources */,
 				B7BD3A272ED41C5B005A016F /* AddressFormView.swift in Sources */,
+				B7261BA92EE3D03B00BDB1B1 /* DebtExtensions.swift in Sources */,
+				B7261BAA2EE3D03B00BDB1B1 /* DebtRowView.swift in Sources */,
+				B7261BAB2EE3D03B00BDB1B1 /* DebtViewModel.swift in Sources */,
+				B7261BAC2EE3D03B00BDB1B1 /* DebtFormView.swift in Sources */,
+				B7261BAD2EE3D03B00BDB1B1 /* DebtListView.swift in Sources */,
+				B7261BAE2EE3D03B00BDB1B1 /* DebtAPIService.swift in Sources */,
+				B7261BAF2EE3D03B00BDB1B1 /* DebtSummaryView.swift in Sources */,
+				B7261BB02EE3D03B00BDB1B1 /* DebtEnums.swift in Sources */,
+				B7261BB12EE3D03B00BDB1B1 /* NetBalance.swift in Sources */,
 				B7BD3A282ED41C5B005A016F /* AddressFormViewModel.swift in Sources */,
 				B7BD3A292ED41C5B005A016F /* AddressMapView.swift in Sources */,
 				B7BD3A2A2ED41C5B005A016F /* AddressEmptyStateView.swift in Sources */,
@@ -467,6 +566,8 @@
 				B7BD3A182ECD7CBB005A016F /* Activity.swift in Sources */,
 				1A2B3C712B1E5FF901234567 /* ContactEntity+CoreDataProperties.swift in Sources */,
 				1A2B3C4D2B1E5F6701234567 /* MonicaClientApp.swift in Sources */,
+				B7261BB42EE3D3F500BDB1B1 /* GlobalDebtView.swift in Sources */,
+				B7261BB52EE3D3F500BDB1B1 /* DebtsTabView.swift in Sources */,
 				B7BD3A352ED41CD0005A016F /* CacheService.swift in Sources */,
 				B7BD3A372ED41CD0005A016F /* KeychainService.swift in Sources */,
 				B7BD3A392ED41CD0005A016F /* UserDefaultsService.swift in Sources */,
@@ -475,18 +576,18 @@
 				FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */,
 				8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */,
 				AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */,
-				F1FB6FF46432060B56870643 /* CallLog.swift in Sources */,
+				F1FB6FF46432060B56870643 /* MonicaClient/Models/CallLog.swift in Sources */,
 				81A281708C79415899B72A9A /* Emotion.swift in Sources */,
-				29120D965A06242FD7FAF8D6 /* CallLogViewModel.swift in Sources */,
-				3B1CB61F2749BE0720AC10C3 /* CallLogFormView.swift in Sources */,
-				EA801FD028219F338899892A /* CallLogRowView.swift in Sources */,
-				0E893B61F5093C87FDE79D69 /* CallLogListView.swift in Sources */,
+				29120D965A06242FD7FAF8D6 /* MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift in Sources */,
+				3B1CB61F2749BE0720AC10C3 /* MonicaClient/Features/CallLogging/Views/CallLogFormView.swift in Sources */,
+				EA801FD028219F338899892A /* MonicaClient/Features/CallLogging/Views/CallLogRowView.swift in Sources */,
+				0E893B61F5093C87FDE79D69 /* MonicaClient/Features/CallLogging/Views/CallLogListView.swift in Sources */,
 				JV0001012B1E600001234567 /* JournalView.swift in Sources */,
 				JV0001032B1E600001234567 /* JournalEntryDetailView.swift in Sources */,
-				MT0001012B1E700001234567 /* MoodPickerView.swift in Sources */,
-				MT0001032B1E700001234567 /* DayRatingFormView.swift in Sources */,
-				MT0001052B1E700001234567 /* DayEntryViewModel.swift in Sources */,
-				MT0001072B1E700001234567 /* DayEntryRowView.swift in Sources */,
+				MT0001012B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/MoodPickerView.swift in Sources */,
+				MT0001032B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayRatingFormView.swift in Sources */,
+				MT0001052B1E700001234567 /* MonicaClient/Features/MoodTracking/ViewModels/DayEntryViewModel.swift in Sources */,
+				MT0001072B1E700001234567 /* MonicaClient/Features/MoodTracking/Views/DayEntryRowView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
