@@ -122,6 +122,10 @@ struct ContactDetailView: View {
                 FoodPreferencesSection(contact: contact)
                     .padding(.horizontal)
 
+                // Pets Section
+                PetsSection(contact: contact)
+                    .padding(.horizontal)
+
                 // Stay in Touch Section
                 StayInTouchSection(contact: contact)
                     .padding(.horizontal)
@@ -2277,6 +2281,254 @@ struct FoodPreferencesEditorView: View {
                     Button("Done") {
                         dismiss()
                     }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Pets Section
+
+struct PetsSection: View {
+    let contact: ContactEntity
+    @EnvironmentObject var authManager: AuthenticationManager
+    @State private var pets: [Pet] = []
+    @State private var petCategories: [PetCategory] = []
+    @State private var isLoading = true
+    @State private var showingAddPet = false
+
+    var body: some View {
+        DetailSection(title: "Pets") {
+            VStack(alignment: .leading, spacing: 8) {
+                if isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else if pets.isEmpty {
+                    Button(action: { showingAddPet = true }) {
+                        Label("Add Pet", systemImage: "plus.circle")
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                    }
+                } else {
+                    ForEach(pets) { pet in
+                        HStack {
+                            Text(pet.emoji)
+                                .font(.title2)
+                            VStack(alignment: .leading, spacing: 2) {
+                                if let name = pet.name, !name.isEmpty {
+                                    Text(name)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                    Text(pet.categoryName)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    Text(pet.categoryName)
+                                        .font(.body)
+                                        .foregroundColor(.primary)
+                                }
+                            }
+                            Spacer()
+                        }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                            Button(role: .destructive) {
+                                deletePet(pet)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                    }
+
+                    Button(action: { showingAddPet = true }) {
+                        Label("Add Pet", systemImage: "plus.circle")
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                    }
+                    .padding(.top, 4)
+                }
+            }
+        }
+        .task {
+            await loadPets()
+        }
+        .sheet(isPresented: $showingAddPet) {
+            AddPetView(contactId: Int(contact.id), petCategories: petCategories) { newPet in
+                pets.append(newPet)
+            }
+            .environmentObject(authManager)
+        }
+    }
+
+    private func loadPets() async {
+        guard let apiClient = authManager.currentAPIClient else {
+            isLoading = false
+            return
+        }
+
+        do {
+            // First, try to discover pet categories
+            if !PetCategory.hasDiscoveredCategories {
+                try await apiClient.discoverPetCategories()
+            }
+
+            // Load pets for this contact
+            let petsResponse = try await apiClient.getPets(for: Int(contact.id))
+            pets = petsResponse.data
+
+            // Update petCategories with discovered categories
+            petCategories = PetCategory.getDiscoveredCategories()
+        } catch {
+            print("Failed to load pets: \(error)")
+        }
+        isLoading = false
+    }
+
+    private func deletePet(_ pet: Pet) {
+        Task {
+            guard let apiClient = authManager.currentAPIClient else { return }
+
+            do {
+                try await apiClient.deletePet(id: pet.id)
+                await MainActor.run {
+                    pets.removeAll { $0.id == pet.id }
+                }
+            } catch {
+                print("Failed to delete pet: \(error)")
+            }
+        }
+    }
+}
+
+// MARK: - Add Pet View
+
+struct AddPetView: View {
+    let contactId: Int
+    let petCategories: [PetCategory]
+    let onSave: (Pet) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var authManager: AuthenticationManager
+
+    @State private var selectedCategory: PetCategory?
+    @State private var petName = ""
+    @State private var isSaving = false
+    @State private var errorMessage: String?
+    @State private var isDiscoveringCategories = false
+
+    private let primaryColor = Color(red: 0.35, green: 0.4, blue: 0.85)
+
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("Pet Type") {
+                    if isDiscoveringCategories {
+                        HStack {
+                            ProgressView()
+                                .padding(.trailing, 8)
+                            Text("Loading pet types...")
+                                .foregroundColor(.secondary)
+                        }
+                    } else if petCategories.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("No pet types available yet.")
+                                .foregroundColor(.secondary)
+                            Text("Create your first pet using the Monica web interface to enable pet type selection.")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Button("Refresh") {
+                                discoverCategories()
+                            }
+                            .font(.caption)
+                        }
+                    } else {
+                        ForEach(petCategories, id: \.id) { category in
+                            Button(action: { selectedCategory = category }) {
+                                HStack {
+                                    Text(category.emoji)
+                                        .font(.title2)
+                                    Text(category.resolvedName)
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    if selectedCategory?.id == category.id {
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(primaryColor)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section("Pet Name (Optional)") {
+                    TextField("e.g., Max, Whiskers, Buddy", text: $petName)
+                }
+
+                if let error = errorMessage {
+                    Section {
+                        Text(error)
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+            .navigationTitle("Add Pet")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        savePet()
+                    }
+                    .disabled(selectedCategory == nil || isSaving)
+                }
+            }
+        }
+    }
+
+    private func discoverCategories() {
+        guard let apiClient = authManager.currentAPIClient else { return }
+
+        isDiscoveringCategories = true
+        Task {
+            do {
+                try await apiClient.discoverPetCategories()
+                await MainActor.run {
+                    isDiscoveringCategories = false
+                }
+            } catch {
+                await MainActor.run {
+                    isDiscoveringCategories = false
+                    errorMessage = "Failed to load pet types"
+                }
+            }
+        }
+    }
+
+    private func savePet() {
+        guard let category = selectedCategory,
+              let apiClient = authManager.currentAPIClient else { return }
+
+        isSaving = true
+        errorMessage = nil
+
+        Task {
+            do {
+                let response = try await apiClient.createPet(
+                    for: contactId,
+                    petCategoryId: category.id,
+                    name: petName.isEmpty ? nil : petName
+                )
+                await MainActor.run {
+                    onSave(response.data)
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Failed to add pet: \(error.localizedDescription)"
+                    isSaving = false
                 }
             }
         }

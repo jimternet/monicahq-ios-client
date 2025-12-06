@@ -1853,4 +1853,129 @@ class MonicaAPIClient {
         }
     }
 
+    // MARK: - Pets CRUD
+    //
+    // Monica v4.x Pets API Documentation:
+    // ====================================
+    // - GET    /api/pets                    - List all pets
+    // - GET    /api/contacts/{id}/pets      - List pets for a specific contact
+    // - GET    /api/pets/{id}               - Get single pet
+    // - POST   /api/pets                    - Create a pet
+    // - PUT    /api/pets/{id}               - Update a pet
+    // - DELETE /api/pets/{id}               - Delete a pet
+    //
+    // NOTE: Monica v4.x does NOT have a /pet-categories or /petcategories endpoint.
+    // Pet categories must be discovered from existing pets in the user's instance.
+    // Category IDs vary by instance - we cannot use hardcoded IDs.
+    // See specs/011-pet-management/spec.md for Known Gaps documentation.
+
+    /// Fetch pet categories - tries /pet-categories endpoint first, falls back to discovering from pets
+    func discoverPetCategories() async throws {
+        // First, try the pet-categories endpoint (some Monica versions may have it)
+        do {
+            let data = try await makeRequest(endpoint: "/pet-categories")
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            let response = try decoder.decode(APIResponse<[PetCategory]>.self, from: data)
+
+            for category in response.data {
+                PetCategory.registerDiscovered(category)
+            }
+            print("🐾 Loaded \(response.data.count) pet categories from /pet-categories endpoint")
+            return
+        } catch {
+            print("🐾 /pet-categories endpoint not available, discovering from existing pets...")
+        }
+
+        // Fall back to discovering categories from existing pets
+        let endpoint = "/pets?limit=100"
+        let data = try await makeRequest(endpoint: endpoint)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let response = try decoder.decode(APIResponse<[Pet]>.self, from: data)
+
+        // Register all unique categories from the response
+        for pet in response.data {
+            if let category = pet.petCategory {
+                PetCategory.registerDiscovered(category)
+            }
+        }
+
+        print("🐾 Discovered \(PetCategory.getDiscoveredCategories().count) pet categories from \(response.data.count) pets")
+    }
+
+    /// Get pets for a specific contact
+    func getPets(for contactId: Int) async throws -> APIResponse<[Pet]> {
+        let endpoint = "/contacts/\(contactId)/pets"
+        let data = try await makeRequest(endpoint: endpoint)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let response = try decoder.decode(APIResponse<[Pet]>.self, from: data)
+
+        // Register any discovered categories
+        for pet in response.data {
+            if let category = pet.petCategory {
+                PetCategory.registerDiscovered(category)
+            }
+        }
+
+        return response
+    }
+
+    /// Create a new pet for a contact
+    func createPet(for contactId: Int, petCategoryId: Int, name: String?) async throws -> APIResponse<Pet> {
+        var body: [String: Any] = [
+            "contact_id": contactId,
+            "pet_category_id": petCategoryId
+        ]
+
+        if let name = name, !name.isEmpty {
+            body["name"] = name
+        }
+
+        print("🐾 Creating pet - contactId: \(contactId), petCategoryId: \(petCategoryId), name: \(name ?? "nil")")
+
+        let bodyData = try JSONSerialization.data(withJSONObject: body)
+        let data = try await makeRequest(endpoint: "/pets", method: "POST", body: bodyData)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let response = try decoder.decode(APIResponse<Pet>.self, from: data)
+
+        // Register the category from the response (helps build our category cache)
+        if let category = response.data.petCategory {
+            PetCategory.registerDiscovered(category)
+        }
+
+        return response
+    }
+
+    /// Update an existing pet
+    func updatePet(id: Int, contactId: Int, petCategoryId: Int?, name: String?) async throws -> APIResponse<Pet> {
+        var body: [String: Any] = [
+            "contact_id": contactId
+        ]
+
+        if let petCategoryId = petCategoryId {
+            body["pet_category_id"] = petCategoryId
+        }
+        if let name = name {
+            body["name"] = name
+        }
+
+        let bodyData = try JSONSerialization.data(withJSONObject: body)
+        let data = try await makeRequest(endpoint: "/pets/\(id)", method: "PUT", body: bodyData)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(APIResponse<Pet>.self, from: data)
+    }
+
+    /// Delete a pet
+    func deletePet(id: Int) async throws {
+        _ = try await makeRequest(endpoint: "/pets/\(id)", method: "DELETE")
+    }
+
 }

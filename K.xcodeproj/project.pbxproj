@@ -76,6 +76,7 @@
 		EA801FD028219F338899892A /* MonicaClient/Features/CallLogging/Views/CallLogRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A403EE4E5BAA49C8CFA47C07 /* MonicaClient/Features/CallLogging/Views/CallLogRowView.swift */; };
 		F1FB6FF46432060B56870643 /* MonicaClient/Models/CallLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F0F930D08B7A237F1C0BE18 /* MonicaClient/Models/CallLog.swift */; };
 		FC63C9DDF46775E23D95791D /* EmotionalState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24AD824B156B02A62A1E7F32 /* EmotionalState.swift */; };
+		PM0001012B1E800001234567 /* MonicaClient/Models/Pet.swift in Sources */ = {isa = PBXBuildFile; fileRef = PM0001002B1E800001234567 /* MonicaClient/Models/Pet.swift */; };
 		FE6618C5DA878D3BC7D6C67C /* CallLogEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA9C14D52460EB28BBEF4625 /* CallLogEntity+CoreDataClass.swift */; };
 		JV0001012B1E600001234567 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JV0001002B1E600001234567 /* JournalView.swift */; };
 		JV0001032B1E600001234567 /* JournalEntryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JV0001022B1E600001234567 /* JournalEntryDetailView.swift */; };
@@ -87,6 +88,7 @@
 
 /* Begin PBXFileReference section */
 		0F0F930D08B7A237F1C0BE18 /* MonicaClient/Models/CallLog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Models/CallLog.swift; sourceTree = SOURCE_ROOT; };
+		PM0001002B1E800001234567 /* MonicaClient/Models/Pet.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MonicaClient/Models/Pet.swift; sourceTree = SOURCE_ROOT; };
 		1A2B3C492B1E5F6701234567 /* MonicaClient.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MonicaClient.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A2B3C4C2B1E5F6701234567 /* MonicaClientApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonicaClientApp.swift; sourceTree = "<group>"; };
 		1A2B3C4E2B1E5F6701234567 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -577,6 +579,7 @@
 				8AE7BDD3D84FF3AA3FD4C56D /* CallLogStorage.swift in Sources */,
 				AC5AD08D9A393E570B4C3A02 /* CallLogAPIService.swift in Sources */,
 				F1FB6FF46432060B56870643 /* MonicaClient/Models/CallLog.swift in Sources */,
+				PM0001012B1E800001234567 /* MonicaClient/Models/Pet.swift in Sources */,
 				81A281708C79415899B72A9A /* Emotion.swift in Sources */,
 				29120D965A06242FD7FAF8D6 /* MonicaClient/Features/CallLogging/ViewModels/CallLogViewModel.swift in Sources */,
 				3B1CB61F2749BE0720AC10C3 /* MonicaClient/Features/CallLogging/Views/CallLogFormView.swift in Sources */,

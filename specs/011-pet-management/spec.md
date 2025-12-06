@@ -151,7 +151,7 @@ Users can modify pet details or remove pet records to correct mistakes or update
 ## Assumptions
 
 - Monica backend provides pet API endpoints at `/api/pets` and `/api/contacts/{contact}/pets`
-- Backend provides pet category metadata at `/api/petcategories`
+- ~~Backend provides pet category metadata at `/api/petcategories`~~ **INVALIDATED - see Known Gaps**
 - Pet data from backend includes all necessary fields (id, contact_id, pet_category_id, name, category object, timestamps)
 - Pet categories follow standard animal types (Dog, Cat, Bird, Fish, Rabbit, Small Pet, Reptile, Horse, Other)
 - Pet names are optional - users can track pet ownership without knowing the pet's name
@@ -160,3 +160,32 @@ Users can modify pet details or remove pet records to correct mistakes or update
 - Pet categories rarely change, making local caching effective
 - Users primarily track current pets, not extensive pet history (no deceased pet tracking required)
 - Device supports displaying emoji-style icons for visual pet type indicators
+
+## Known Gaps & API Limitations
+
+### Pet Categories Endpoint Not Available (Critical)
+
+**Issue**: Monica v4.x does NOT expose a `/api/petcategories` or `/api/pet-categories` endpoint. Pet categories are seeded in the database but not accessible via the API.
+
+**Impact**:
+- Cannot fetch the list of available pet categories with their correct IDs
+- Category IDs vary between Monica instances (not using standard seeded order)
+- App can only discover categories from existing pets in the system
+- If no pets exist, users cannot add new pets (no category options available)
+
+**Current Workaround**:
+- App discovers categories by fetching all pets (`/api/pets`) and extracting unique `pet_category` objects from responses
+- Only categories that have been used before are available in the picker
+- New Monica instances with no pets will show "No pet types available yet"
+
+**Proposed Solutions** (for future implementation):
+1. **Probe-based discovery**: Try creating test pets with IDs 1-9 to discover category mappings, then delete them
+2. **User-selectable ID**: Allow advanced users to manually enter category ID
+3. **Monica API enhancement**: Request `/api/pet-categories` endpoint be added to Monica v4.x
+4. **Hardcoded fallback**: Use standard Monica category IDs with clear warning that results may vary by instance
+
+**Affected Requirements**:
+- FR-013: System MUST load pet category options from the backend - **BLOCKED**
+- FR-014: System MUST cache pet categories locally for performance - **PARTIAL** (can only cache discovered categories)
+
+**Status**: Deferred - requires Monica API enhancement or alternative discovery mechanism
