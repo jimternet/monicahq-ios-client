@@ -1180,26 +1180,80 @@ struct ConversationUpdatePayload: Codable {
 
 // MARK: - Debts
 
+/// Minimal contact info embedded in Debt response
+/// Matches ContactShort resource from Monica API
+struct DebtContact: Codable, Identifiable {
+    let id: Int
+    let uuid: String?
+    let hashId: String?
+    let firstName: String?
+    let lastName: String?
+    let completeName: String
+    let initials: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case uuid
+        case hashId = "hash_id"
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case completeName = "complete_name"
+        case initials
+    }
+}
+
 /// Debt tracking between user and contact
+/// API: Monica v4.x /api/debts
 struct Debt: Codable, Identifiable {
     let id: Int
-    let contactId: Int
-    let inDebt: Bool  // true = they owe you, false = you owe them
-    let status: String
-    let amount: Double
+    let uuid: String?
+    let inDebt: String           // "yes" = they owe me, "no" = I owe them
+    let status: String           // "inprogress" or "completed"
+    let amount: Double           // Raw numeric amount
+    let value: String?           // Formatted decimal string (e.g., "50.00")
+    let amountWithCurrency: String?  // Display string (e.g., "$50.00")
     let reason: String?
+    let contact: DebtContact?    // Nested contact for global view
     let createdAt: Date
     let updatedAt: Date
 
     enum CodingKeys: String, CodingKey {
         case id
-        case contactId = "contact_id"
+        case uuid
         case inDebt = "in_debt"
         case status
         case amount
+        case value
+        case amountWithCurrency = "amount_with_currency"
         case reason
+        case contact
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        uuid = try container.decodeIfPresent(String.self, forKey: .uuid)
+        inDebt = try container.decode(String.self, forKey: .inDebt)
+        status = try container.decode(String.self, forKey: .status)
+
+        // Handle amount as either Double or String
+        if let doubleAmount = try? container.decode(Double.self, forKey: .amount) {
+            amount = doubleAmount
+        } else if let stringAmount = try? container.decode(String.self, forKey: .amount),
+                  let parsedAmount = Double(stringAmount) {
+            amount = parsedAmount
+        } else {
+            amount = 0.0
+        }
+
+        value = try container.decodeIfPresent(String.self, forKey: .value)
+        amountWithCurrency = try container.decodeIfPresent(String.self, forKey: .amountWithCurrency)
+        reason = try container.decodeIfPresent(String.self, forKey: .reason)
+        contact = try container.decodeIfPresent(DebtContact.self, forKey: .contact)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        updatedAt = try container.decode(Date.self, forKey: .updatedAt)
     }
 }
 
@@ -1211,8 +1265,8 @@ struct DebtSingleResponse: Codable {
 
 struct DebtCreatePayload: Codable {
     let contactId: Int
-    let inDebt: Bool
-    let status: String
+    let inDebt: String           // "yes" or "no"
+    let status: String           // "inprogress" or "completed"
     let amount: Double
     let reason: String?
 
@@ -1226,9 +1280,19 @@ struct DebtCreatePayload: Codable {
 }
 
 struct DebtUpdatePayload: Codable {
+    let contactId: Int           // Required by API
+    let inDebt: String?          // Can update direction
     let status: String?
     let amount: Double?
     let reason: String?
+
+    enum CodingKeys: String, CodingKey {
+        case contactId = "contact_id"
+        case inDebt = "in_debt"
+        case status
+        case amount
+        case reason
+    }
 }
 
 // MARK: - Life Events

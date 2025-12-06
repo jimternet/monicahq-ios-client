@@ -1,9 +1,10 @@
 # Feature Specification: Financial Debt Tracking
 
-**Feature Branch**: `001-007-debt-tracking`
+**Feature Branch**: `007-debt-tracking`
 **Created**: 2025-11-19
 **Status**: Draft
 **Input**: User description: "Track money lent to or borrowed from contacts - who owes you, who you owe, with amounts and reasons"
+**API Verified**: ✅ Monica v4.x `/api/debts` endpoint confirmed in source code
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -94,13 +95,13 @@ Users can modify or remove debt entries to correct mistakes or update informatio
 
 ### Edge Cases
 
-- What happens when user tries to create a debt with a zero or negative amount?
+- **Zero/negative amounts**: Form validation prevents submission; displays inline error "Amount must be greater than zero"
 - How does system handle debts with very large amounts (millions)?
-- What occurs when a contact is deleted who has outstanding debts?
-- How are currency exchange rates handled when viewing multi-currency net balances?
+- **Contact deletion with debts**: Block deletion until all debts are settled or deleted; display warning listing outstanding debts
+- **Multi-currency balances**: Display separate net balance per currency with no conversion (e.g., "Net: +$50 USD, -€20 EUR")
 - What happens when user creates multiple debts of the same type and amount on the same day?
-- How does system behave when user tries to mark an already-settled debt as complete again?
-- What occurs when editing a debt changes its direction (from "they owe me" to "I owe them")?
+- **Already-settled debts**: Hide "Mark as Paid" action for settled debts; no re-settling action available
+- **Direction change on edit**: Allow with confirmation dialog warning "This will affect your net balance with this contact"
 
 ## Requirements *(mandatory)*
 
@@ -148,14 +149,31 @@ Users can modify or remove debt entries to correct mistakes or update informatio
 - **SC-009**: Global debt summary accurately reflects totals across all contacts
 - **SC-010**: Users can find and settle specific debts in under 15 seconds
 
+## Clarifications
+
+### Session 2025-12-03
+
+- Q: What happens when user tries to create a debt with zero or negative amount? → A: Prevent submission with inline validation error "Amount must be greater than zero"
+- Q: What occurs when a contact is deleted who has outstanding debts? → A: Block contact deletion until all debts are settled or deleted
+- Q: How are multi-currency net balances displayed? → A: Show separate net balance per currency (e.g., "Net: +$50 USD, -€20 EUR")
+- Q: What happens when user tries to mark an already-settled debt as complete? → A: Hide "Mark as Paid" action for settled debts (no action available)
+- Q: What occurs when editing a debt changes its direction? → A: Allow direction change with confirmation dialog warning of balance impact
+
 ## Assumptions
 
-- Monica backend provides debt API endpoints at `/api/debts` and `/api/contacts/{contact}/debts`
-- Debt data from backend includes all necessary fields (id, contact_id, amount, currency, direction, status, reason, timestamps)
-- Debt direction is indicated by a field value (e.g., "yes"/"no" or similar) indicating whether contact owes user
+**Verified from Monica v4.x source code (`/tmp/monica-v4/`):**
+
+- Monica backend provides debt API endpoints at `/api/debts` and `/api/contacts/{contact}/debts` (verified in `routes/api.php`)
+- Debt API response includes: `id`, `uuid`, `in_debt` (direction), `status`, `amount`, `value`, `amount_with_currency`, `reason`, `contact`, `created_at`, `updated_at` (verified in `app/Http/Resources/Debt/Debt.php`)
+- Debt direction field `in_debt` uses "yes"/"no" values - "yes" means contact owes user, "no" means user owes contact (verified in `app/Models/Contact/Debt.php` scopes)
+- Debt status field uses "inprogress" for outstanding debts (verified in `scopeInProgress`)
+- Full CRUD operations supported via API: GET (list/show), POST (create), PUT (update), DELETE
+
+**General Assumptions:**
+
 - Currency codes follow ISO 4217 standard (USD, EUR, GBP, etc.)
 - Debts track full amounts, not partial payments (user marks complete when fully repaid)
-- Standard mobile data connectivity is available but offline debt creation should queue for sync
+- Backend-only architecture - no offline debt creation (consistent with existing features)
 - Users primarily track informal personal debts, not complex financial instruments
 - Debt records are private to the user and not shared with other Monica users
 - Net balance calculation is simple addition/subtraction per currency without exchange rate conversion

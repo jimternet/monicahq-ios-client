@@ -18,6 +18,11 @@ struct ContentView: View {
                             Label("Reminders", systemImage: "bell")
                         }
 
+                    DebtsTabView()
+                        .tabItem {
+                            Label("Debts", systemImage: "dollarsign.circle")
+                        }
+
                     // TODO: Re-enable Journal view when implemented
                     // JournalView()
                     //     .tabItem {
