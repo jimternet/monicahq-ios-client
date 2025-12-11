@@ -1535,6 +1535,9 @@ struct LifeEventCreatePayload: Codable {
     let name: String
     let happenedAt: String
     let note: String?
+    let hasReminder: Bool
+    let happenedAtMonthUnknown: Bool
+    let happenedAtDayUnknown: Bool
 
     enum CodingKeys: String, CodingKey {
         case contactId = "contact_id"
@@ -1542,6 +1545,9 @@ struct LifeEventCreatePayload: Codable {
         case name
         case happenedAt = "happened_at"
         case note
+        case hasReminder = "has_reminder"
+        case happenedAtMonthUnknown = "happened_at_month_unknown"
+        case happenedAtDayUnknown = "happened_at_day_unknown"
     }
 }
 

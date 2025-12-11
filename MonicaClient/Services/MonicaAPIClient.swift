@@ -1559,13 +1559,16 @@ class MonicaAPIClient {
         return try decoder.decode(APIResponse<[LifeEvent]>.self, from: data)
     }
 
-    func createLifeEvent(for contactId: Int, lifeEventTypeId: Int, name: String, happenedAt: Date, note: String?) async throws -> APIResponse<LifeEvent> {
+    func createLifeEvent(for contactId: Int, lifeEventTypeId: Int, name: String, happenedAt: Date, note: String?, hasReminder: Bool = false, monthUnknown: Bool = false, dayUnknown: Bool = false) async throws -> APIResponse<LifeEvent> {
         let formatter = ISO8601DateFormatter()
         var body: [String: Any] = [
             "contact_id": contactId,
             "life_event_type_id": lifeEventTypeId,
             "name": name,
-            "happened_at": formatter.string(from: happenedAt)
+            "happened_at": formatter.string(from: happenedAt),
+            "has_reminder": hasReminder,
+            "happened_at_month_unknown": monthUnknown,
+            "happened_at_day_unknown": dayUnknown
         ]
 
         if let note = note {
