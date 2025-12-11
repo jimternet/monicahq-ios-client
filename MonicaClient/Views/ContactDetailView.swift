@@ -2752,12 +2752,64 @@ struct AddLifeEventView: View {
 
     @State private var selectedType: LifeEventType?
     @State private var eventName = ""
-    @State private var eventDate = Date()
+    @State private var selectedYear: Int
+    @State private var selectedMonth: Int? = nil  // nil means "unknown"
+    @State private var selectedDay: Int? = nil    // nil means "unknown"
     @State private var eventNote = ""
+    @State private var hasReminder = false
     @State private var isSaving = false
     @State private var errorMessage: String?
 
     private let primaryColor = Color(red: 0.35, green: 0.4, blue: 0.85)
+
+    // Year range: from 1900 to current year
+    private var yearRange: [Int] {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        return Array((1900...currentYear).reversed())
+    }
+
+    // Month options: nil (unknown) + 1-12
+    private var monthOptions: [(Int?, String)] {
+        var options: [(Int?, String)] = [(nil, "Unknown")]
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM"
+        for month in 1...12 {
+            var components = DateComponents()
+            components.month = month
+            components.day = 1
+            components.year = 2000
+            if let date = Calendar.current.date(from: components) {
+                options.append((month, formatter.string(from: date)))
+            }
+        }
+        return options
+    }
+
+    // Day options depend on selected month/year
+    private var dayOptions: [(Int?, String)] {
+        var options: [(Int?, String)] = [(nil, "Unknown")]
+        guard let month = selectedMonth else { return options }
+
+        var components = DateComponents()
+        components.year = selectedYear
+        components.month = month
+
+        if let date = Calendar.current.date(from: components),
+           let range = Calendar.current.range(of: .day, in: .month, for: date) {
+            for day in range {
+                options.append((day, "\(day)"))
+            }
+        }
+        return options
+    }
+
+    init(contactId: Int, lifeEventTypes: [LifeEventType], onSave: @escaping (LifeEvent) -> Void) {
+        self.contactId = contactId
+        self.lifeEventTypes = lifeEventTypes
+        self.onSave = onSave
+        // Default to current year
+        _selectedYear = State(initialValue: Calendar.current.component(.year, from: Date()))
+    }
 
     var body: some View {
         NavigationView {
@@ -2773,9 +2825,6 @@ struct AddLifeEventView: View {
                                 ForEach(types) { type in
                                     Button(action: {
                                         selectedType = type
-                                        if eventName.isEmpty {
-                                            eventName = type.displayName
-                                        }
                                     }) {
                                         HStack {
                                             Image(systemName: type.icon)
@@ -2796,15 +2845,73 @@ struct AddLifeEventView: View {
                     }
                 }
 
-                Section("Event Details") {
-                    TextField("Event Name", text: $eventName)
+                Section {
+                    // Year picker (required)
+                    Picker("Year", selection: $selectedYear) {
+                        ForEach(yearRange, id: \.self) { year in
+                            Text("\(year)").tag(year)
+                        }
+                    }
 
-                    DatePicker("Date", selection: $eventDate, displayedComponents: .date)
+                    // Month picker (optional)
+                    Picker("Month", selection: $selectedMonth) {
+                        ForEach(monthOptions, id: \.0) { option in
+                            Text(option.1).tag(option.0)
+                        }
+                    }
+                    .onChange(of: selectedMonth) { newValue in
+                        // Reset day when month changes or becomes unknown
+                        if newValue == nil {
+                            selectedDay = nil
+                        }
+                    }
+
+                    // Day picker (optional, only if month is selected)
+                    if selectedMonth != nil {
+                        Picker("Day", selection: $selectedDay) {
+                            ForEach(dayOptions, id: \.0) { option in
+                                Text(option.1).tag(option.0)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("When did it happen?")
+                } footer: {
+                    Text("You do not need to indicate a month or a day – only the year is mandatory.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
 
-                Section("Notes (Optional)") {
+                Section("Title (optional)") {
+                    TextField("Give this event a title", text: $eventName)
+                }
+
+                Section("Story (optional)") {
                     TextEditor(text: $eventNote)
                         .frame(minHeight: 80)
+                        .overlay(
+                            Group {
+                                if eventNote.isEmpty {
+                                    Text("Tell a story about this life event")
+                                        .foregroundColor(.secondary)
+                                        .padding(.top, 8)
+                                        .padding(.leading, 4)
+                                        .allowsHitTesting(false)
+                                }
+                            },
+                            alignment: .topLeading
+                        )
+                }
+
+                Section {
+                    Toggle(isOn: $hasReminder) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Add a yearly reminder")
+                            Text("Get reminded on the anniversary of this event")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
 
                 if let error = errorMessage {
@@ -2826,7 +2933,7 @@ struct AddLifeEventView: View {
                     Button("Save") {
                         saveEvent()
                     }
-                    .disabled(selectedType == nil || eventName.isEmpty || isSaving)
+                    .disabled(selectedType == nil || isSaving)
                 }
             }
         }
@@ -2846,6 +2953,15 @@ struct AddLifeEventView: View {
         return groups.map { ($0.key, $0.value) }.sorted { $0.0 < $1.0 }
     }
 
+    // Build the date from components
+    private var eventDate: Date {
+        var components = DateComponents()
+        components.year = selectedYear
+        components.month = selectedMonth ?? 1
+        components.day = selectedDay ?? 1
+        return Calendar.current.date(from: components) ?? Date()
+    }
+
     private func saveEvent() {
         guard let type = selectedType,
               let apiClient = authManager.currentAPIClient else { return }
@@ -2853,14 +2969,20 @@ struct AddLifeEventView: View {
         isSaving = true
         errorMessage = nil
 
+        let monthUnknown = selectedMonth == nil
+        let dayUnknown = selectedDay == nil || selectedMonth == nil
+
         Task {
             do {
                 let response = try await apiClient.createLifeEvent(
                     for: contactId,
                     lifeEventTypeId: type.id,
-                    name: eventName,
+                    name: eventName.isEmpty ? type.displayName : eventName,
                     happenedAt: eventDate,
-                    note: eventNote.isEmpty ? nil : eventNote
+                    note: eventNote.isEmpty ? nil : eventNote,
+                    hasReminder: hasReminder,
+                    monthUnknown: monthUnknown,
+                    dayUnknown: dayUnknown
                 )
                 await MainActor.run {
                     onSave(response.data)
