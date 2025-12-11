@@ -1297,11 +1297,168 @@ struct DebtUpdatePayload: Codable {
 
 // MARK: - Life Events
 
+/// Life event category (Work & Education, Family & Relationships, etc.)
+struct LifeEventCategory: Codable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let coreMonicaData: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case coreMonicaData = "core_monica_data"
+    }
+
+    /// Icon for the category
+    var icon: String {
+        switch name.lowercased() {
+        case let n where n.contains("work") || n.contains("education"):
+            return "briefcase.fill"
+        case let n where n.contains("family") || n.contains("relationship"):
+            return "heart.fill"
+        case let n where n.contains("home") || n.contains("living"):
+            return "house.fill"
+        case let n where n.contains("health") || n.contains("wellness"):
+            return "heart.text.square.fill"
+        case let n where n.contains("travel") || n.contains("experience"):
+            return "airplane"
+        default:
+            return "star.fill"
+        }
+    }
+
+    /// Color for the category
+    var color: String {
+        switch name.lowercased() {
+        case let n where n.contains("work") || n.contains("education"):
+            return "blue"
+        case let n where n.contains("family") || n.contains("relationship"):
+            return "pink"
+        case let n where n.contains("home") || n.contains("living"):
+            return "green"
+        case let n where n.contains("health") || n.contains("wellness"):
+            return "red"
+        case let n where n.contains("travel") || n.contains("experience"):
+            return "orange"
+        default:
+            return "purple"
+        }
+    }
+}
+
+typealias LifeEventCategoriesResponse = APIResponse<[LifeEventCategory]>
+
+/// Life event type (e.g., New Job, Marriage, Graduation)
+struct LifeEventType: Codable, Identifiable, Hashable {
+    let id: Int
+    let name: String
+    let coreMonicaData: Bool?
+    let lifeEventCategoryId: Int?
+    let lifeEventCategory: LifeEventCategory?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case coreMonicaData = "core_monica_data"
+        case lifeEventCategoryId = "life_event_category_id"
+        case lifeEventCategory = "life_event_category"
+    }
+
+    /// Display name for the type
+    var displayName: String {
+        // Convert snake_case to Title Case
+        name.replacingOccurrences(of: "_", with: " ").capitalized
+    }
+
+    /// Icon for the event type
+    var icon: String {
+        let lowercaseName = name.lowercased()
+        switch lowercaseName {
+        case let n where n.contains("job") || n.contains("promotion"):
+            return "briefcase.fill"
+        case let n where n.contains("graduation") || n.contains("degree"):
+            return "graduationcap.fill"
+        case let n where n.contains("retirement"):
+            return "beach.umbrella.fill"
+        case let n where n.contains("marriage") || n.contains("wedding"):
+            return "heart.fill"
+        case let n where n.contains("divorce"):
+            return "heart.slash.fill"
+        case let n where n.contains("child") || n.contains("birth") || n.contains("baby"):
+            return "figure.and.child.holdinghands"
+        case let n where n.contains("engaged"):
+            return "ring"
+        case let n where n.contains("move") || n.contains("house") || n.contains("home"):
+            return "house.fill"
+        case let n where n.contains("travel") || n.contains("trip"):
+            return "airplane"
+        case let n where n.contains("health") || n.contains("hospital") || n.contains("surgery"):
+            return "cross.case.fill"
+        case let n where n.contains("publish"):
+            return "book.fill"
+        case let n where n.contains("hobby"):
+            return "paintpalette.fill"
+        case let n where n.contains("goal") || n.contains("achievement"):
+            return "trophy.fill"
+        default:
+            return "star.fill"
+        }
+    }
+
+    /// Default life event types when API doesn't provide them
+    static let defaultTypes: [LifeEventType] = {
+        // Work & Education category (id: 1)
+        let workCategory = LifeEventCategory(id: 1, name: "Work & Education", coreMonicaData: true)
+        // Family & Relationships category (id: 2)
+        let familyCategory = LifeEventCategory(id: 2, name: "Family & Relationships", coreMonicaData: true)
+        // Home & Living category (id: 3)
+        let homeCategory = LifeEventCategory(id: 3, name: "Home & Living", coreMonicaData: true)
+        // Health & Wellness category (id: 4)
+        let healthCategory = LifeEventCategory(id: 4, name: "Health & Wellness", coreMonicaData: true)
+        // Travel & Experiences category (id: 5)
+        let travelCategory = LifeEventCategory(id: 5, name: "Travel & Experiences", coreMonicaData: true)
+
+        return [
+            // Work & Education
+            LifeEventType(id: 1, name: "New job", coreMonicaData: true, lifeEventCategoryId: 1, lifeEventCategory: workCategory),
+            LifeEventType(id: 2, name: "Promotion", coreMonicaData: true, lifeEventCategoryId: 1, lifeEventCategory: workCategory),
+            LifeEventType(id: 3, name: "Retirement", coreMonicaData: true, lifeEventCategoryId: 1, lifeEventCategory: workCategory),
+            LifeEventType(id: 4, name: "Graduation", coreMonicaData: true, lifeEventCategoryId: 1, lifeEventCategory: workCategory),
+            LifeEventType(id: 5, name: "Published work", coreMonicaData: true, lifeEventCategoryId: 1, lifeEventCategory: workCategory),
+
+            // Family & Relationships
+            LifeEventType(id: 6, name: "Marriage", coreMonicaData: true, lifeEventCategoryId: 2, lifeEventCategory: familyCategory),
+            LifeEventType(id: 7, name: "Engaged", coreMonicaData: true, lifeEventCategoryId: 2, lifeEventCategory: familyCategory),
+            LifeEventType(id: 8, name: "Divorce", coreMonicaData: true, lifeEventCategoryId: 2, lifeEventCategory: familyCategory),
+            LifeEventType(id: 9, name: "New child", coreMonicaData: true, lifeEventCategoryId: 2, lifeEventCategory: familyCategory),
+            LifeEventType(id: 10, name: "New relationship", coreMonicaData: true, lifeEventCategoryId: 2, lifeEventCategory: familyCategory),
+
+            // Home & Living
+            LifeEventType(id: 11, name: "Moved", coreMonicaData: true, lifeEventCategoryId: 3, lifeEventCategory: homeCategory),
+            LifeEventType(id: 12, name: "Bought house", coreMonicaData: true, lifeEventCategoryId: 3, lifeEventCategory: homeCategory),
+            LifeEventType(id: 13, name: "New roommate", coreMonicaData: true, lifeEventCategoryId: 3, lifeEventCategory: homeCategory),
+
+            // Health & Wellness
+            LifeEventType(id: 14, name: "Hospitalization", coreMonicaData: true, lifeEventCategoryId: 4, lifeEventCategory: healthCategory),
+            LifeEventType(id: 15, name: "Surgery", coreMonicaData: true, lifeEventCategoryId: 4, lifeEventCategory: healthCategory),
+            LifeEventType(id: 16, name: "Started therapy", coreMonicaData: true, lifeEventCategoryId: 4, lifeEventCategory: healthCategory),
+
+            // Travel & Experiences
+            LifeEventType(id: 17, name: "Traveled", coreMonicaData: true, lifeEventCategoryId: 5, lifeEventCategory: travelCategory),
+            LifeEventType(id: 18, name: "Started hobby", coreMonicaData: true, lifeEventCategoryId: 5, lifeEventCategory: travelCategory),
+            LifeEventType(id: 19, name: "Achieved goal", coreMonicaData: true, lifeEventCategoryId: 5, lifeEventCategory: travelCategory),
+        ]
+    }()
+}
+
+typealias LifeEventTypesResponse = APIResponse<[LifeEventType]>
+
 /// Life event for a contact
 struct LifeEvent: Codable, Identifiable {
     let id: Int
     let contactId: Int
     let lifeEventTypeId: Int
+    let lifeEventType: LifeEventType?
     let happenedAt: Date
     let name: String
     let note: String?
@@ -1312,11 +1469,57 @@ struct LifeEvent: Codable, Identifiable {
         case id
         case contactId = "contact_id"
         case lifeEventTypeId = "life_event_type_id"
+        case lifeEventType = "life_event_type"
         case happenedAt = "happened_at"
         case name
         case note
         case createdAt = "created_at"
         case updatedAt = "updated_at"
+    }
+
+    /// Icon for display based on event type or name
+    var icon: String {
+        lifeEventType?.icon ?? "star.fill"
+    }
+
+    /// Category name if available
+    var categoryName: String? {
+        lifeEventType?.lifeEventCategory?.name
+    }
+
+    /// How long ago the event happened
+    var timeAgo: String {
+        let interval = Date().timeIntervalSince(happenedAt)
+        let days = Int(interval / 86400)
+
+        if days < 1 {
+            return "Today"
+        } else if days == 1 {
+            return "Yesterday"
+        } else if days < 7 {
+            return "\(days) days ago"
+        } else if days < 30 {
+            let weeks = days / 7
+            return "\(weeks) week\(weeks == 1 ? "" : "s") ago"
+        } else if days < 365 {
+            let months = days / 30
+            return "\(months) month\(months == 1 ? "" : "s") ago"
+        } else {
+            let years = days / 365
+            return "\(years) year\(years == 1 ? "" : "s") ago"
+        }
+    }
+
+    /// Year of the event for grouping
+    var year: Int {
+        Calendar.current.component(.year, from: happenedAt)
+    }
+
+    /// Formatted date for display
+    var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: happenedAt)
     }
 }
 
@@ -1335,6 +1538,20 @@ struct LifeEventCreatePayload: Codable {
 
     enum CodingKeys: String, CodingKey {
         case contactId = "contact_id"
+        case lifeEventTypeId = "life_event_type_id"
+        case name
+        case happenedAt = "happened_at"
+        case note
+    }
+}
+
+struct LifeEventUpdatePayload: Codable {
+    let lifeEventTypeId: Int?
+    let name: String?
+    let happenedAt: String?
+    let note: String?
+
+    enum CodingKeys: String, CodingKey {
         case lifeEventTypeId = "life_event_type_id"
         case name
         case happenedAt = "happened_at"

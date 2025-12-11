@@ -1584,6 +1584,49 @@ class MonicaAPIClient {
         _ = try await makeRequest(endpoint: "/lifeevents/\(id)", method: "DELETE")
     }
 
+    func updateLifeEvent(id: Int, lifeEventTypeId: Int?, name: String?, happenedAt: Date?, note: String?) async throws -> APIResponse<LifeEvent> {
+        var body: [String: Any] = [:]
+
+        if let typeId = lifeEventTypeId {
+            body["life_event_type_id"] = typeId
+        }
+        if let name = name {
+            body["name"] = name
+        }
+        if let date = happenedAt {
+            let formatter = ISO8601DateFormatter()
+            body["happened_at"] = formatter.string(from: date)
+        }
+        if let note = note {
+            body["note"] = note
+        }
+
+        let bodyData = try JSONSerialization.data(withJSONObject: body)
+        let data = try await makeRequest(endpoint: "/lifeevents/\(id)", method: "PUT", body: bodyData)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(APIResponse<LifeEvent>.self, from: data)
+    }
+
+    // MARK: - Life Event Types & Categories
+
+    func getLifeEventTypes() async throws -> APIResponse<[LifeEventType]> {
+        let data = try await makeRequest(endpoint: "/lifeeventtypes")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(APIResponse<[LifeEventType]>.self, from: data)
+    }
+
+    func getLifeEventCategories() async throws -> APIResponse<[LifeEventCategory]> {
+        let data = try await makeRequest(endpoint: "/lifeeventcategories")
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        return try decoder.decode(APIResponse<[LifeEventCategory]>.self, from: data)
+    }
+
     // MARK: - Photos
 
     func getPhotos(for contactId: Int) async throws -> APIResponse<[Photo]> {
