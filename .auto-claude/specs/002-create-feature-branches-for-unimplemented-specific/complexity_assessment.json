@@ -1,0 +1,65 @@
+{
+  "complexity": "simple",
+  "workflow_type": "simple",
+  "confidence": 0.90,
+  "reasoning": "Self-contained repository automation task. Scans spec directory, compares with git branches, and outputs missing tasks. No external integrations, infrastructure changes, or unfamiliar tech. Main unknown is task output format/location.",
+
+  "analysis": {
+    "scope": {
+      "estimated_files": 2,
+      "estimated_services": 1,
+      "is_cross_cutting": false,
+      "notes": "Likely a single script/automation tool plus possibly a task list output file. All within the repository automation context."
+    },
+    "integrations": {
+      "external_services": [],
+      "new_dependencies": [],
+      "research_needed": false,
+      "notes": "Uses only standard git and filesystem operations. No external APIs or services required."
+    },
+    "infrastructure": {
+      "docker_changes": false,
+      "database_changes": false,
+      "config_changes": false,
+      "notes": "Pure repository/git operations. No infrastructure impact."
+    },
+    "knowledge": {
+      "patterns_exist": true,
+      "research_required": false,
+      "unfamiliar_tech": [],
+      "notes": "Standard git branch listing and filesystem scanning. Well-understood patterns."
+    },
+    "risk": {
+      "level": "low",
+      "concerns": [
+        "Need to clarify task output format (GitHub issues vs file-based)",
+        "Ensure no duplicate task creation"
+      ],
+      "notes": "Low risk automation task. Main concern is determining where to output tasks, which is a requirements clarification not a complexity issue."
+    }
+  },
+
+  "recommended_phases": [
+    "discovery",
+    "quick_spec",
+    "validation"
+  ],
+
+  "flags": {
+    "needs_research": false,
+    "needs_self_critique": false,
+    "needs_infrastructure_setup": false
+  },
+
+  "validation_recommendations": {
+    "risk_level": "low",
+    "skip_validation": false,
+    "minimal_mode": true,
+    "test_types_required": ["unit"],
+    "security_scan_required": false,
+    "staging_deployment_required": false,
+    "reasoning": "Repository automation task with minimal risk. Simple validation to ensure script correctly identifies specs without branches and doesn't create duplicates."
+  },
+
+  "created_at": "2025-12-19T10:30:00Z"
+}

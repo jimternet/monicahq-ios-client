@@ -1,0 +1,48 @@
+{
+  "feature": "Create Tasks for Unimplemented Specs",
+  "spec_name": "create-feature-branches-for-unimplemented-specific",
+  "workflow_type": "simple",
+  "total_phases": 1,
+  "recommended_workers": 1,
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Implementation",
+      "description": "Scan specs and create tasks for unmapped specifications",
+      "depends_on": [],
+      "subtasks": [
+        {
+          "id": "subtask-1-1",
+          "description": "Scan .auto-claude/specs/ directory and list all existing feature branches to identify specs without branches",
+          "service": "main",
+          "status": "completed",
+          "files_to_create": [],
+          "files_to_modify": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "run": "ls -la .auto-claude/specs/ && git branch -a | grep feature"
+          }
+        },
+        {
+          "id": "subtask-1-2",
+          "description": "Create task files in .auto-claude/tasks/ for each spec that doesn't have a corresponding feature branch",
+          "service": "main",
+          "status": "pending",
+          "files_to_create": [".auto-claude/tasks/*.md"],
+          "files_to_modify": [],
+          "patterns_from": [],
+          "verification": {
+            "type": "manual",
+            "run": "ls -la .auto-claude/tasks/"
+          }
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-12-19T10:00:00Z",
+    "complexity": "simple",
+    "estimated_sessions": 1
+  }
+}

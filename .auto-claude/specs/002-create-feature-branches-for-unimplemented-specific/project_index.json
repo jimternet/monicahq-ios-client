@@ -1,0 +1,12 @@
+{
+  "project_root": "/Users/jamesbeyers/workspace/monicaHqClient",
+  "project_type": "single",
+  "services": {},
+  "infrastructure": {
+    "ci": "GitHub Actions",
+    "ci_workflows": [
+      "ci.yml"
+    ]
+  },
+  "conventions": {}
+}
