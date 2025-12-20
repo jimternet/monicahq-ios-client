@@ -111,3 +111,12 @@ test_*.sh
 # IDE files
 .vscode/
 .idea/
+
+# Auto Claude data directory
+.auto-claude/
+.worktrees/
+logs/
+*.xcuserstate
+.worktrees/
+logs/
+*.xcuserstate

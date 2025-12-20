@@ -1,0 +1,667 @@
+# OpenAPI 3.0+ Specification Template for Monica v4 API
+# This template defines the structure - implementation will generate full JSON
+
+openapi: "3.0.3"
+
+info:
+  title: Monica Personal CRM API
+  description: |
+    REST API for Monica, the open-source personal relationship management system.
+
+    ## Authentication
+    All endpoints (except /statistics and /countries) require OAuth 2.0 Bearer token authentication.
+    Include the token in the Authorization header: `Authorization: Bearer {token}`
+
+    ## Pagination
+    List endpoints return paginated results with `links` and `meta` objects.
+    Use `?limit=N` (max 100) and `?page=N` query parameters.
+
+    ## Error Handling
+    Errors return a standard format with `error.message` and `error.error_code`.
+  version: "4.x.x"  # Will match Monica version
+  contact:
+    name: Monica API Documentation
+    url: https://www.monicahq.com/api
+
+servers:
+  - url: "{server}/api"
+    description: Monica instance
+    variables:
+      server:
+        default: https://app.monicahq.com
+        description: Monica server URL
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and profile
+  - name: Contacts
+    description: Contact management
+  - name: Tags
+    description: Contact tagging
+  - name: Relationships
+    description: Contact relationships
+  - name: Activities
+    description: Activities and activity types
+  - name: Notes
+    description: Contact notes
+  - name: Calls
+    description: Phone call logs
+  - name: Conversations
+    description: Conversation tracking
+  - name: Reminders
+    description: Reminder management
+  - name: Tasks
+    description: Task management
+  - name: Gifts
+    description: Gift tracking
+  - name: Debts
+    description: Debt tracking
+  - name: Life Events
+    description: Life event tracking
+  - name: Documents
+    description: Document uploads
+  - name: Photos
+    description: Photo uploads
+  - name: Settings
+    description: Account settings and configuration
+
+paths:
+  # Example endpoint structure (full spec will have all 150+ endpoints)
+
+  /contacts:
+    get:
+      tags: [Contacts]
+      summary: List contacts
+      operationId: listContacts
+      parameters:
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/sortParam'
+        - name: query
+          in: query
+          schema:
+            type: string
+          description: Search query
+        - name: with
+          in: query
+          schema:
+            type: string
+            enum: [contactfields]
+          description: Include additional data
+      responses:
+        '200':
+          description: Paginated list of contacts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags: [Contacts]
+      summary: Create contact
+      operationId: createContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateContactRequest'
+      responses:
+        '201':
+          description: Contact created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /contacts/{contact}:
+    parameters:
+      - $ref: '#/components/parameters/contactId'
+    get:
+      tags: [Contacts]
+      summary: Get contact
+      operationId: getContact
+      responses:
+        '200':
+          description: Contact details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Contacts]
+      summary: Update contact
+      operationId: updateContact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateContactRequest'
+      responses:
+        '200':
+          description: Contact updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      tags: [Contacts]
+      summary: Delete contact
+      operationId: deleteContact
+      responses:
+        '200':
+          description: Contact deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ... additional 140+ endpoints follow same pattern
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: OAuth 2.0 Bearer token
+
+  parameters:
+    contactId:
+      name: contact
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Contact ID
+
+    limitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 15
+      description: Items per page (max 100)
+
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+      description: Page number
+
+    sortParam:
+      name: sort
+      in: query
+      schema:
+        type: string
+        enum: [created_at, -created_at, updated_at, -updated_at]
+        default: created_at
+      description: Sort field (prefix - for descending)
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Not authorized"
+              error_code: 42
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "The resource has not been found"
+              error_code: 31
+
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: ["The first_name field is required."]
+              error_code: 32
+
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error:
+              message: "Invalid query"
+              error_code: 40
+
+  schemas:
+    # Error Response
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [message, error_code]
+          properties:
+            message:
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+            error_code:
+              type: integer
+              enum: [30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42]
+
+    # Delete Response
+    DeleteResponse:
+      type: object
+      properties:
+        deleted:
+          type: boolean
+          example: true
+        id:
+          type: integer
+
+    # Pagination
+    PaginationLinks:
+      type: object
+      properties:
+        first:
+          type: string
+          format: uri
+        last:
+          type: string
+          format: uri
+        prev:
+          type: string
+          format: uri
+          nullable: true
+        next:
+          type: string
+          format: uri
+          nullable: true
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        from:
+          type: integer
+        last_page:
+          type: integer
+        path:
+          type: string
+          format: uri
+        per_page:
+          type: integer
+        to:
+          type: integer
+        total:
+          type: integer
+
+    # Account Reference
+    AccountRef:
+      type: object
+      properties:
+        id:
+          type: integer
+
+    # Contact Schemas
+    Contact:
+      type: object
+      required: [id, uuid, object, first_name, complete_name, initials]
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+          format: uuid
+        object:
+          type: string
+          enum: [contact]
+        hash_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+          nullable: true
+        nickname:
+          type: string
+          nullable: true
+        complete_name:
+          type: string
+        initials:
+          type: string
+        description:
+          type: string
+          nullable: true
+        gender:
+          type: string
+          nullable: true
+        gender_type:
+          type: string
+          nullable: true
+        is_starred:
+          type: boolean
+        is_partial:
+          type: boolean
+        is_active:
+          type: boolean
+        is_dead:
+          type: boolean
+        is_me:
+          type: boolean
+        information:
+          $ref: '#/components/schemas/ContactInformation'
+        addresses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Address'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        statistics:
+          $ref: '#/components/schemas/ContactStatistics'
+        contactFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactField'
+          description: "Included when ?with=contactfields"
+        url:
+          type: string
+          format: uri
+        account:
+          $ref: '#/components/schemas/AccountRef'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ContactShort:
+      type: object
+      required: [id, uuid, object, first_name, complete_name, initials]
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+          format: uuid
+        object:
+          type: string
+          enum: [contact]
+        hash_id:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+          nullable: true
+        complete_name:
+          type: string
+        initials:
+          type: string
+
+    ContactInformation:
+      type: object
+      properties:
+        relationships:
+          type: object
+          properties:
+            love:
+              $ref: '#/components/schemas/RelationshipGroup'
+            family:
+              $ref: '#/components/schemas/RelationshipGroup'
+            friend:
+              $ref: '#/components/schemas/RelationshipGroup'
+            work:
+              $ref: '#/components/schemas/RelationshipGroup'
+        dates:
+          type: object
+          properties:
+            birthdate:
+              $ref: '#/components/schemas/SpecialDate'
+            deceased_date:
+              $ref: '#/components/schemas/SpecialDate'
+        career:
+          type: object
+          properties:
+            job:
+              type: string
+              nullable: true
+            company:
+              type: string
+              nullable: true
+        avatar:
+          $ref: '#/components/schemas/Avatar'
+        food_preferences:
+          type: string
+          nullable: true
+
+    RelationshipGroup:
+      type: object
+      properties:
+        total:
+          type: integer
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactShort'
+
+    SpecialDate:
+      type: object
+      properties:
+        is_age_based:
+          type: boolean
+          nullable: true
+        is_year_unknown:
+          type: boolean
+          nullable: true
+        date:
+          type: string
+          format: date-time
+          nullable: true
+
+    Avatar:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          nullable: true
+        source:
+          type: string
+          enum: [default, adorable, gravatar, photo]
+        default_avatar_color:
+          type: string
+
+    ContactStatistics:
+      type: object
+      properties:
+        number_of_calls:
+          type: integer
+        number_of_notes:
+          type: integer
+        number_of_activities:
+          type: integer
+        number_of_reminders:
+          type: integer
+        number_of_tasks:
+          type: integer
+        number_of_gifts:
+          type: integer
+        number_of_debts:
+          type: integer
+
+    # Response Wrappers
+    ContactResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Contact'
+
+    ContactListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    # Request Schemas
+    CreateContactRequest:
+      type: object
+      required: [first_name, is_birthdate_known, is_deceased, is_deceased_date_known]
+      properties:
+        first_name:
+          type: string
+          maxLength: 255
+        middle_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        nickname:
+          type: string
+          maxLength: 255
+        gender_id:
+          type: integer
+        description:
+          type: string
+          maxLength: 255
+        is_partial:
+          type: boolean
+        is_birthdate_known:
+          type: boolean
+        birthdate_day:
+          type: integer
+          minimum: 1
+          maximum: 31
+        birthdate_month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        birthdate_year:
+          type: integer
+        is_deceased:
+          type: boolean
+        is_deceased_date_known:
+          type: boolean
+
+    UpdateContactRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 255
+        middle_name:
+          type: string
+          maxLength: 255
+        last_name:
+          type: string
+          maxLength: 255
+        nickname:
+          type: string
+          maxLength: 255
+        gender_id:
+          type: integer
+        description:
+          type: string
+          maxLength: 255
+        is_partial:
+          type: boolean
+        is_starred:
+          type: boolean
+
+    # Placeholder schemas for other resources
+    # (Full implementation will include all 45+ schemas)
+
+    Address:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+          format: uuid
+        object:
+          type: string
+          enum: [address]
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+          format: uuid
+        object:
+          type: string
+          enum: [tag]
+        name:
+          type: string
+
+    ContactField:
+      type: object
+      properties:
+        id:
+          type: integer
+        uuid:
+          type: string
+          format: uuid
+        object:
+          type: string
+          enum: [contactfield]
