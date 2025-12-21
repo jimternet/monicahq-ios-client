@@ -126,6 +126,10 @@ struct ContactDetailView: View {
                 PetsSection(contact: contact)
                     .padding(.horizontal)
 
+                // Life Events Section
+                LifeEventsSection(contact: contact)
+                    .padding(.horizontal)
+
                 // Stay in Touch Section
                 StayInTouchSection(contact: contact)
                     .padding(.horizontal)
@@ -2531,6 +2535,601 @@ struct AddPetView: View {
                     isSaving = false
                 }
             }
+        }
+    }
+}
+
+// MARK: - Life Events Section
+
+struct LifeEventsSection: View {
+    let contact: ContactEntity
+    @EnvironmentObject var authManager: AuthenticationManager
+    @State private var lifeEvents: [LifeEvent] = []
+    @State private var lifeEventTypes: [LifeEventType] = []
+    @State private var isLoading = true
+    @State private var showingAddEvent = false
+    @State private var showingAllEvents = false
+
+    var body: some View {
+        DetailSection(title: "Life Events") {
+            VStack(alignment: .leading, spacing: 8) {
+                if isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                } else if lifeEvents.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("No life events recorded")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Button(action: { showingAddEvent = true }) {
+                            Label("Add Life Event", systemImage: "plus.circle")
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                } else {
+                    // Show timeline of recent events (up to 5)
+                    LifeEventsTimelineView(events: Array(sortedEvents.prefix(5)))
+
+                    // Action buttons
+                    HStack {
+                        Button(action: { showingAddEvent = true }) {
+                            Label("Add Event", systemImage: "plus.circle")
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                        }
+
+                        Spacer()
+
+                        if lifeEvents.count > 5 {
+                            Button(action: { showingAllEvents = true }) {
+                                Text("View All (\(lifeEvents.count))")
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
+            }
+        }
+        .task {
+            await loadLifeEvents()
+        }
+        .sheet(isPresented: $showingAddEvent) {
+            AddLifeEventView(contactId: Int(contact.id), lifeEventTypes: lifeEventTypes) { newEvent in
+                lifeEvents.append(newEvent)
+            }
+            .environmentObject(authManager)
+        }
+        .sheet(isPresented: $showingAllEvents) {
+            AllLifeEventsView(
+                events: sortedEvents,
+                lifeEventTypes: lifeEventTypes,
+                contactId: Int(contact.id),
+                onDelete: { eventId in
+                    lifeEvents.removeAll { $0.id == eventId }
+                }
+            )
+            .environmentObject(authManager)
+        }
+    }
+
+    private var sortedEvents: [LifeEvent] {
+        lifeEvents.sorted { $0.happenedAt > $1.happenedAt }
+    }
+
+    private func loadLifeEvents() async {
+        guard let apiClient = authManager.currentAPIClient else {
+            // Use default types when no API client
+            lifeEventTypes = LifeEventType.defaultTypes
+            isLoading = false
+            return
+        }
+
+        do {
+            // Load life events for this contact
+            let eventsResponse = try await apiClient.getLifeEvents(for: Int(contact.id))
+            lifeEvents = eventsResponse.data
+
+            // Load life event types for adding new events
+            do {
+                let typesResponse = try await apiClient.getLifeEventTypes()
+                lifeEventTypes = typesResponse.data.isEmpty ? LifeEventType.defaultTypes : typesResponse.data
+            } catch {
+                // Fall back to default types if API doesn't support life event types
+                print("Life event types API not available, using defaults: \(error)")
+                lifeEventTypes = LifeEventType.defaultTypes
+            }
+        } catch {
+            print("Failed to load life events: \(error)")
+            // Still provide default types for adding new events
+            lifeEventTypes = LifeEventType.defaultTypes
+        }
+        isLoading = false
+    }
+}
+
+// MARK: - Life Events Timeline View
+
+struct LifeEventsTimelineView: View {
+    let events: [LifeEvent]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(events) { event in
+                LifeEventRow(event: event, isLast: event.id == events.last?.id)
+            }
+        }
+    }
+}
+
+struct LifeEventRow: View {
+    let event: LifeEvent
+    let isLast: Bool
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            // Timeline indicator
+            VStack(spacing: 0) {
+                Circle()
+                    .fill(categoryColor)
+                    .frame(width: 10, height: 10)
+
+                if !isLast {
+                    Rectangle()
+                        .fill(Color.secondary.opacity(0.3))
+                        .frame(width: 2)
+                        .frame(minHeight: 30)
+                }
+            }
+
+            // Event content
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Image(systemName: event.icon)
+                        .foregroundColor(categoryColor)
+                        .font(.system(size: 14))
+
+                    Text(event.name)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .lineLimit(1)
+
+                    Spacer()
+
+                    Text(event.timeAgo)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Text(event.formattedDate)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+
+                if let note = event.note, !note.isEmpty {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                }
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var categoryColor: Color {
+        guard let categoryName = event.categoryName?.lowercased() else {
+            return .blue
+        }
+
+        switch categoryName {
+        case let n where n.contains("work") || n.contains("education"):
+            return .blue
+        case let n where n.contains("family") || n.contains("relationship"):
+            return .pink
+        case let n where n.contains("home") || n.contains("living"):
+            return .green
+        case let n where n.contains("health") || n.contains("wellness"):
+            return .red
+        case let n where n.contains("travel") || n.contains("experience"):
+            return .orange
+        default:
+            return .purple
+        }
+    }
+}
+
+// MARK: - Add Life Event View
+
+struct AddLifeEventView: View {
+    let contactId: Int
+    let lifeEventTypes: [LifeEventType]
+    let onSave: (LifeEvent) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var authManager: AuthenticationManager
+
+    @State private var selectedType: LifeEventType?
+    @State private var eventName = ""
+    @State private var selectedYear: Int
+    @State private var selectedMonth: Int? = nil  // nil means "unknown"
+    @State private var selectedDay: Int? = nil    // nil means "unknown"
+    @State private var eventNote = ""
+    @State private var hasReminder = false
+    @State private var isSaving = false
+    @State private var errorMessage: String?
+
+    private let primaryColor = Color(red: 0.35, green: 0.4, blue: 0.85)
+
+    // Year range: from 1900 to current year
+    private var yearRange: [Int] {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        return Array((1900...currentYear).reversed())
+    }
+
+    // Month options: nil (unknown) + 1-12
+    private var monthOptions: [(Int?, String)] {
+        var options: [(Int?, String)] = [(nil, "Unknown")]
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM"
+        for month in 1...12 {
+            var components = DateComponents()
+            components.month = month
+            components.day = 1
+            components.year = 2000
+            if let date = Calendar.current.date(from: components) {
+                options.append((month, formatter.string(from: date)))
+            }
+        }
+        return options
+    }
+
+    // Day options depend on selected month/year
+    private var dayOptions: [(Int?, String)] {
+        var options: [(Int?, String)] = [(nil, "Unknown")]
+        guard let month = selectedMonth else { return options }
+
+        var components = DateComponents()
+        components.year = selectedYear
+        components.month = month
+
+        if let date = Calendar.current.date(from: components),
+           let range = Calendar.current.range(of: .day, in: .month, for: date) {
+            for day in range {
+                options.append((day, "\(day)"))
+            }
+        }
+        return options
+    }
+
+    init(contactId: Int, lifeEventTypes: [LifeEventType], onSave: @escaping (LifeEvent) -> Void) {
+        self.contactId = contactId
+        self.lifeEventTypes = lifeEventTypes
+        self.onSave = onSave
+        // Default to current year
+        _selectedYear = State(initialValue: Calendar.current.component(.year, from: Date()))
+    }
+
+    var body: some View {
+        NavigationView {
+            Form {
+                Section("Event Type") {
+                    if lifeEventTypes.isEmpty {
+                        Text("No event types available")
+                            .foregroundColor(.secondary)
+                    } else {
+                        // Group by category
+                        ForEach(groupedTypes, id: \.0) { categoryName, types in
+                            DisclosureGroup(categoryName) {
+                                ForEach(types) { type in
+                                    Button(action: {
+                                        selectedType = type
+                                    }) {
+                                        HStack {
+                                            Image(systemName: type.icon)
+                                                .foregroundColor(.blue)
+                                                .frame(width: 24)
+                                            Text(type.displayName)
+                                                .foregroundColor(.primary)
+                                            Spacer()
+                                            if selectedType?.id == type.id {
+                                                Image(systemName: "checkmark")
+                                                    .foregroundColor(primaryColor)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Section {
+                    // Year picker (required)
+                    Picker("Year", selection: $selectedYear) {
+                        ForEach(yearRange, id: \.self) { year in
+                            Text("\(year)").tag(year)
+                        }
+                    }
+
+                    // Month picker (optional)
+                    Picker("Month", selection: $selectedMonth) {
+                        ForEach(monthOptions, id: \.0) { option in
+                            Text(option.1).tag(option.0)
+                        }
+                    }
+                    .onChange(of: selectedMonth) { newValue in
+                        // Reset day when month changes or becomes unknown
+                        if newValue == nil {
+                            selectedDay = nil
+                        }
+                    }
+
+                    // Day picker (optional, only if month is selected)
+                    if selectedMonth != nil {
+                        Picker("Day", selection: $selectedDay) {
+                            ForEach(dayOptions, id: \.0) { option in
+                                Text(option.1).tag(option.0)
+                            }
+                        }
+                    }
+                } header: {
+                    Text("When did it happen?")
+                } footer: {
+                    Text("You do not need to indicate a month or a day – only the year is mandatory.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Section("Title (optional)") {
+                    TextField("Give this event a title", text: $eventName)
+                }
+
+                Section("Story (optional)") {
+                    TextEditor(text: $eventNote)
+                        .frame(minHeight: 80)
+                        .overlay(
+                            Group {
+                                if eventNote.isEmpty {
+                                    Text("Tell a story about this life event")
+                                        .foregroundColor(.secondary)
+                                        .padding(.top, 8)
+                                        .padding(.leading, 4)
+                                        .allowsHitTesting(false)
+                                }
+                            },
+                            alignment: .topLeading
+                        )
+                }
+
+                Section {
+                    Toggle(isOn: $hasReminder) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Add a yearly reminder")
+                            Text("Get reminded on the anniversary of this event")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+
+                if let error = errorMessage {
+                    Section {
+                        Text(error)
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+            .navigationTitle("Add Life Event")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        saveEvent()
+                    }
+                    .disabled(selectedType == nil || isSaving)
+                }
+            }
+        }
+    }
+
+    private var groupedTypes: [(String, [LifeEventType])] {
+        var groups: [String: [LifeEventType]] = [:]
+
+        for type in lifeEventTypes {
+            let categoryName = type.lifeEventCategory?.name ?? "Other"
+            if groups[categoryName] == nil {
+                groups[categoryName] = []
+            }
+            groups[categoryName]?.append(type)
+        }
+
+        return groups.map { ($0.key, $0.value) }.sorted { $0.0 < $1.0 }
+    }
+
+    // Build the date from components
+    private var eventDate: Date {
+        var components = DateComponents()
+        components.year = selectedYear
+        components.month = selectedMonth ?? 1
+        components.day = selectedDay ?? 1
+        return Calendar.current.date(from: components) ?? Date()
+    }
+
+    private func saveEvent() {
+        guard let type = selectedType,
+              let apiClient = authManager.currentAPIClient else { return }
+
+        isSaving = true
+        errorMessage = nil
+
+        let monthUnknown = selectedMonth == nil
+        let dayUnknown = selectedDay == nil || selectedMonth == nil
+
+        Task {
+            do {
+                let response = try await apiClient.createLifeEvent(
+                    for: contactId,
+                    lifeEventTypeId: type.id,
+                    name: eventName.isEmpty ? type.displayName : eventName,
+                    happenedAt: eventDate,
+                    note: eventNote.isEmpty ? nil : eventNote,
+                    hasReminder: hasReminder,
+                    monthUnknown: monthUnknown,
+                    dayUnknown: dayUnknown
+                )
+                await MainActor.run {
+                    onSave(response.data)
+                    dismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Failed to save event: \(error.localizedDescription)"
+                    isSaving = false
+                }
+            }
+        }
+    }
+}
+
+// MARK: - All Life Events View
+
+struct AllLifeEventsView: View {
+    let events: [LifeEvent]
+    let lifeEventTypes: [LifeEventType]
+    let contactId: Int
+    let onDelete: (Int) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var authManager: AuthenticationManager
+
+    var body: some View {
+        NavigationView {
+            List {
+                // Group events by year
+                ForEach(groupedByYear, id: \.0) { year, yearEvents in
+                    Section(header: Text("\(year)")) {
+                        ForEach(yearEvents) { event in
+                            LifeEventDetailRow(event: event)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        deleteEvent(event)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Life Events")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private var groupedByYear: [(Int, [LifeEvent])] {
+        var groups: [Int: [LifeEvent]] = [:]
+
+        for event in events {
+            let year = event.year
+            if groups[year] == nil {
+                groups[year] = []
+            }
+            groups[year]?.append(event)
+        }
+
+        return groups.map { ($0.key, $0.value.sorted { $0.happenedAt > $1.happenedAt }) }
+            .sorted { $0.0 > $1.0 }  // Most recent year first
+    }
+
+    private func deleteEvent(_ event: LifeEvent) {
+        guard let apiClient = authManager.currentAPIClient else { return }
+
+        Task {
+            do {
+                try await apiClient.deleteLifeEvent(id: event.id)
+                await MainActor.run {
+                    onDelete(event.id)
+                }
+            } catch {
+                print("Failed to delete event: \(error)")
+            }
+        }
+    }
+}
+
+struct LifeEventDetailRow: View {
+    let event: LifeEvent
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: event.icon)
+                .foregroundColor(categoryColor)
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(event.name)
+                    .font(.body)
+                    .fontWeight(.medium)
+
+                HStack {
+                    Text(event.formattedDate)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Text("•")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+
+                    Text(event.timeAgo)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                if let note = event.note, !note.isEmpty {
+                    Text(note)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .lineLimit(2)
+                }
+            }
+
+            Spacer()
+        }
+        .padding(.vertical, 4)
+    }
+
+    private var categoryColor: Color {
+        guard let categoryName = event.categoryName?.lowercased() else {
+            return .blue
+        }
+
+        switch categoryName {
+        case let n where n.contains("work") || n.contains("education"):
+            return .blue
+        case let n where n.contains("family") || n.contains("relationship"):
+            return .pink
+        case let n where n.contains("home") || n.contains("living"):
+            return .green
+        case let n where n.contains("health") || n.contains("wellness"):
+            return .red
+        case let n where n.contains("travel") || n.contains("experience"):
+            return .orange
+        default:
+            return .purple
         }
     }
 }
