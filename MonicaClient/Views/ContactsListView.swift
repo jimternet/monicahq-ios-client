@@ -41,10 +41,9 @@ struct ContactsListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack {
-                        // TODO: Re-enable contact creation
-                        // Button(action: { showingAddContact = true }) {
-                        //     Image(systemName: "plus")
-                        // }
+                        Button(action: { showingAddContact = true }) {
+                            Image(systemName: "plus")
+                        }
 
                         Button(action: refreshContacts) {
                             Image(systemName: "arrow.clockwise")
@@ -59,12 +58,11 @@ struct ContactsListView: View {
                     }
                 }
             }
-            // TODO: Re-enable contact creation sheet
-            // .sheet(isPresented: $showingAddContact) {
-            //     AddContactView()
-            //         .environmentObject(authManager)
-            //         .environmentObject(dataController)
-            // }
+            .sheet(isPresented: $showingAddContact) {
+                AddContactView()
+                    .environmentObject(authManager)
+                    .environmentObject(dataController)
+            }
             .refreshable {
                 await syncContacts()
             }

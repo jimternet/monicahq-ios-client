@@ -944,6 +944,45 @@ struct ContactStarUpdatePayload: Codable {
     }
 }
 
+/// Contact creation payload - contains fields needed for creating a new contact via API
+struct ContactCreatePayload: Codable {
+    let firstName: String
+    let lastName: String?
+    let nickname: String?
+    let genderId: Int?
+    let gender: String?
+    let birthdateDay: Int?
+    let birthdateMonth: Int?
+    let birthdateYear: Int?
+    let birthdateIsAgeBased: Bool
+    let isBirthdateKnown: Bool
+    let isPartial: Bool
+    let isDeceased: Bool
+    let isDeceasedDateKnown: Bool
+    let company: String?
+    let jobTitle: String?
+    let description: String?
+
+    enum CodingKeys: String, CodingKey {
+        case firstName = "first_name"
+        case lastName = "last_name"
+        case nickname
+        case genderId = "gender_id"
+        case gender
+        case birthdateDay = "birthdate_day"
+        case birthdateMonth = "birthdate_month"
+        case birthdateYear = "birthdate_year"
+        case birthdateIsAgeBased = "birthdate_is_age_based"
+        case isBirthdateKnown = "is_birthdate_known"
+        case isPartial = "is_partial"
+        case isDeceased = "is_deceased"
+        case isDeceasedDateKnown = "is_deceased_date_known"
+        case company
+        case jobTitle = "job_title"
+        case description
+    }
+}
+
 // MARK: - Phone Calls
 
 /// Phone call record with a contact

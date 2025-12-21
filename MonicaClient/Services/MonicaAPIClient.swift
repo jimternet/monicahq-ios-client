@@ -236,16 +236,32 @@ class MonicaAPIClient {
         }
     }
     
-    func createContact(_ contact: Contact) async throws -> Contact {
+    func createContact(_ payload: ContactCreatePayload) async throws -> Contact {
         let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        let body = try encoder.encode(contact)
-        
+        let body = try encoder.encode(payload)
+
+        print("📤 Creating contact with payload: \(String(data: body, encoding: .utf8) ?? "nil")")
+
         let data = try await makeRequest(endpoint: "/contacts", method: "POST", body: body)
-        
+
+        // Debug: Log the raw response
+        if let responseString = String(data: data, encoding: .utf8) {
+            print("📥 Raw create contact response: \(responseString.prefix(500))")
+        }
+
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        return try decoder.decode(Contact.self, from: data)
+
+        // Try wrapped response first (API typically returns { "data": {...} })
+        do {
+            let wrappedResponse = try decoder.decode(ContactApiResponse.self, from: data)
+            print("✅ Created contact: \(wrappedResponse.data.completeName)")
+            return wrappedResponse.data
+        } catch {
+            // Fallback to direct Contact decoding
+            print("⚠️ Wrapped decode failed, trying direct decode...")
+            return try decoder.decode(Contact.self, from: data)
+        }
     }
     
     func updateContact(_ contact: Contact) async throws -> Contact {

@@ -101,33 +101,41 @@ struct AddContactView: View {
 
         Task {
             do {
-                // Create basic contact
-                var newContact = Contact(
-                    id: 0,  // Will be assigned by server
-                    firstName: firstName.isEmpty ? nil : firstName,
+                // Build birthdate components if provided
+                var birthdateDay: Int?
+                var birthdateMonth: Int?
+                var birthdateYear: Int?
+                let isBirthdateKnown = birthdate != nil
+
+                if let bd = birthdate {
+                    let calendar = Calendar.current
+                    birthdateDay = calendar.component(.day, from: bd)
+                    birthdateMonth = calendar.component(.month, from: bd)
+                    birthdateYear = calendar.component(.year, from: bd)
+                }
+
+                // Create contact payload
+                let payload = ContactCreatePayload(
+                    firstName: firstName,
                     lastName: lastName.isEmpty ? nil : lastName,
                     nickname: nickname.isEmpty ? nil : nickname,
-                    completeName: "\(firstName) \(lastName)",
+                    genderId: selectedGender?.id,
                     gender: selectedGender?.name,
-                    isStarred: false,
+                    birthdateDay: birthdateDay,
+                    birthdateMonth: birthdateMonth,
+                    birthdateYear: birthdateYear,
+                    birthdateIsAgeBased: false,
+                    isBirthdateKnown: isBirthdateKnown,
                     isPartial: false,
-                    isActive: true,
-                    isDead: isDeceased,
-                    information: nil,
-                    email: email.isEmpty ? nil : email,
-                    phone: phone.isEmpty ? nil : phone,
+                    isDeceased: isDeceased,
+                    isDeceasedDateKnown: false,
                     company: company.isEmpty ? nil : company,
                     jobTitle: jobTitle.isEmpty ? nil : jobTitle,
-                    birthdate: birthdate,
-                    notes: notes.isEmpty ? nil : notes,
-                    addresses: [],
-                    tags: [],
-                    createdAt: Date(),
-                    updatedAt: Date()
+                    description: notes.isEmpty ? nil : notes
                 )
 
                 // Create the contact
-                let createdContact = try await apiClient.createContact(newContact)
+                let createdContact = try await apiClient.createContact(payload)
                 print("✅ Created contact: \(createdContact.completeName)")
 
                 // Add contact fields (email, phone) if provided
