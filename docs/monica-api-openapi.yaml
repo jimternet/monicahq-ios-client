@@ -1847,16 +1847,41 @@ paths:
             schema:
               type: object
               required:
-                - first_name
+                - is_birthdate_known
+                - is_deceased
+                - is_deceased_date_known
               properties:
                 first_name:
                   type: string
+                  description: Contact's first name
                 last_name:
                   type: string
+                  description: Contact's last name
                 gender_id:
                   type: integer
+                  description: Gender ID (1=Man, 2=Woman, 3=Other)
                 is_partial:
                   type: boolean
+                  description: Whether this is a partial contact (limited information)
+                  default: false
+                is_birthdate_known:
+                  type: boolean
+                  description: Whether the birthdate is known (REQUIRED)
+                is_deceased:
+                  type: boolean
+                  description: Whether the contact is deceased (REQUIRED)
+                is_deceased_date_known:
+                  type: boolean
+                  description: Whether the deceased date is known (REQUIRED)
+                nickname:
+                  type: string
+                  description: Contact's nickname
+                job:
+                  type: string
+                  description: Contact's job title
+                company:
+                  type: string
+                  description: Contact's company name
       responses:
         '201':
           description: Contact created successfully
@@ -2156,6 +2181,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - is_first_met_date_known
               properties:
                 information:
                   type: string
@@ -2360,22 +2387,27 @@ paths:
             schema:
               type: object
               required:
-                - activity_type_id
-                - summary
                 - happened_at
                 - contacts
               properties:
                 activity_type_id:
                   type: integer
+                  description: ID of the activity type (optional)
                 summary:
                   type: string
+                  description: Brief summary of the activity
                 description:
                   type: string
+                  description: Detailed description of the activity
                 happened_at:
                   type: string
-                  format: date-time
+                  format: date
+                  description: When the activity occurred (Y-m-d format, REQUIRED)
+                  example: "2024-01-15"
                 contacts:
                   type: array
+                  description: Array of contact IDs (must have at least one, REQUIRED)
+                  minItems: 1
                   items:
                     type: integer
       responses:
@@ -3609,21 +3641,22 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-                - contact_id
-                - title
               properties:
                 contact_id:
                   type: integer
+                  description: ID of the contact this task relates to (optional)
                 title:
                   type: string
+                  description: Task title (optional)
                 description:
                   type: string
+                  description: Task description (optional)
                 completed:
                   type: boolean
                   default: false
+                  description: Whether the task is completed
       responses:
-        '201':
+        '200':
           description: Task created successfully
         '401':
           description: Unauthorized - Invalid or missing authentication token
@@ -3701,6 +3734,7 @@ paths:
               type: object
               required:
                 - title
+                - completed
               properties:
                 title:
                   type: string
@@ -4073,7 +4107,14 @@ paths:
       operationId: deleteConversation
   /conversations/{id}/messages:
     get:
+      deprecated: true
       summary: List messages in a conversation
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **No workaround available** - messages are included in the conversation object from GET /conversations/{id}.
       tags:
         - Conversations
       parameters:
@@ -4114,7 +4155,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/InternalServerError'
       operationId: listConversationMessages
-      description: List messages in a conversation.
     post:
       summary: Add a message to a conversation
       description: |
@@ -4923,11 +4963,16 @@ paths:
               type: object
               required:
                 - compliance_id
+                - ip_address
               properties:
                 compliance_id:
                   type: integer
                   description: ID of the compliance policy to sign
                   example: 1
+                ip_address:
+                  type: string
+                  description: IP address of the user signing the policy
+                  example: "192.168.1.1"
       responses:
         '200':
           description: Compliance policy signed successfully
@@ -5037,8 +5082,24 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
       operationId: listContactRelationships
     post:
+      deprecated: true
       summary: Create a relationship
-      description: Create a relationship between two contacts.
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **Use instead:** POST /relationships with contact_id in request body
+
+        Example:
+        ```
+        POST /relationships
+        {
+          "contact_id": 123,
+          "relationship_type_id": 1,
+          "contact_is": 456
+        }
+        ```
       tags:
         - Relationships
       parameters:
@@ -5733,8 +5794,24 @@ paths:
       operationId: listContactAddresses
       description: Get all addresses for a contact.
     post:
+      deprecated: true
       summary: Add an address to a contact
-      description: Create a new address for a contact.
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **Use instead:** POST /addresses with contact_id in request body
+
+        Example:
+        ```
+        POST /addresses
+        {
+          "contact_id": 123,
+          "street": "123 Main St",
+          ...
+        }
+        ```
       tags:
         - Addresses
         - Contacts
@@ -6038,8 +6115,24 @@ paths:
                 $ref: '#/components/schemas/InternalServerError'
       operationId: listContactContactfields
     post:
+      deprecated: true
       summary: Add a contact field
-      description: Add a contact field (email, phone, social link, etc.) to a contact.
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **Use instead:** POST /contactfields with contact_id in request body
+
+        Example:
+        ```
+        POST /contactfields
+        {
+          "contact_id": 123,
+          "contact_field_type_id": 1,
+          "data": "john@example.com"
+        }
+        ```
       tags:
         - ContactFields
         - Contacts
@@ -6336,8 +6429,24 @@ paths:
       operationId: listContactPets
       description: Get all pets for a contact.
     post:
+      deprecated: true
       summary: Add a pet to a contact
-      description: Create a pet record for a contact.
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **Use instead:** POST /pets with contact_id in request body
+
+        Example:
+        ```
+        POST /pets
+        {
+          "contact_id": 123,
+          "pet_category_id": 1,
+          "name": "Buddy"
+        }
+        ```
       tags:
         - Pets
         - Contacts
@@ -7392,8 +7501,24 @@ paths:
       operationId: listContactCalls
       description: Get all calls for a contact.
     post:
+      deprecated: true
       summary: Log a call with a contact
-      description: Record a phone call or conversation with a contact.
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **Use instead:** POST /calls with contact_id in request body
+
+        Example:
+        ```
+        POST /calls
+        {
+          "contact_id": 123,
+          "called_at": "2025-01-15T14:30:00Z",
+          "content": "Discussed project"
+        }
+        ```
       tags:
         - Calls
         - Contacts
@@ -8944,8 +9069,14 @@ paths:
       operationId: listContactDocuments
       description: Get all documents for a contact.
     post:
+      deprecated: true
       summary: Upload a document
-      description: Upload a document file for a contact.
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **No workaround available** - document upload functionality may not be implemented.
       tags:
         - Documents
         - Contacts
@@ -9164,8 +9295,14 @@ paths:
       operationId: listContactPhotos
       description: Get all photos for a contact.
     post:
+      deprecated: true
       summary: Upload a photo
-      description: Upload a photo for a contact.
+      description: |
+        ⚠️ **DEPRECATED - ENDPOINT DOES NOT EXIST**
+
+        This endpoint returns HTTP 405 Method Not Allowed.
+
+        **No workaround available** - photo upload functionality may not be implemented.
       tags:
         - Photos
         - Contacts
