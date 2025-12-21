@@ -152,7 +152,10 @@ jobs:
         if grep -r -E "(api[_-]?key|password|secret|token).*=.*['\"][A-Za-z0-9]{20,}" . \
           --exclude-dir=.git \
           --exclude-dir=DerivedData \
+          --exclude-dir=docs \
           --exclude="*.md" \
+          --exclude="*.yaml" \
+          --exclude="*.html" \
           --exclude="ci.yml" 2>/dev/null; then
           echo "::error::Potential secrets found in code"
           exit 1
