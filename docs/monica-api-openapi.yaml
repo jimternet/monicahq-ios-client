@@ -53,14 +53,14 @@ components:
           example: James
         last_name:
           type: string
-          example: Beyers
+          example: Doe
         nickname:
           type: string
           nullable: true
           example: Jim
         complete_name:
           type: string
-          example: James Matthew Beyers (Jim)
+          example: John Michael Doe (Johnny)
         initials:
           type: string
           example: JMB
@@ -215,7 +215,7 @@ components:
           example: James
         last_name:
           type: string
-          example: Beyers
+          example: Doe
         email:
           type: string
           format: email
